@@ -1,0 +1,10 @@
+{
+  "name": "@cornershop/shop-vault-scripts",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Ops scripts for shop-vault. Run with Node >= 22.18 (built-in TypeScript type stripping). Dependencies are loaded from ../client/node_modules (run `npm ci` in ../client first).",
+  "scripts": {
+    "e2e": "node devnet-e2e.ts"
+  }
+}

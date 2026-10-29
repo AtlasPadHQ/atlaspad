@@ -1,0 +1,70 @@
+[package]
+name = "shop-vault"
+version = "0.1.0"
+edition = "2021"
+description = "CORNERSHOP per-place pump.fun creator-fee vault (Pinocchio, no Anchor). See SPEC.md."
+license = "Apache-2.0"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "shop_vault"
+
+[features]
+default = []
+# Shorter claim window / rotation delay for devnet builds (SPEC §2). The default build is mainnet.
+devnet = []
+# Build as a library without the program entrypoint.
+no-entrypoint = []
+
+[dependencies]
+# Pinned exactly (SPEC §9). No `alloc`, no `copy`: the program never allocates.
+pinocchio = { version = "=0.11.2", default-features = false, features = ["cpi"] }
+pinocchio-system = "=0.6.1"
+
+# Host builds only (cargo test links the lib): PDA derivation off-chain needs curve25519.
+[target.'cfg(not(target_os = "solana"))'.dependencies]
+solana-address = { version = "=2.7.0", features = ["curve25519"] }
+
+[dev-dependencies]
+litesvm = "=0.17.0"
+solana-address = { version = "=2.7.0", features = ["curve25519", "decode"] }
+solana-account = "=4.7.0"
+solana-keypair = "=3.1.2"
+solana-signer = "=3.0.1"
+solana-instruction = "=3.5.1"
+solana-message = "=4.6.0"
+solana-transaction = "=4.3.0"
+solana-transaction-error = "=3.4.0"
+solana-instruction-error = "=2.5.0"
+solana-clock = "=3.2.1"
+solana-rent = "=4.4.0"
+solana-hash = "=4.6.0"
+solana-address-lookup-table-interface = { version = "=3.1.0", features = ["bincode"] }
+sha2 = "=0.10.9"
+serde_json = "1"
+base64 = "0.22"
+rand = "0.8"
+
+[profile.release]
+opt-level = "z"
+lto = "fat"
+codegen-units = 1
+overflow-checks = true
+panic = "abort"
+strip = true
+debug = false
+incremental = false
+
+# Dependencies (pinocchio's entrypoint pointer maths) do not need overflow checks; our crate keeps them.
+[profile.release.package."*"]
+overflow-checks = false
+
+# solana-verify (.github/workflows/verifiable-build.yml and scripts/check-artifact.sh --verified) picks its Docker image
+# from this version. Without it, it guesses from Cargo.lock (solana-program-error 3.0.1, an older toolchain). Keep it
+# equal to the Agave CLI that builds and tests the program (cargo-build-sbf 4.1, platform-tools v1.54).
+[workspace.metadata.cli]
+solana = "4.1.2"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }

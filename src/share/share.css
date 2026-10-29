@@ -1,0 +1,11 @@
+/* CORNERSHOP share modal — DESIGN.md §12.5. PANEL module CSS. */
+.share-card{margin-top:16px;width:100%;aspect-ratio:1200 / 675;border-radius:12px;border:1px solid var(--cs-divider);overflow:hidden;background:var(--cs-surface-2);display:grid;place-items:center}
+.share-card img{width:100%;height:100%;display:block;object-fit:cover}
+.share-card .sk{width:100%;height:100%;border-radius:0}
+.share-card-err{margin:0;padding:16px;text-align:center;font-size:13px;line-height:18px;color:var(--cs-text-2)}
+.share-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.share-dlg .tf-area textarea{resize:none}
+@media (max-width:767px){
+  .share-btns .btn{flex:1 1 calc(50% - 4px)}
+  .share-btns .btn-primary{flex-basis:100%}
+}

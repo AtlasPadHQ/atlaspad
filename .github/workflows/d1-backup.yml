@@ -1,0 +1,100 @@
+name: D1 backup (mainnet)
+# Daily `wrangler d1 export` of cornershop-mainnet, encrypted, kept 30 days as a workflow artifact
+# (docs/OPS-AUTOMATION.md). An OPTIONAL off-Cloudflare copy on top of D1 Time Travel (point-in-time restore, free plan
+# included). Does nothing until deploy/mainnet.json (with the ALT) is committed, and skips (green) unless ALL of these
+# are set: the repository variable D1_BACKUP_ENABLED=true (an explicit opt-in: adding the Cloudflare secrets for the
+# watchdog never starts backups), the secret D1_BACKUP_PASSPHRASE, and the secrets CLOUDFLARE_API_TOKEN
+# (Account · D1 · Edit) + CLOUDFLARE_ACCOUNT_ID.
+# Artifacts of a public repo can be downloaded by ANY signed-in GitHub user, and the database holds report contacts and
+# claim records: only the passphrase-encrypted file is ever uploaded, and without a passphrase the job fails before
+# the upload. Use a long random passphrase (`openssl rand -base64 32`); decrypting: docs/OPS-AUTOMATION.md section 3.
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: d1-backup-mainnet
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Mainnet live and backup configured?
+        id: live
+        env:
+          HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+          ENABLED: ${{ vars.D1_BACKUP_ENABLED == 'true' }}
+          HAS_PASS: ${{ secrets.D1_BACKUP_PASSPHRASE != '' }}
+        run: |
+          # Live = go-mainnet recorded the ALT (step E3); a dry run's --record writes the file without it.
+          if ! { [ -f deploy/mainnet.json ] && jq -e '.alt // empty' deploy/mainnet.json > /dev/null; }; then
+            echo "live=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::deploy/mainnet.json has no ALT yet: mainnet is not live, nothing to back up."
+          elif [ "$HAS_TOKEN" != "true" ]; then
+            # optional: D1 Time Travel already gives point-in-time restore (docs/OPS-AUTOMATION.md section 3)
+            echo "live=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets: off-Cloudflare backup skipped (D1 Time Travel still restores)."
+          elif [ "$ENABLED" != "true" ] || [ "$HAS_PASS" != "true" ]; then
+            echo "live=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Backup off: it needs vars.D1_BACKUP_ENABLED=true and the D1_BACKUP_PASSPHRASE secret (artifacts on a public repo are downloadable by any signed-in GitHub user)."
+          else
+            echo "live=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        if: steps.live.outputs.live == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      # wrangler and its dependencies exactly as package-lock.json pins them (integrity-checked), no install scripts.
+      # This step has no Cloudflare secret in its environment.
+      - name: Install
+        if: steps.live.outputs.live == 'true'
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Export cornershop-mainnet
+        if: steps.live.outputs.live == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: |
+          mkdir -p backup
+          stamp=$(date -u +%Y%m%dT%H%M%SZ)
+          out="$GITHUB_WORKSPACE/backup/cornershop-mainnet-$stamp.sql"
+          # Run outside the repo (no wrangler.jsonc): the database is looked up by NAME through the API, so this works
+          # whether or not the committed wrangler.jsonc still has the __D1_MAINNET_ID__ placeholder.
+          (cd "$RUNNER_TEMP" && "$GITHUB_WORKSPACE/node_modules/.bin/wrangler" d1 export cornershop-mainnet --remote --skip-confirmation --output "$out")
+          test -s "$out"
+          gzip -9 "backup/cornershop-mainnet-$stamp.sql"
+          echo "STAMP=$stamp" >> "$GITHUB_ENV"
+      - name: Encrypt (required)
+        if: steps.live.outputs.live == 'true'
+        env:
+          PASSPHRASE: ${{ secrets.D1_BACKUP_PASSPHRASE }}
+        run: |
+          f="backup/cornershop-mainnet-$STAMP.sql.gz"
+          if [ -z "$PASSPHRASE" ]; then
+            # the gate above already skips without it; this keeps a plain dump from ever reaching the upload
+            rm -f "$f"
+            echo "::error::D1_BACKUP_PASSPHRASE is required: refusing to upload an unencrypted backup (artifacts on a public repo are downloadable by any signed-in GitHub user)."
+            exit 1
+          fi
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in "$f" -out "$f.enc" -pass env:PASSPHRASE
+          rm "$f"
+          echo "encrypted: $f.enc"
+          ls -l backup
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        if: steps.live.outputs.live == 'true'
+        with:
+          name: d1-cornershop-mainnet-${{ env.STAMP }}
+          # the encrypted file only: a plain .sql or .sql.gz can never match
+          path: backup/*.enc
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0

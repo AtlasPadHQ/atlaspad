@@ -1,0 +1,42 @@
+.env*
+!.env.example
+node_modules
+dist
+dist-devnet/
+dist-mainnet/
+.wrangler
+.dev.vars*
+.keys/
+scripts/out/
+src/chain/__e2e__/out/
+
+# key material anywhere in the tree: a safety net under .keys/ (whose mainnet keys are symlinks into a .nosync folder)
+*.nosync
+*.nosync/
+*-keypair.json
+*.key
+*.pem
+**/id.json
+
+# deps and build output (any depth)
+node_modules/
+programs/shop-vault/target/
+
+# local QA evidence, scratch and run reports (may contain wallet addresses, logs)
+.qa/
+.qa-*.tmp.mjs
+programs/shop-vault/scripts/out/
+
+# internal notes, promo media and design captures: not part of the public tree (design/og-card.html renders public/og.png)
+research/
+videos/
+marketing/
+BRIEF.md
+design/*
+!design/og-card.html
+*.mp4
+*.mov
+
+# OS
+.DS_Store
+.claude/worktrees/

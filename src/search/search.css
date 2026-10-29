@@ -1,0 +1,143 @@
+/* SEARCH module styles — DESIGN.md §6.2 (search pill + dropdown), §6.3 (chips), §4.3/§4.4
+   (tablet/mobile placement), §6.6 (mobile locate FAB), §10.1 list rows (results panel), §15 focus.
+   Tokens only (plus the literal values written in DESIGN). OWNED BY SEARCH. */
+
+/* ================================================================ search pill (§6.2) */
+.search{position:fixed;left:88px;top:12px;width:var(--search-w);z-index:var(--z-search);margin:0}
+.search-box{height:var(--search-h);border-radius:24px;background:#fff;box-shadow:var(--cs-elev-search);display:flex;align-items:center;padding:0 0 0 24px;position:relative}
+.search.open .search-box{border-radius:24px 24px 0 0;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.search-logo{display:none}
+.search-back{display:none}
+.search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;font-size:15px;line-height:24px;letter-spacing:.1px;color:var(--cs-text);padding:0;text-overflow:ellipsis}
+.search input:focus-visible{outline:0}
+.search input::placeholder{color:var(--cs-text-2);font-size:14px;opacity:1}
+.search .sbtn{width:48px;height:48px;display:grid;place-items:center;color:var(--cs-icon);border-radius:24px;flex:none;transition:background var(--cs-dur-2) var(--cs-ease)}
+.search .sbtn:hover{background:var(--cs-state-hover)}
+.search .sbtn:active{background:var(--cs-state-press)}
+.search .sbtn.clear{width:40px;height:40px;border-radius:50%}
+.search .sbtn.launch{color:var(--cs-green);margin-right:4px}
+.search .sbtn.launch .ms{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.search .sbtn-sep{width:1px;height:24px;background:var(--cs-outline-2);flex:none}
+.search .wallet-mini{display:none}
+
+/* ---------------------------------------------------------------- dropdown */
+.sugg{background:#fff;border-radius:0 0 16px 16px;box-shadow:0 2px 4px rgba(0,0,0,.2);padding:0 0 8px;border-top:1px solid var(--cs-divider);max-height:calc(100dvh - 72px);overflow-y:auto;overscroll-behavior:contain}
+.sugg-h{padding:12px 24px 4px;font-size:11px;line-height:16px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--cs-text-3)}
+.srow{display:flex;align-items:center;height:46px;padding:0 16px 0 18px;gap:15px;font-size:14px;line-height:20px;cursor:pointer;color:var(--cs-text)}
+.srow:hover,.srow.hl{background:var(--cs-surface-2)}
+.srow .ms{color:var(--cs-icon);font-size:21px;width:28px;text-align:center}
+.srow .av{width:28px;height:28px;font-size:16px}
+.srow .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .tx b{font-weight:600}
+.srow .tx span{color:var(--cs-text-2)}
+.srow .rt{font-size:12px;font-weight:600;flex:none;white-space:nowrap}
+.srow .rt-launch{color:var(--cs-green);padding:4px 0}
+.srow .rt-launch:hover{text-decoration:underline;text-underline-offset:2px}
+.srow .rt-coin{color:var(--cs-on-green-container)}
+.srow.link{height:56px;background:var(--cs-green-tint)}
+.srow.link:hover,.srow.link.hl{background:var(--cs-green-container)}
+.srow.link .ms{color:var(--cs-green)}
+.srow.link .ms.err{color:var(--cs-down)}
+.srow.link.is-error{cursor:default}
+.srow.link.is-error:hover,.srow.link.is-error.hl{background:var(--cs-green-tint)}
+.srow.two{height:56px}
+.srow.two .tx b{display:block;overflow:hidden;text-overflow:ellipsis}
+.srow .tx small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2);overflow:hidden;text-overflow:ellipsis}
+.srow .s-cta{height:32px;padding:0 14px;font-size:13px;flex:none;pointer-events:none}
+.srow .s-cta .ms{font-size:16px;width:auto;color:inherit}
+.srow.static{cursor:default}
+.srow.static:hover{background:transparent}
+.srow.sk-srow{cursor:default}
+.srow.sk-srow:hover{background:transparent}
+.sugg-credit{height:32px;display:flex;align-items:center;justify-content:flex-end;padding:0 16px;font-size:12px;font-weight:400;color:#5e5e5e;white-space:nowrap}
+
+/* ================================================================ tablet keeps the desktop pill */
+
+/* ================================================================ mobile (<768) */
+@media (max-width:767px){
+  .search{left:12px;right:12px;top:calc(env(safe-area-inset-top) + 10px);width:auto}
+  .search-box{padding-left:6px;height:48px}
+  .search-logo{display:grid;width:36px;height:36px;border-radius:12px;background:var(--cs-green);place-items:center;margin-right:10px;flex:none;box-shadow:var(--cs-app-icon-shadow)}
+  .search-logo svg{width:22px;height:22px}
+  .search-back{display:grid;width:40px;height:40px;margin:0 6px 0 -2px;color:var(--cs-text)}
+  .search input{font-size:16px}
+  .search input::placeholder{font-size:15px}
+  .search .sbtn.find,.search .sbtn-sep{display:none}
+  .search .sbtn.launch{width:40px;height:40px;margin-right:0}
+  .search .wallet-mini{display:grid;width:36px;height:36px;border-radius:50%;background:var(--cs-green-container);color:var(--cs-on-green-container);place-items:center;margin:0 6px 0 2px;flex:none;overflow:visible}
+  .search .wallet-mini .ms{font-size:20px}
+  .search .wallet-mini.connected{background:#fff;box-shadow:0 0 0 2px var(--cs-green)}
+  .search .wallet-mini img,.search .wallet-mini .blob{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover}
+  .search .wallet-mini .blob{border-radius:50%}
+
+  /* full-screen search page (DESIGN §6.2 "Mobile focus") — above an open sheet */
+  body.search-open .search{z-index:var(--z-scrim)}
+  .search.open::before{content:"";position:fixed;inset:0;background:#fff;z-index:-1}
+  .search.open .search-box{border-radius:24px;box-shadow:var(--cs-elev-search)}
+  .search.open .sugg{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top) + 66px);bottom:0;max-height:none;border-radius:0;box-shadow:none;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .sugg-h{padding-left:20px;padding-right:20px}
+  .srow{padding:0 16px 0 14px}
+}
+
+/* ================================================================ chips row (§6.3) */
+.chips{position:fixed;left:529px;top:13px;height:48px;right:max(var(--chips-right),calc(var(--topright-w,348px) + 48px));z-index:var(--z-float);display:flex;align-items:center;gap:6px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 64px),transparent calc(100% - 20px));mask-image:linear-gradient(90deg,#000 calc(100% - 64px),transparent calc(100% - 20px));padding-left:4px}
+.chips::-webkit-scrollbar{display:none}
+.chips.at-end{-webkit-mask-image:none;mask-image:none}
+body.panel-open .chips{left:508px}
+.chips-end{flex:none;width:44px;height:1px}
+.chips-next{position:fixed;top:21px;right:max(calc(var(--chips-right) + 4px),calc(var(--topright-w,348px) + 52px));width:32px;height:32px;border-radius:50%;background:#fff;box-shadow:var(--cs-elev-1);display:grid;place-items:center;z-index:var(--z-float);color:var(--cs-icon);transition:background var(--cs-dur-2) var(--cs-ease)}
+.chips-next:hover{background:var(--cs-chip-hover)}
+.chips-next:focus-visible{box-shadow:0 0 0 4px #fff}
+
+/* tablet (768–1023): second row, scrolls, no fade, no next button (§4.3) */
+@media (max-width:1023px){
+  .chips{top:68px;left:88px;right:16px;height:40px;gap:8px;-webkit-mask-image:none;mask-image:none}
+  body.panel-open .chips{left:504px}
+  .chips-next,.chips-end{display:none}
+}
+
+/* mobile (<768): full width under the pill (§4.4) */
+@media (max-width:767px){
+  .chips,body.panel-open .chips{left:0;right:0;top:calc(env(safe-area-inset-top) + 68px);height:40px;padding:0 12px;gap:8px}
+  body.search-open .chips{display:none}
+  body[data-sheet="full"] .chips{display:none}
+}
+
+/* ================================================================ mobile locate FAB (§4.4, §6.6) */
+.locate-fab{display:none}
+@media (max-width:767px){
+  .locate-fab{display:grid;position:fixed;right:12px;bottom:calc(var(--sheet-h) + 40px);z-index:var(--z-map-ctrl);width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:var(--cs-elev-2);place-items:center;color:var(--cs-icon);transition:bottom var(--cs-dur-4) var(--cs-ease),background var(--cs-dur-2) var(--cs-ease)}
+  body:not(.panel-open) .locate-fab{bottom:calc(24px + env(safe-area-inset-bottom))}
+  body:has(.panel.dragging) .locate-fab{transition:none}
+  .locate-fab:active{background:var(--cs-ctl-hover)}
+  .locate-fab.located{color:var(--cs-loc)}
+  body.hero-on .locate-fab,body.search-open .locate-fab,body.drawer-open .locate-fab{display:none}
+  /* Full sheet: no room on the map strip (it would sit on the search pill) */
+  body[data-sheet="full"] .locate-fab{display:none}
+}
+
+/* ================================================================ results panel (list rows §10.1) */
+.rl-h{gap:8px;align-items:flex-start}
+.rl-titles{min-width:0}
+.rl-titles h1{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-cap{margin:2px 0 0;font-size:12px;line-height:16px;letter-spacing:.2px;color:var(--cs-text-2)}
+.rl-close{flex:none;margin:-6px -8px 0 0}
+.rl-list{list-style:none;margin:0;padding:4px 0 0}
+.rl-item{position:relative}
+.rl-item .frow{width:100%;text-align:left}
+.rl-item .tx{display:block}
+.rl-item .t1,.rl-item .t2{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-item.has-cta .frow{padding-right:120px}
+.rl-pin{width:40px;height:40px;border-radius:50%;background:var(--cs-surface-2);display:grid;place-items:center;color:var(--cs-icon);flex:none}
+.rl-item .rt-dist{font-weight:500;color:var(--cs-text-2);font-size:12px}
+.rl-cta{position:absolute;right:16px;top:50%;transform:translateY(-50%);height:32px;padding:0 14px 0 12px;font-size:13px}
+.rl-cta .ms{font-size:16px}
+.rl-credit{margin:0;padding:8px 24px 20px;text-align:right;font-size:12px;line-height:16px;color:#5e5e5e;white-space:nowrap}
+
+@media (max-width:767px){
+  .rl-h{padding-right:64px}
+  .rl-close{display:none}
+  .rl-item.has-cta .frow{padding-right:112px}
+  .rl-cta{right:12px}
+  .rl-credit{padding-left:16px;padding-right:16px}
+}

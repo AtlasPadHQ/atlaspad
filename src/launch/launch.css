@@ -1,0 +1,87 @@
+/* CORNERSHOP launch modal — DESIGN.md §12.2 (bespoke parts; the dialog shell, fields, .art,
+   .emoji-pick, .dlg-box, .dlg-buy, .check, .dlg-center come from src/styles/components.css).
+   PANEL module CSS. */
+
+.launch-dlg h2:focus{outline:none}
+
+/* art row */
+.art-wrap{position:relative;flex:none}
+.art{overflow:hidden;transition:background var(--cs-dur-2) var(--cs-ease)}
+.art:hover{background:var(--cs-surface-3)}
+.art .ms{color:var(--cs-text-2)}
+.art.has-img{border:0;padding:0;background:var(--cs-surface-2)}
+.art.has-img img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.art .spinner .ms{color:var(--cs-green)}
+.art-x{position:absolute;right:-2px;top:-2px;width:24px;height:24px;border-radius:50%;background:var(--cs-text);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 2px #fff;z-index:1}
+.art-x .ms{font-size:16px}
+.art-x:hover{background:#000}
+.emoji-pick{min-width:0;flex:1}
+.emoji-pick button.hit{position:relative}
+.emoji-pick button:not(.swatch):hover{background:var(--cs-state-hover)}
+.emoji-pick button.on:hover{background:var(--cs-green-tint)}
+.lf-colour-l{display:block;margin-top:10px}
+.emoji-pick .swatches{display:flex;gap:8px;margin-top:6px}
+.emoji-pick .swatch{width:24px;height:24px;border-radius:50%;border:0;box-shadow:inset 0 0 0 1px rgba(31,31,31,.12);font-size:0;flex:none}
+.emoji-pick .swatch.on{border:0;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--cs-green)}
+.lf-art-err{margin-top:8px}
+.lf-ticker input{font-weight:600;text-transform:uppercase}
+
+/* review */
+.lf-sum{display:flex;align-items:center;gap:16px;margin-top:16px;padding:16px;border:1px solid var(--cs-divider);border-radius:var(--cs-r-lg)}
+.lf-sum-tx{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:2px}
+.lf-sum-tx b{font-size:16px;line-height:22px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
+.lf-sum-tx small{font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.lf-place-l{margin:16px 0 0}
+.lf-oneline{align-self:center;font-weight:600}
+.lf-rows{margin:12px 0 0;padding:0}
+.lf-rows > div{display:flex;align-items:center;justify-content:space-between;gap:12px;height:36px;font-size:14px;line-height:20px}
+.lf-rows dt{color:var(--cs-text-2)}
+.lf-rows dd{margin:0;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.lf-short{margin:4px 0 0}
+
+/* launching */
+.lf-run{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.lf-run li{display:flex;align-items:center;gap:12px;min-height:40px;font-size:14px;line-height:20px;color:var(--cs-text)}
+.lf-run li.is-todo{color:var(--cs-text-3)}
+.lf-run li .ms{font-size:20px;color:var(--cs-green)}
+.lf-run .spinner .ms{color:var(--cs-green)}
+.lf-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--cs-outline-2);flex:none}
+
+/* success / errors */
+.lf-success,.lf-err{display:flex;flex-direction:column;align-items:center}
+.lf-big{position:relative;width:96px;height:96px;margin:8px auto 0;display:grid;place-items:center}
+.lf-big .sticker{position:relative;z-index:1}
+.lf-ring{position:absolute;inset:0;border-radius:50%;border:3px solid var(--cs-green-bright);opacity:0;animation:cs-burst 900ms var(--cs-ease-decel) both}
+.lf-ring.r2{animation-delay:150ms}
+.lf-success .sticker{animation:cs-pop 450ms var(--cs-ease-decel) both}
+.lf-success h2,.lf-err h2{margin-top:16px}
+.lf-success .dlg-sub,.lf-err .dlg-sub{max-width:400px}
+.lf-fb{margin:8px 0 0;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.lf-succ-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px}
+.lf-owner{margin:20px 0 0;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.lf-success > .btn-text{margin-top:4px}
+.lf-err-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin-top:8px}
+.lf-err-ic .ms{font-size:32px}
+.lf-err-ic.warn{background:var(--cs-amber-container);color:var(--cs-amber)}
+.lf-err-ic.bad{background:var(--cs-down-bg);color:var(--cs-down)}
+
+@media (max-width:767px){
+  .lf-succ-btns{flex-direction:column;align-self:stretch}
+  .lf-succ-btns .btn{width:100%;height:48px;border-radius:24px}
+  .art-row{align-items:flex-start}
+  .emoji-pick div[role="radiogroup"]:not(.swatches){gap:8px}
+}
+@media (max-width:374px){
+  .art{width:64px;height:64px}
+  .emoji-pick button:not(.swatch){width:36px;height:36px;font-size:18px}
+}
+
+/* footer: the demo note gets its own row on phones so the buttons stay on one line */
+@media (max-width:767px){
+  .launch-dlg .dlg-f .dlg-f-note{flex:1 1 100%;justify-content:flex-start}
+}
+/* narrow phones: non-current stepper items collapse to their number / ✓ so it stays one row */
+@media (max-width:420px){
+  .launch-dlg .stepper{flex-wrap:nowrap}
+  .launch-dlg .stepper li:not(.on){font-size:0;gap:0;padding:0 4px}
+}

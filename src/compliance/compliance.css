@@ -1,0 +1,8 @@
+/* Region-blocked notice (src/compliance/RegionBlocked.tsx): covers the whole app, same card as .app-crash (App.css). */
+.region-blocked{position:fixed;inset:0;z-index:calc(var(--z-tooltip) + 1);display:grid;place-items:center;padding:24px 16px;background:var(--cs-map-bg);overflow-y:auto}
+.region-blocked .empty{background:var(--cs-surface);border-radius:var(--cs-r-xl);box-shadow:var(--cs-elev-2);max-width:400px;padding:40px 28px 24px}
+.region-blocked .empty-t{font-size:20px;line-height:28px;outline:none}
+.region-blocked .empty-b{max-width:320px}
+.region-blocked-mail{margin:12px 0 0;font-size:13px;line-height:18px;color:var(--cs-text-3);max-width:320px}
+.region-blocked-mail a{color:var(--cs-green)}
+.region-blocked .empty-actions{margin-top:12px}

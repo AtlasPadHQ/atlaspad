@@ -1,0 +1,176 @@
+{
+  // CORNERSHOP - one codebase, three Workers (INTEGRATION.md §1.4). BACKEND owns this file.
+  //
+  //  * TOP LEVEL = the live Phase-1 DEMO Worker `cornershop` (https://cornershop.tiejiucai.workers.dev).
+  //    Do NOT deploy it in the Phase-2 workflow (H4). `vars.CLUSTER` is unset there, so every Phase-2 route answers
+  //    404 not_enabled and the Phase-1 routes behave exactly as before.
+  //  * env.devnet  = `cornershop-devnet` (real mode on Solana devnet). Deploy ONLY through scripts/deploy-devnet.sh:
+  //    `npx wrangler deploy --env devnet --var ALT_ADDRESS:<alt> --var BUILD_ID:<id>`.
+  //  * env.mainnet = `cornershop` (replaces the demo at go-mainnet; scripts/go-mainnet.mjs --execute only).
+  //    While its D1 database_id is still the placeholder it cannot deploy, which is intended (go-mainnet E5 fills it;
+  //    the placeholder must appear exactly once in this file, as that value, or E5 refuses to edit).
+  //
+  // Secrets are never in this file: `node scripts/lib/secretPut.mjs NAME --env <env>` pipes them into
+  // `wrangler secret put` (INTEGRATION §1.6). Local runs: `node scripts/dev-vars.mjs devnet` writes .dev.vars.devnet.
+  // Note: with `secrets.required`, the very first deploy of a NEW Worker needs its secrets set first
+  // (`wrangler secret put` creates the Worker) or `wrangler deploy --secrets-file <file>`.
+  //
+  // `define` constants are compile-time (worker/globals.d.ts): __CS_DEV_ENDPOINTS__=false removes /api/dev/*, the
+  // on-screen phone verifier, dev origins and synthetic test places from the mainnet bundle (scripts/check-bundle.mjs
+  // greps `wrangler deploy --dry-run --env mainnet --outdir .wrangler/check-mainnet` to prove it).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cornershop",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/c/*", "/p/*"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "define": {
+    "__CS_CLUSTER__": "\"demo\"",
+    "__CS_DEV_ENDPOINTS__": "false"
+  },
+  "env": {
+    "devnet": {
+      "name": "cornershop-devnet",
+      "workers_dev": true,
+      "assets": {
+        "directory": "./dist-devnet",
+        "binding": "ASSETS",
+        "not_found_handling": "single-page-application",
+        // every page runs the Worker first (the sanctions geo-block, worker/geo.ts); hashed bundles, the favicon,
+        // the share image and the Terms / Privacy pages stay plain static files
+        "run_worker_first": ["/*", "!/assets/*", "!/favicon.svg", "!/og.png", "!/terms", "!/terms.html", "!/privacy", "!/privacy.html"]
+      },
+      "define": {
+        "__CS_CLUSTER__": "\"devnet\"",
+        "__CS_DEV_ENDPOINTS__": "true"
+      },
+      "vars": {
+        "CLUSTER": "devnet",
+        "PUBLIC_ORIGIN": "https://cornershop-devnet.tiejiucai.workers.dev",
+        "PROGRAM_ID": "6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x",
+        "ALT_ADDRESS": "",
+        "MAX_DEV_BUY_LAMPORTS": "1000000000",
+        "PRIORITY_FEE_DEFAULT": "10000",
+        "TURNSTILE_SITE_KEY": "",
+        "PRIVY_APP_ID": "",
+        "FEATURE_WEBSITE_VERIFY": "1",
+        "POLICY_REFERENCE": "1",
+        "BUILD_ID": "dev",
+        // the alert email's sender (worker/email.ts): the atlaspad.online zone has Email Routing on
+        "ALERT_EMAIL_FROM": "alerts@atlaspad.online"
+      },
+      // Alert email (worker/email.ts), free through Cloudflare Email Routing. Unrestricted on purpose: Cloudflare only
+      // delivers to the account's VERIFIED destination addresses, and the recipient is the ALERT_EMAIL_TO secret
+      // (.env.server). Never add destination_address here: no personal address is ever committed.
+      "send_email": [{ "name": "ALERT_EMAIL" }],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "cornershop-devnet",
+          "database_id": "49f55e00-8d36-4732-a148-ab76f0bc6108",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "ratelimits": [
+        { "name": "RL_READ", "namespace_id": "2101", "simple": { "limit": 600, "period": 60 } },
+        { "name": "RL_FRESH", "namespace_id": "2102", "simple": { "limit": 30, "period": 60 } },
+        { "name": "RL_GOOGLE", "namespace_id": "2103", "simple": { "limit": 30, "period": 60 } },
+        { "name": "RL_RPC", "namespace_id": "2104", "simple": { "limit": 300, "period": 60 } },
+        { "name": "RL_SEND", "namespace_id": "2105", "simple": { "limit": 30, "period": 60 } },
+        { "name": "RL_WRITE", "namespace_id": "2106", "simple": { "limit": 10, "period": 60 } },
+        { "name": "RL_CLAIM", "namespace_id": "2107", "simple": { "limit": 6, "period": 60 } }
+      ],
+      // every 5 minutes, not every minute: devnet and mainnet share the account's D1 budget on Workers Free (100,000 rows
+      // written, 5,000,000 read a day). The Worker's freshness windows follow it (worker/ctx.ts cronPeriodMs); the 60 s
+      // devnet claim window is finalized by the next run, up to 5 minutes later.
+      "triggers": { "crons": ["*/5 * * * *"] },
+      "observability": { "enabled": true },
+      "secrets": {
+        "required": ["ALCHEMY_API_KEY", "GOOGLE_SERVER_KEY", "ATTESTOR_SECRET", "CRANK_SECRET", "HMAC_KEY", "DEV_FAUCET_SECRET"]
+      }
+    },
+    "mainnet": {
+      "name": "cornershop",
+      "workers_dev": true,
+      // AtlasPad's domain: Custom Domains on the atlaspad.online zone of this account (wrangler creates the DNS records
+      // and certificates at deploy). PUBLIC_ORIGIN below is the canonical host: worker/canonical.ts 301s page requests
+      // on www and workers.dev to it, so the Worker runs first for every path except the content-hashed /assets/*.
+      "routes": [
+        { "pattern": "atlaspad.online", "custom_domain": true },
+        { "pattern": "www.atlaspad.online", "custom_domain": true }
+      ],
+      "minify": true,
+      "assets": {
+        "directory": "./dist-mainnet",
+        "binding": "ASSETS",
+        "not_found_handling": "single-page-application",
+        // every page runs the Worker first (the sanctions geo-block, worker/geo.ts, and the canonical-host redirect); hashed bundles, the favicon,
+        // the share image and the Terms / Privacy pages stay plain static files
+        "run_worker_first": ["/*", "!/assets/*", "!/favicon.svg", "!/og.png", "!/terms", "!/terms.html", "!/privacy", "!/privacy.html"]
+      },
+      "define": {
+        "__CS_CLUSTER__": "\"mainnet\"",
+        "__CS_DEV_ENDPOINTS__": "false"
+      },
+      "vars": {
+        "CLUSTER": "mainnet",
+        "PUBLIC_ORIGIN": "https://atlaspad.online",
+        "PROGRAM_ID": "6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x",
+        "ALT_ADDRESS": "",
+        "MAX_DEV_BUY_LAMPORTS": "1000000000",
+        "PRIORITY_FEE_DEFAULT": "50000",
+        "TURNSTILE_SITE_KEY": "",
+        "PRIVY_APP_ID": "",
+        "FEATURE_WEBSITE_VERIFY": "1",
+        // Workers Free at launch (owner, 2026-10-26): the reference co-sign check's cold start (25-55 ms CPU) does not fit
+        // Free's 10 ms, so it is off; the strict gate (worker/policy.ts) stays on. Set "1" again on Workers Paid.
+        "POLICY_REFERENCE": "0",
+        "BUILD_ID": "",
+        // the alert email's sender (worker/email.ts): the atlaspad.online zone has Email Routing on
+        "ALERT_EMAIL_FROM": "alerts@atlaspad.online"
+      },
+      // Alert email (worker/email.ts), free through Cloudflare Email Routing: owner alerts go to the verified address in
+      // the ALERT_EMAIL_TO secret (.env.server) instead of, or as well as, a Discord webhook. Unrestricted on purpose
+      // (Cloudflare only delivers to verified destination addresses); never add destination_address here.
+      "send_email": [{ "name": "ALERT_EMAIL" }],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "cornershop-mainnet",
+          "database_id": "773456af-9770-40de-85c8-056aee0767a8",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "ratelimits": [
+        { "name": "RL_READ", "namespace_id": "3101", "simple": { "limit": 600, "period": 60 } },
+        { "name": "RL_FRESH", "namespace_id": "3102", "simple": { "limit": 30, "period": 60 } },
+        { "name": "RL_GOOGLE", "namespace_id": "3103", "simple": { "limit": 30, "period": 60 } },
+        // /api/rpc per IP (IPv6 per /64), counted per batch item: an open coin page polls ~25 a minute and a stuck
+        // trade's 60 s confirm loop sends ~150 items; sends + simulations include its rebroadcasts (~4 trades/min/IP)
+        { "name": "RL_RPC", "namespace_id": "3104", "simple": { "limit": 200, "period": 60 } },
+        { "name": "RL_SEND", "namespace_id": "3105", "simple": { "limit": 15, "period": 60 } },
+        { "name": "RL_WRITE", "namespace_id": "3106", "simple": { "limit": 10, "period": 60 } },
+        { "name": "RL_CLAIM", "namespace_id": "3107", "simple": { "limit": 6, "period": 60 } }
+      ],
+      "triggers": { "crons": ["* * * * *"] },
+      "observability": { "enabled": true },
+      "secrets": {
+        "required": [
+          "ALCHEMY_API_KEY",
+          "GOOGLE_SERVER_KEY",
+          "ATTESTOR_SECRET",
+          "CRANK_SECRET",
+          "HMAC_KEY"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+name: Bug report
+description: Something on atlaspad.online or in this code does not work as it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Anything that could move or lock funds, get round a claim, or expose someone's data is a security issue:
+        report it privately instead (Security → Report a vulnerability). Never post a private key, seed phrase,
+        API key or anyone's contact details here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. See …
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The page URL or the command, and whether it was the mainnet site, devnet or a local build.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser, wallet and device
+      placeholder: e.g. Chrome on macOS, Phantom extension
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console output, error text or transaction signatures
+      description: Public data only. Transaction signatures and coin mint addresses are fine.
+      render: text

@@ -1,0 +1,397 @@
+/* CORNERSHOP shared component styles (src/ui) — DESIGN.md §6, §8, §9.4, §10.1, §12, §13.
+   SHARED (src/styles). Module-specific styles (rail, search, pins, place panel blocks, modals'
+   bespoke parts, hero) live in each module's own CSS file. Values are literal from DESIGN.md. */
+
+/* ================================================================ buttons (§6, verbatim + states) */
+.btn{height:40px;padding:0 20px;border-radius:20px;font-size:14px;line-height:20px;font-weight:600;letter-spacing:.1px;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;transition:background var(--cs-dur-2) var(--cs-ease),box-shadow var(--cs-dur-2) var(--cs-ease);position:relative;text-decoration:none}
+.btn .ms{font-size:18px;margin-left:-4px}
+.btn .ms.trail{margin-left:0;margin-right:-4px}
+.btn-primary{background:var(--cs-green);color:#fff}
+.btn-primary:hover{background:var(--cs-green-hover);box-shadow:var(--cs-elev-1)}
+.btn-primary:active{background:var(--cs-green-press)}
+.btn-tonal{background:var(--cs-green-container);color:var(--cs-on-green-container)}
+.btn-tonal:hover{box-shadow:var(--cs-elev-1)}
+.btn-outline{border:1px solid var(--cs-outline-2);background:#fff;color:var(--cs-text)}
+.btn-outline .ms{color:var(--cs-green)}
+.btn-outline:hover{background:var(--cs-state-hover)}
+.btn-amber{background:var(--cs-on-amber-container);color:#fff}
+.btn-amber:hover{background:var(--cs-amber-hover)}
+.btn-text{height:40px;padding:0 12px;color:var(--cs-green);font-weight:600}
+.btn-text:hover{background:var(--cs-state-hover)}
+/* Sell button (DESIGN §8.11): bg --cs-down, hover #b02631 */
+.btn-danger{background:var(--cs-down);color:#fff}
+.btn-danger:hover{background:#b02631;box-shadow:var(--cs-elev-1)}
+.btn-block{width:100%;height:48px;border-radius:24px;font-size:15px}
+.btn-tonal:active,.btn-outline:active,.btn-text:active,.btn-amber:active,.btn-danger:active{box-shadow:inset 0 0 0 999px var(--cs-state-press)}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.38;cursor:default;box-shadow:none}
+.btn-primary[disabled]:hover{background:var(--cs-green)}
+.btn-outline[disabled]:hover,.btn-text[disabled]:hover{background:transparent}
+.btn-outline[disabled]:hover{background:#fff}
+.btn-danger[disabled]:hover{background:var(--cs-down)}
+.btn-amber[disabled]:hover{background:var(--cs-on-amber-container)}
+.btn.is-loading{cursor:progress}
+
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--cs-icon);position:relative}
+.icon-btn:hover{background:var(--cs-state-hover)}
+.icon-btn:active{background:var(--cs-state-press)}
+.icon-btn[disabled]{opacity:.38;cursor:default;background:transparent}
+
+/* ================================================================ chip (§6.3, single chip) */
+.chip{flex:none;height:32px;padding:0 12px 0 10px;border-radius:16px;background:#fff;box-shadow:var(--cs-elev-1);display:inline-flex;align-items:center;gap:6px;font-size:14px;line-height:20px;font-weight:500;letter-spacing:.1px;color:var(--cs-text);white-space:nowrap;transition:background var(--cs-dur-2) var(--cs-ease);position:relative}
+.chip:hover{background:var(--cs-chip-hover)}
+.chip:active{background:var(--cs-state-press)}
+.chip .ms{font-size:18px;color:var(--cs-text)}
+.chip .em{font-size:15px;line-height:1}
+.chip.on{background:var(--cs-green-container);color:var(--cs-on-green-container)}
+.chip.on .ms{color:var(--cs-on-green-container)}
+.chip .ms.chip-x{font-size:16px;margin-right:-4px}
+.chip.fees .n{color:var(--cs-amber);font-weight:700}
+
+/* floating-over-map controls get a white halo with the focus ring (§15) */
+.chip:focus-visible,.demo-chip:focus-visible,.basic-chip:focus-visible,.ctl:focus-visible,.m-fab:focus-visible,.layers:focus-visible,.area-row:focus-visible{box-shadow:0 0 0 4px #fff}
+
+/* ================================================================ DEMO chip (§6.4) + Basic map chip (§13.5) */
+.demo-chip{height:32px;padding:0 12px 0 10px;border-radius:16px;background:var(--cs-amber-container);color:var(--cs-on-amber-container);display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:16px;font-weight:700;letter-spacing:.3px;box-shadow:var(--cs-elev-1);white-space:nowrap;position:relative}
+.demo-chip i{width:8px;height:8px;border-radius:50%;background:var(--cs-amber-bright);box-shadow:0 0 0 3px rgba(245,158,11,.25);flex:none}
+.demo-chip span{font-weight:500;letter-spacing:.1px}
+.demo-chip .demo-short{display:none}
+@media (max-width:1023px){
+  .demo-chip .demo-long{display:none}
+  .demo-chip .demo-short{display:inline}
+}
+.demo-chip.demo-full .demo-long{display:inline}
+.demo-chip.demo-full .demo-short{display:none}
+.demo-chip.net-chip{background:var(--cs-devnet-container);color:var(--cs-on-devnet-container)}
+.demo-chip.net-chip i{background:var(--cs-devnet-dot);box-shadow:0 0 0 3px rgba(123,79,213,.22)}
+.basic-chip{height:32px;padding:0 12px 0 8px;border-radius:16px;background:var(--cs-amber-container);color:var(--cs-on-amber-container);display:inline-flex;align-items:center;gap:4px;font-size:12px;line-height:16px;font-weight:700;letter-spacing:.3px;box-shadow:var(--cs-elev-1);white-space:nowrap;cursor:default}
+.basic-chip .ms{color:var(--cs-amber)}
+/* narrow desktop / tablet: icon-only in the top-right row so the chips row keeps its room (label in aria-label + tooltip) */
+@media (min-width:768px) and (max-width:1279px){ .topright .basic-chip{padding:0 8px} .topright .basic-chip .basic-lbl{display:none} }
+
+/* ================================================================ mobile FABs (§6.6, verbatim) */
+/* Base for the mobile Layers FAB (src/map) and the locate FAB (src/search); each module positions its own. */
+.m-fab{position:fixed;right:12px;z-index:var(--z-map-ctrl);width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:var(--cs-elev-2);display:grid;place-items:center;color:var(--cs-icon)}
+
+/* ================================================================ identity (§6.1, §11, §6.8) */
+.app-icon{width:40px;height:40px;border-radius:12px;background:var(--cs-green);display:grid;place-items:center;box-shadow:var(--cs-app-icon-shadow);flex:none}
+.app-icon svg{width:100%;height:100%;display:block}
+.brand{display:flex;align-items:center;gap:10px}
+.wordmark{font-family:"CS Wordmark",var(--cs-font);font-size:16px;line-height:20px;font-weight:800;font-stretch:120%;letter-spacing:.6px;color:var(--cs-text)}
+
+/* ================================================================ segmented control (§8.10) */
+.seg{display:inline-flex;gap:2px;background:var(--cs-surface-2);border-radius:16px;padding:2px}
+.seg button{height:28px;padding:0 10px;border-radius:14px;font-size:12px;font-weight:600;color:var(--cs-text-2);transition:background var(--cs-dur-2) var(--cs-ease)}
+.seg button.on{background:#fff;color:var(--cs-text);box-shadow:var(--cs-seg-on-shadow)}
+.seg button[disabled]{opacity:.38;cursor:default}
+@media (max-width:767px){ .seg{border-radius:20px} .seg button{height:36px;border-radius:18px} }
+
+/* ================================================================ tabs (§8.8) */
+.tabs{display:flex;border-bottom:1px solid var(--cs-outline);margin-top:12px;position:sticky;top:0;background:var(--cs-surface);z-index:2}
+.tab{flex:1;height:48px;position:relative;font-size:14px;line-height:20px;font-weight:500;letter-spacing:.1px;color:var(--cs-text-2)}
+.tab:hover{background:var(--cs-state-hover)}
+.tab.active{color:var(--cs-green)}
+.tab.is-disabled{opacity:.45;cursor:default}
+.tab.is-disabled:hover{background:transparent}
+.tab-ind{position:absolute;left:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--cs-green);transition:transform var(--cs-dur-2) var(--cs-ease),width var(--cs-dur-2) var(--cs-ease);pointer-events:none}
+
+/* ================================================================ coin bits (§8.4, §8.11) */
+.ticker{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:var(--cs-r-2xs);background:var(--cs-green-container);color:var(--cs-on-green-container);font-weight:700;font-size:13px;letter-spacing:.2px;white-space:nowrap}
+.ticker.ghost{background:transparent;border:1px dashed var(--cs-green);color:var(--cs-green)}
+.chg{display:inline-flex;align-items:center;gap:1px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sol{width:20px;height:20px;border-radius:50%;background:var(--cs-sol-chip);display:inline-grid;place-items:center;flex:none}
+.sol svg{width:12px;height:10px}
+.demo-note{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:8px;font-size:11px;line-height:16px;color:var(--cs-text-3)}
+.demo-note .ms{font-size:14px}
+.sticker{position:relative;display:inline-grid;place-items:center;border-radius:50%;flex:none;line-height:1;overflow:visible;user-select:none}
+.sticker > img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+.blob{width:28px;height:28px;border-radius:50%;flex:none;display:inline-block}
+
+/* ================================================================ skeletons (§13.3) */
+.sk{display:block;background:var(--cs-surface-2);border-radius:6px;position:relative;overflow:hidden}
+.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);transform:translateX(-100%);animation:sk 1.2s linear infinite}
+.sk-row{display:flex;align-items:center;gap:12px;padding:10px 24px;min-height:60px}
+.sk-row-tx{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+@media (max-width:767px){ .sk-row{padding-left:16px;padding-right:16px} }
+
+/* ================================================================ empty states (§13.4) */
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 32px}
+.empty-ic{width:96px;height:96px;border-radius:50%;background:var(--cs-green-tint);border:2.5px dashed var(--cs-green);display:grid;place-items:center;color:var(--cs-green)}
+.empty-t{margin:16px 0 0;font-size:16px;line-height:22px;font-weight:600}
+.empty-b{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--cs-text-2);max-width:280px}
+.empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+
+/* ================================================================ panel shell (§8.1, §8.3, §4.2) */
+.panel{position:fixed;left:0;top:0;bottom:0;width:calc(var(--rail-w) + var(--panel-w) + var(--panel-gutter));padding:var(--panel-gutter) var(--panel-gutter) var(--panel-gutter) var(--rail-w);background:var(--cs-rail);z-index:var(--z-panel)}
+.panel-card{position:relative;height:100%;background:var(--cs-surface);border-radius:var(--cs-r-xl);overflow:hidden}
+.panel[data-state="open"] .panel-card{animation:cs-panel-in var(--cs-dur-3) var(--cs-ease-decel)}
+.panel[data-state="closing"] .panel-card{animation:cs-panel-out var(--cs-dur-2) var(--cs-ease-accel) forwards}
+.panel-scroll{height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#c7c7c7 transparent}
+.panel-scroll:focus-visible{outline-offset:-2px}
+.collapse-tab{position:absolute;left:100%;top:50%;margin-top:-24px;width:23px;height:48px;border-radius:0 8px 8px 0;background:var(--cs-rail);display:grid;place-items:center;color:var(--cs-icon)}
+.collapse-tab .ms{font-size:22px}
+.collapse-tab:hover{color:var(--cs-text)}
+.collapse-tab.is-collapsed{position:fixed;left:var(--rail-w);z-index:var(--z-panel)}
+.handle,.ph-x{display:none}
+.back-chip{position:absolute;left:16px;top:72px;z-index:5;height:32px;padding:0 12px 0 8px;border-radius:16px;background:#fff;box-shadow:var(--cs-elev-1);display:inline-flex;align-items:center;gap:4px;font-size:14px;line-height:20px;font-weight:500;letter-spacing:.1px;color:var(--cs-text)}
+.back-chip:hover{background:var(--cs-chip-hover)}
+.back-chip .ms{color:var(--cs-icon)}
+.back-chip.inline{position:relative;left:auto;top:auto;margin:0 8px 8px 0;vertical-align:middle}
+
+@media (max-width:767px){
+  .panel{left:0;right:0;top:auto;bottom:0;width:auto;height:var(--sheet-h);padding:0;background:transparent;z-index:var(--z-sheet);transition:height var(--cs-dur-4) var(--cs-ease)}
+  .panel.dragging{transition:none}
+  .panel[data-state="open"]{animation:cs-sheet-in var(--cs-dur-4) var(--cs-ease-decel)}
+  .panel[data-state="open"] .panel-card,.panel[data-state="closing"] .panel-card{animation:none}
+  .panel[data-state="closing"]{animation:cs-sheet-out var(--cs-dur-3) var(--cs-ease-accel) forwards}
+  .panel-card{border-radius:var(--cs-r-2xl) var(--cs-r-2xl) 0 0;box-shadow:var(--cs-elev-sheet)}
+  .handle{display:block;position:absolute;left:0;right:0;top:0;height:22px;z-index:3;cursor:grab;touch-action:none}
+  .handle::before{content:"";position:absolute;left:50%;top:8px;width:32px;height:4px;margin-left:-16px;border-radius:2px;background:var(--cs-handle)}
+  .handle::after{content:"";position:absolute;left:0;right:0;top:0;height:44px}
+  .handle:focus-visible{outline-offset:-4px}
+  .panel-scroll{padding-top:14px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  .panel[data-snap="peek"] .panel-scroll{overflow:hidden}
+  [data-sheet-drag]{touch-action:none}
+  .ph-x{position:absolute;right:12px;top:18px;display:flex;gap:8px;z-index:4}
+  .ph-x .icon-btn{width:40px;height:40px;border-radius:50%;background:var(--cs-surface-2);color:var(--cs-text)}
+  .ph-x .icon-btn:hover{background:var(--cs-surface-3)}
+  .ph-x .ms{font-size:20px}
+}
+
+/* ================================================================ panel sections (§8.12, §8.13, §9.4) */
+.sec-title{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 10px;font-size:16px;line-height:22px;font-weight:600}
+.sec-h{margin:0;padding:12px 24px 4px;font-size:16px;line-height:22px;font-weight:600}
+.foot{padding:16px 24px 28px;font-size:12px;line-height:16px;color:var(--cs-text-3);letter-spacing:.2px}
+.foot a,.foot .link-btn{color:var(--cs-text-2)}
+.link-btn{display:inline;padding:0;font:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.info{padding:8px 0}
+.irow{display:flex;align-items:center;min-height:48px;padding:8px 24px;gap:24px;font-size:14px;line-height:20px;letter-spacing:.1px;cursor:pointer;position:relative;width:100%;text-align:left;color:var(--cs-text);text-decoration:none}
+.irow:hover{background:var(--cs-state-hover)}
+.irow.static{cursor:default}
+.irow.static:hover{background:transparent}
+.irow > .ms{color:var(--cs-green);flex:none}
+.irow .main{flex:1;min-width:0}
+.irow .main small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2);letter-spacing:.2px}
+.irow .trail{color:var(--cs-icon);font-size:20px}
+.trow{display:flex;align-items:center;gap:12px;padding:8px 24px;font-size:13px;line-height:18px}
+.trow .who{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.trow .side{font-weight:600}
+.trow .amt{font-variant-numeric:tabular-nums;color:var(--cs-text)}
+.trow .ago{color:var(--cs-text-3);width:44px;text-align:right;font-size:12px}
+@media (max-width:767px){
+  .sec-title,.sec-h,.foot{padding-left:16px;padding-right:16px}
+  .irow{padding:8px 16px;gap:20px}
+  .trow{padding-left:16px;padding-right:16px}
+}
+
+/* ================================================================ list panels (§10.1, verbatim + mobile) */
+.lp-h{display:flex;align-items:flex-end;justify-content:space-between;padding:76px 24px 8px;gap:12px}
+.lp-h h1{margin:0;font-size:22px;line-height:28px;font-weight:600}
+.lp-tabs{display:flex;gap:8px;padding:8px 24px 8px;overflow-x:auto;scrollbar-width:none}
+.lp-tabs::-webkit-scrollbar{display:none}
+.lp-tabs button{height:32px;padding:0 14px;border-radius:16px;border:1px solid var(--cs-outline-2);font-size:13px;font-weight:600;color:var(--cs-text-2);flex:none;position:relative}
+.lp-tabs button:hover{background:var(--cs-state-hover)}
+.lp-tabs button.on{background:var(--cs-green-container);border-color:transparent;color:var(--cs-on-green-container)}
+.feed{padding:4px 0}
+.frow{display:flex;align-items:center;gap:12px;padding:10px 24px;min-height:60px;cursor:pointer;width:100%;text-align:left;color:inherit}
+.frow:hover{background:var(--cs-state-hover)}
+.frow .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:20px;flex:none;position:relative}
+.frow .av i{position:absolute;right:-2px;bottom:-2px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:0 0 0 2px #fff;font-style:normal}
+.frow .av i .ms{font-size:12px;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20}
+.frow .tx{flex:1;min-width:0}
+.frow .tx b{font-weight:600}
+.frow .t1{font-size:14px;line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frow .t2{font-size:12px;line-height:16px;color:var(--cs-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.frow .rt{text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;flex:none}
+.frow .rt small{display:block;font-size:11px;font-weight:400;color:var(--cs-text-3)}
+.frow.new{animation:rowin .6s var(--cs-ease-decel)}
+.rank{width:20px;font-size:13px;font-weight:700;color:var(--cs-text-3);text-align:center;flex:none}
+@media (max-width:767px){
+  .lp-h{padding:8px 16px 8px}
+  .lp-tabs,.frow{padding-left:16px;padding-right:16px}
+}
+
+/* live indicator (This area card, Live panel header) */
+.area-live{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--cs-text-2);letter-spacing:.2px;white-space:nowrap}
+.area-live i{position:relative;width:8px;height:8px;border-radius:50%;background:var(--cs-green-bright);flex:none}
+.area-live i::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--cs-green-bright);animation:ping 1.6s var(--cs-ease-decel) infinite}
+.area-live.idle i{background:var(--cs-text-3)}
+.area-live.idle i::after{display:none}
+
+/* ================================================================ help panel (§12.6) */
+.help-rows{padding:4px 0 8px}
+.help-row{border-bottom:1px solid var(--cs-divider)}
+.help-q{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:56px;padding:8px 24px;text-align:left;font-size:16px;line-height:22px;font-weight:600}
+.help-q:hover{background:var(--cs-state-hover)}
+.help-chev{color:var(--cs-icon);transition:transform var(--cs-dur-2) var(--cs-ease)}
+.help-row.open .help-chev{transform:rotate(180deg)}
+.help-a{padding:0 24px 16px;font-size:14px;line-height:20px;color:var(--cs-text-2)}
+.help-a p{margin:0 0 8px}
+.help-foot{display:flex;flex-wrap:wrap;gap:0 4px}
+.help-legal{padding-bottom:0}
+.help-legal p{margin:0 0 8px}
+@media (max-width:767px){ .help-q,.help-a{padding-left:16px;padding-right:16px} }
+
+/* ================================================================ dialogs (§12.1 verbatim + additions) */
+.scrim{position:fixed;inset:0;background:var(--cs-scrim);z-index:var(--z-scrim)}
+.scrim[data-state="open"]{animation:cs-fade-in var(--cs-dur-2) var(--cs-ease-decel)}
+.scrim[data-state="closing"]{animation:cs-fade-out var(--cs-dur-2) var(--cs-ease-accel) forwards}
+.scrim.scrim-dark{background:rgba(31,31,31,.86)}
+.dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:var(--dialog-w);max-width:calc(100vw - 32px);max-height:calc(100dvh - 48px);overflow:auto;background:#fff;border-radius:var(--cs-r-2xl);box-shadow:var(--cs-elev-3);z-index:var(--z-modal);padding:20px 24px 20px;outline:none}
+.dialog[data-state="open"]{animation:cs-dialog-in var(--cs-dur-3) var(--cs-ease-decel)}
+.dialog[data-state="closing"]{animation:cs-dialog-out var(--cs-dur-2) var(--cs-ease-accel) forwards}
+.dlg-handle{display:none}
+.dlg-h{display:flex;align-items:center;justify-content:space-between;margin:-4px -8px 8px 0;gap:8px}
+.dlg-h > .btn-text{margin-left:-12px}
+.stepper{list-style:none;margin:0;padding:0;display:flex;gap:6px;counter-reset:st;flex-wrap:wrap}
+.stepper li{counter-increment:st;display:flex;align-items:center;gap:6px;height:28px;padding:0 10px 0 4px;border-radius:14px;font-size:12px;font-weight:600;color:var(--cs-text-3);background:var(--cs-surface-2)}
+.stepper li::before{content:counter(st);width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--cs-text-2);font-size:11px}
+.stepper li.on{background:var(--cs-green-container);color:var(--cs-on-green-container)}
+.stepper li.on::before{background:var(--cs-green);color:#fff}
+.stepper li.done{background:var(--cs-green-tint);color:var(--cs-on-green-container)}
+.stepper li.done::before{content:"✓";background:var(--cs-green);color:#fff}
+.dialog h2{margin:8px 0 0;font-size:22px;line-height:28px;font-weight:600}
+.dlg-sub{margin:6px 0 0;font-size:14px;line-height:20px;color:var(--cs-text-2)}
+.dlg-step{animation:cs-step-in var(--cs-dur-2) var(--cs-ease)}
+.art-row{display:flex;gap:16px;align-items:center;margin-top:20px}
+.art{width:80px;height:80px;border-radius:50%;border:2px dashed var(--cs-outline);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cs-text-2);flex:none;background:var(--cs-surface-2);position:relative}
+.art small{font-size:11px;font-weight:600;margin-top:2px}
+.lbl2{font-size:12px;color:var(--cs-text-2)}
+.emoji-pick div{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.emoji-pick button{width:40px;height:40px;border-radius:12px;font-size:20px;border:1px solid var(--cs-outline-2)}
+.emoji-pick button.on{border:2px solid var(--cs-green);background:var(--cs-green-tint)}
+.tf-wrap{display:block}
+.tf{position:relative;display:flex;align-items:center;height:56px;border:1px solid var(--cs-outline);border-radius:12px;padding:0 14px 0 16px;margin-top:16px;gap:4px;cursor:text}
+.tf:focus-within{border:2px solid var(--cs-green);padding-left:15px;padding-right:13px}
+.tf input{flex:1;min-width:0;border:0;outline:0;font-size:16px;background:transparent;height:100%}
+.tf input:focus-visible,.tf select:focus-visible,.tf textarea:focus-visible{outline:none}
+.tf input.mono-input{font-family:var(--cs-mono);font-size:14px}
+.tf-l{position:absolute;left:12px;top:-9px;padding:0 4px;background:#fff;font-size:12px;line-height:16px;color:var(--cs-text-2);pointer-events:none}
+.tf:focus-within .tf-l{color:var(--cs-green)}
+.tf-pre{font-size:16px;color:var(--cs-text-2);font-weight:600}
+.tf-c{font-size:12px;color:var(--cs-text-3);white-space:nowrap}
+.tf-c.tf-suffix{font-size:16px;color:var(--cs-text-2)}
+.tf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tf.err{border:2px solid var(--cs-down);padding-left:15px;padding-right:13px}
+.tf.err .tf-l{color:var(--cs-down)}
+.tf-help{margin:4px 16px 0;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.tf-help.err{color:var(--cs-down)} .tf-help.warn{color:var(--cs-amber)}
+.tf select{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:16px;background:transparent;appearance:none;height:100%;cursor:pointer}
+.tf .tf-caret{color:var(--cs-icon);pointer-events:none}
+.tf.tf-area{height:auto;align-items:flex-start;padding-top:14px;padding-bottom:10px}
+.tf.tf-area textarea{flex:1;min-width:0;border:0;outline:0;font-size:16px;line-height:22px;background:transparent;resize:vertical;min-height:66px}
+.tf.tf-area .tf-c{align-self:flex-end}
+.dlg-box{display:flex;gap:12px;margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--cs-amber-container);color:var(--cs-on-amber-container);font-size:13px;line-height:18px}
+.dlg-box b{display:block;font-weight:600}
+.dlg-box small{display:block;font-size:12px;line-height:16px;color:var(--cs-amber-text-2);margin-top:2px}
+.dlg-box > .ms{color:var(--cs-amber);font-size:20px}
+.dlg-box.green{background:var(--cs-green-tint);color:var(--cs-on-green-container)}
+.dlg-box.green small{color:var(--cs-text-2)}
+.dlg-box.green > .ms{color:var(--cs-green)}
+.dlg-buy{display:flex;align-items:center;justify-content:space-between;margin-top:16px;font-size:14px;color:var(--cs-text);gap:12px;flex-wrap:wrap}
+.dlg-f{display:flex;align-items:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--cs-divider);flex-wrap:wrap}
+.dlg-f .demo-note{margin:0}
+.dlg-f-spacer{flex:1}
+.check{display:flex;gap:12px;align-items:flex-start;margin-top:16px;font-size:13px;line-height:18px;color:var(--cs-text);cursor:pointer}
+.check input{width:20px;height:20px;margin:0;accent-color:var(--cs-green);flex:none}
+/* phones: the whole label is the tap target (≥ 44 px tall, INTEGRATION.md §7.8); the box itself gets a 44 px hit area */
+@media (max-width:767px){
+  .check{min-height:44px;align-items:center;margin-top:12px}
+  .check input{width:24px;height:24px;margin:10px 0;flex:none}
+}
+.opt-list{margin-top:8px}
+.opt{display:flex;align-items:center;gap:16px;width:100%;min-height:72px;padding:12px 16px;margin-top:8px;border:1px solid var(--cs-divider);border-radius:12px;text-align:left}
+.opt:hover{background:var(--cs-state-hover)}
+.opt[aria-checked="true"]{border:2px solid var(--cs-green);padding:11px 15px;background:var(--cs-green-tint)}
+.opt[data-disabled]{opacity:.5;cursor:default}
+.opt[data-disabled]:hover{background:transparent}
+.opt .oi{width:40px;height:40px;border-radius:50%;background:var(--cs-green-container);color:var(--cs-on-green-container);display:grid;place-items:center;flex:none}
+.opt-tx{flex:1;min-width:0}
+.opt b{display:block;font-size:14px;line-height:20px;font-weight:600}
+.opt small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.opt .opt-chev{color:var(--cs-icon)}
+.code6{display:flex;gap:8px;justify-content:center;margin-top:20px}
+.code6 input{width:48px;height:56px;border:1px solid var(--cs-outline);border-radius:12px;text-align:center;font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;outline:0;background:#fff}
+.code6 input:focus{border:2px solid var(--cs-green)}
+.code6.err input{border:2px solid var(--cs-down)}
+.code6.shake{animation:cs-shake var(--cs-dur-3) var(--cs-ease)}
+.dlg-center{text-align:center;padding:12px 0 4px}
+.dlg-center .big{width:96px;height:96px;margin:8px auto 0;border-radius:50%;display:grid;place-items:center}
+
+/* lightbox (§12.6) */
+.dialog.lightbox{width:auto;max-width:90vw;max-height:none;padding:0;background:transparent;box-shadow:none;overflow:visible;text-align:center}
+.dialog.lightbox img{display:block;max-width:90vw;max-height:80vh;border-radius:16px;margin:0 auto}
+.lightbox-credit{margin:8px 0 0;font-size:12px;line-height:16px;color:#fff}
+.lightbox-x{position:absolute;right:-8px;top:-48px;color:#fff}
+.lightbox-x:hover{background:rgba(255,255,255,.12)}
+
+@media (max-width:767px){
+  .dialog{left:0;right:0;bottom:0;top:auto;transform:none;width:auto;max-width:none;max-height:calc(100dvh - 24px);border-radius:28px 28px 0 0;padding:20px 16px calc(16px + env(safe-area-inset-bottom))}
+  .dialog[data-state="open"]{animation:cs-sheet-in var(--cs-dur-4) var(--cs-ease-decel)}
+  .dialog[data-state="closing"]{animation:cs-sheet-out var(--cs-dur-3) var(--cs-ease-accel) forwards}
+  .dlg-handle{display:block;position:absolute;left:50%;top:8px;width:32px;height:4px;margin-left:-16px;border-radius:2px;background:var(--cs-handle)}
+  .dlg-f{position:sticky;bottom:calc(-16px - env(safe-area-inset-bottom));background:#fff;margin-left:-16px;margin-right:-16px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));margin-bottom:calc(-16px - env(safe-area-inset-bottom))}
+  .code6 input{width:44px;height:52px}
+  .dialog.lightbox{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%);border-radius:0;padding:0}
+  .dialog.lightbox[data-state="open"]{animation:cs-dialog-in var(--cs-dur-3) var(--cs-ease-decel)}
+  .dialog.lightbox[data-state="closing"]{animation:cs-dialog-out var(--cs-dur-2) var(--cs-ease-accel) forwards}
+  .lightbox-x{right:0}
+}
+@media (max-width:399px){ .tf-row{grid-template-columns:1fr} }
+
+/* ================================================================ switch + toggle row (§6.7) */
+.switch{position:relative;width:36px;height:20px;border-radius:10px;background:var(--cs-outline);flex:none;transition:background var(--cs-dur-2) var(--cs-ease)}
+.switch.on{background:var(--cs-green)}
+.switch-thumb{position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform var(--cs-dur-2) var(--cs-ease)}
+.switch.on .switch-thumb{transform:translateX(16px)}
+.switch[disabled]{opacity:.38;cursor:default}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;font-size:14px;line-height:20px;cursor:pointer}
+
+/* ================================================================ popover (§12.6) */
+.popover{position:fixed;z-index:var(--z-modal);background:#fff;border-radius:12px;box-shadow:var(--cs-elev-2);padding:12px 16px;font-size:13px;line-height:18px;color:var(--cs-text);animation:cs-fade-in var(--cs-dur-2) var(--cs-ease-decel)}
+.popover a,.popover .link-btn{color:var(--cs-green);font-weight:500}
+
+/* ================================================================ toast (§13.1) */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--cs-toast-bg);color:#fff;border-radius:8px;padding:12px 16px;font-size:14px;line-height:20px;box-shadow:var(--cs-elev-3);z-index:var(--z-toast);display:none;align-items:center;gap:12px;width:max-content;max-width:min(560px,calc(100vw - 32px))}
+.toast.show{display:flex;animation:cs-toast-in var(--cs-dur-2) var(--cs-ease-decel)}
+.toast .ms{font-size:20px}
+.toast .ms.ok{color:#7ad3a3} .toast .ms.bad{color:#ffb3b8}
+.toast-msg{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.toast .act-t{margin-left:8px;color:#7ad3a3;font-weight:600;font-size:14px;height:36px;padding:0 8px;border-radius:18px;flex:none}
+.toast .act-t:hover{background:rgba(255,255,255,.08)}
+/* Mobile: never on Google's logo / attribution row or the locate FAB (§6.8, §17), so toasts sit
+   above the locate FAB (DESIGN §13.1's 24px / sheet + 12px put them on both); at Full the map strip is
+   only the search pill + DEMO chip + logo, so the toast goes over the sheet's bottom instead. */
+@media (max-width:767px){
+  .toast{bottom:calc(80px + env(safe-area-inset-bottom))}
+  body.panel-open .toast{bottom:calc(var(--sheet-h) + 96px)}
+  body[data-sheet="full"] .toast{bottom:calc(24px + env(safe-area-inset-bottom))}
+  body.hero-on:not(.panel-open) .toast{bottom:calc(24px + env(safe-area-inset-bottom))}
+}
+
+/* ================================================================ tooltip (§13.2) */
+.tooltip{position:fixed;z-index:var(--z-tooltip);background:rgba(31,31,31,.9);color:#fff;font-size:12px;line-height:16px;font-weight:500;padding:4px 8px;border-radius:4px;max-width:240px;pointer-events:none;white-space:normal}
+@media (hover:none){ .tooltip{display:none} }
+
+/* ================================================================ Phase 2: real-mode chrome (INTEGRATION.md §1.3, §7) */
+/* Blocking network banner (cluster mismatch / API unreachable on boot) — below the search pill. */
+.chain-banner{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:var(--z-search);display:flex;align-items:center;gap:10px;max-width:min(560px,calc(100vw - 32px));padding:10px 16px;border-radius:12px;background:var(--cs-amber-container);color:var(--cs-on-amber-container);box-shadow:var(--cs-elev-2);font-size:14px;line-height:20px;font-weight:500}
+.chain-banner.bad{background:var(--cs-down-bg);color:var(--cs-down)}
+.chain-banner .link{font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+@media (max-width:767px){.chain-banner{top:auto;bottom:16px;flex-wrap:wrap}}
+/* Devnet explainer rows */
+.net-rows{margin-top:8px}
+.net-row{display:flex;align-items:center;gap:16px;min-height:72px;padding:12px 16px;margin-top:8px;border:1px dashed var(--cs-divider);border-radius:12px}
+.net-row .oi{width:40px;height:40px;border-radius:50%;background:var(--cs-surface-2);display:grid;place-items:center;flex:none;color:var(--cs-text-2)}
+.net-row b{display:block;font-size:14px;line-height:20px;font-weight:600}
+.net-row small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+/* Real tx states: helper line under a busy button, explorer link in errors */
+.tx-help{margin:6px 2px 0;font-size:12px;line-height:16px;color:var(--cs-text-2);text-align:center}
+.tx-err{margin:8px 2px 0;font-size:12px;line-height:16px;color:var(--cs-down);display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.tx-err .link,.tx-short .link{font-weight:600;color:inherit;text-decoration:underline;text-underline-offset:2px;background:none;border:0;padding:0;cursor:pointer;font-size:12px}
+.tx-short{margin:8px 2px 0;font-size:12px;line-height:16px;color:var(--cs-on-amber-container);background:var(--cs-amber-container);border-radius:8px;padding:8px 10px}
+.tx-short b{display:block;font-weight:600}
+.tx-short .tx-short-a{display:flex;gap:12px;margin-top:4px}
+.tx-sub{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2);font-weight:400}
+@media (max-width:767px){
+  .tx-err .link,.tx-short .link{min-height:44px;display:inline-flex;align-items:center}
+}

@@ -1,0 +1,22 @@
+{
+  "cluster": "devnet",
+  "squadsProgram": "SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf",
+  "threshold": 2,
+  "multisigA": "8uREw7ywaumQVeo3asLtHaxkZ5fF7frW6EsSmugKMT9Q",
+  "vaultA": "3Tfwv7ETyPVC5FJD9tXZ1DHc3H4oQGzebqwFvwzNFqrT",
+  "timeLockA": 0,
+  "multisigB": "HJS8io82jwZLtoFMvGsUsV3vvrH3VhUfArTskyEfRmm7",
+  "vaultB": "APkKUQNnN3hG9W5MoMBDBFiMxmmb7KYyH5BeyWCAw9ee",
+  "timeLockB": 604800,
+  "members": [
+    "5Up6rFWKX62FweeQhADZBMFejQvdzNPLHngY8H9Xjy3u",
+    "DDCs2dioYCnQ5Du9BJa2CN22hFrJjf79CqwAU5w3va4y",
+    "H9uo8AFTo5xGn487GVuwgPqvMV16TN4nh7sTtN8BE5c2"
+  ],
+  "createdAt": "2026-10-26T16:41:37.423Z",
+  "updatedAt": "2026-10-26T16:41:38.476Z",
+  "signatures": {
+    "A": "4sNsJdcb7GnsuYxoBZu6dPo6xpeU7UXPqpGDfsU6WaWM5UTS4U15CQhCUAr1zgDfkYx8x58hVygyVvjT3HsxiMmd",
+    "B": "2SNJDMfi6kPtqiWZ1xsuUFUwHY29ZQL4PvZEjXmLdgcfGzWQVssv1bUDEy1w2q3ACPK1o7ETAGpF5ZyTNQ94WApm"
+  }
+}

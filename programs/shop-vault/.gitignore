@@ -1,0 +1,9 @@
+# Build output (target/deploy/shop_vault-keypair.json is a symlink to ../../.keys/shop-vault-program.json; never commit keys)
+/target/
+# Mainnet dumps of third-party programs and accounts (re-create with scripts/dump-fixtures.sh); manifest.json is committed
+/tests/fixtures/*.so
+/tests/fixtures/accounts/
+/client/node_modules/
+/client/dist/
+/scripts/out/
+*-keypair.json

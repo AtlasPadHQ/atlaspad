@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Roboto Flex'; src: url('RobotoFlex-latin.woff2') format('woff2'); font-weight: 100 1000; }
+  html, body { margin: 0; width: 1500px; height: 500px; overflow: hidden; background: #0e7c47; font-family: 'Roboto Flex', system-ui, sans-serif; }
+  .map { position: absolute; inset: 0; }
+  /* X header: the avatar covers the bottom-left (about x 0-420, y 300-500) and phones crop ~60 px top and bottom,
+     so everything that must be read sits in the middle band to the right */
+  .pin { position: absolute; width: 46px; height: 62px; }
+  .tag { position: absolute; background: #fff; color: #0e7c47; font-weight: 800; font-size: 20px; letter-spacing: 0.5px;
+         padding: 5px 12px 6px; border-radius: 999px; white-space: nowrap; }
+  .brand { position: absolute; left: 790px; top: 108px; width: 650px; color: #fff; }
+  .row { display: flex; align-items: center; gap: 26px; }
+  .tile { width: 104px; height: 104px; border-radius: 28px; background: #fff; display: grid; place-items: center; flex: none; }
+  .word { font-size: 92px; font-weight: 900; letter-spacing: 3px; line-height: 1; font-variation-settings: 'wdth' 110; }
+  .tagline { margin-top: 30px; font-size: 40px; font-weight: 700; line-height: 1.12; letter-spacing: -0.5px; }
+  .tagline em { font-style: normal; color: #bdf2d3; }
+  .sub { margin-top: 16px; font-size: 25px; font-weight: 500; color: rgba(255,255,255,0.88); }
+</style>
+</head>
+<body>
+  <svg class="map" viewBox="0 0 1500 500" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="none" stroke="#fff" stroke-linecap="round">
+      <!-- canal -->
+      <path d="M-40 405 C 180 360, 300 450, 520 395 S 860 300, 1000 350 S 1300 430, 1560 360" stroke-opacity="0.07" stroke-width="44"/>
+      <!-- main roads -->
+      <path d="M-20 120 C 200 140, 380 60, 620 110 S 980 190, 1540 120" stroke-opacity="0.11" stroke-width="18"/>
+      <path d="M140 -20 C 170 140, 110 300, 190 520" stroke-opacity="0.11" stroke-width="16"/>
+      <path d="M460 -20 C 430 160, 520 330, 470 520" stroke-opacity="0.10" stroke-width="16"/>
+      <path d="M720 -20 C 760 120, 690 300, 760 520" stroke-opacity="0.09" stroke-width="14"/>
+      <path d="M-20 260 C 260 240, 430 300, 760 250" stroke-opacity="0.09" stroke-width="12"/>
+      <!-- side streets -->
+      <g stroke-opacity="0.06" stroke-width="6">
+        <path d="M0 40 L 300 70"/><path d="M40 190 L 420 175"/><path d="M60 330 L 360 345"/><path d="M300 20 L 330 260"/>
+        <path d="M560 30 L 600 240"/><path d="M590 300 L 700 470"/><path d="M230 410 L 420 470"/><path d="M620 180 L 760 170"/>
+        <path d="M880 0 L 840 90"/><path d="M1100 20 L 1150 100"/><path d="M1300 0 L 1260 110"/><path d="M1420 150 L 1500 200"/>
+        <path d="M900 440 L 1100 470"/><path d="M1200 420 L 1450 470"/>
+      </g>
+      <!-- a park -->
+      <path d="M520 150 q 60 -30 120 0 q 30 50 -10 90 q -70 25 -110 -20 q -20 -40 0 -70 z" fill="#fff" fill-opacity="0.05" stroke="none"/>
+    </g>
+  </svg>
+
+  <!-- pins with coin tags (left and centre, clear of the avatar corner) -->
+  <svg class="pin" style="left:228px;top:58px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:282px;top:66px">$CAFE</div>
+
+  <svg class="pin" style="left:520px;top:178px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:574px;top:186px">$KEBAB</div>
+
+  <svg class="pin" style="left:96px;top:196px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:150px;top:204px">$BARBER</div>
+
+  <svg class="pin" style="left:400px;top:300px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:454px;top:308px">$PIZZA</div>
+
+  <svg class="pin" style="left:640px;top:58px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:694px;top:66px">$BAKERY</div>
+
+  <svg class="pin" style="left:610px;top:350px" viewBox="17 12 30 40"><path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#fff"/><circle cx="32" cy="26.5" r="7" fill="#0e7c47"/></svg>
+  <div class="tag" style="left:664px;top:358px">$PUB</div>
+
+  <div class="brand">
+    <div class="row">
+      <div class="tile">
+        <svg width="62" height="82" viewBox="17 12 30 40" aria-hidden="true">
+          <path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#0e7c47"/>
+          <circle cx="32" cy="26.5" r="8.6" fill="#fff"/>
+          <ellipse cx="32" cy="26.5" rx="3.5" ry="8.6" fill="none" stroke="#0e7c47" stroke-width="1.8"/>
+          <path d="M23.4 26.5h17.2" stroke="#0e7c47" stroke-width="1.8"/>
+        </svg>
+      </div>
+      <div class="word">ATLASPAD</div>
+    </div>
+    <div class="tagline">your cafe. your barber.<br><em>your kebab shop.</em></div>
+    <div class="sub">launch a coin for any business on earth · atlaspad.online</div>
+  </div>
+</body>
+</html>

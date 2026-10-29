@@ -1,0 +1,11 @@
+{
+  // Editor config for the Worker (Cloudflare Workers runtime types). `npm run typecheck` builds the
+  // same files through the root tsconfig.worker.json; this file only makes editors pick the
+  // workers types for worker/**.
+  "extends": "../tsconfig.worker.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../node_modules/.tmp/tsconfig.worker.editor.tsbuildinfo",
+    "types": ["@cloudflare/workers-types"]
+  },
+  "include": ["./**/*.ts"]
+}

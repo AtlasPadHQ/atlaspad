@@ -1,0 +1,30 @@
+# Weekly version-update PRs. Security updates come separately once Dependabot alerts are on (repo Settings → Code
+# security). Every PR still has to pass CI; nothing merges on its own.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      # Pinned on purpose: the Worker's pump.fun instruction and event layouts follow these SDKs' IDLs, so a move needs
+      # the mainnet re-test in docs/OPS-AUTOMATION.md section 7, not a routine bump (version updates only).
+      - dependency-name: '@pump-fun/*'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor', 'version-update:semver-patch']
+  - package-ecosystem: npm
+    directory: /programs/shop-vault/client
+    schedule:
+      interval: weekly
+  # A Cargo.lock change changes the program binary and its verified hash: merge only as part of a planned upgrade.
+  - package-ecosystem: cargo
+    directory: /programs/shop-vault
+    schedule:
+      interval: weekly
+  # Keeps the SHA pins in .github/workflows current (it updates the `# vX.Y.Z` comments too).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

@@ -1,0 +1,25 @@
+{
+  "cluster": "mainnet-beta",
+  "slot": 461665809,
+  "dumped_at": "2026-10-26T12:34:51Z",
+  "files": {
+    "accounts/13ec7XdrjF3h3YcqBTFDSReRcUFwbCnJaAQspM4j6DDJ.json": "16ca870417663a2a1a4bab2ff740192aca86a148c726174bf1cb2042c3215e3f",
+    "accounts/4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf.json": "14516bb7584d0d09d15771f4427bba168d615fd952196c6635689ade3eec1594",
+    "accounts/5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD.json": "d7c1a6a117b73b249d1696b5ed98a3943b78d701240057c7ba26b76356a5d9d5",
+    "accounts/62qc2CNXwrYqQScmEdiZFFAnJR262PxWEuNQtxfafNgV.json": "7662b1dbcdb1bd037ecbda4b29a2728274a8f1a11332caf4b2f7628195291ea7",
+    "accounts/6z6GDdfb2AjR9ZhJmAUQ5cipJCVxQvLJhB2H8mCwTFBP.json": "e4af57143971c929515b81ba4ba2bc661b595f3fdd95119285d64b2b7f583fdd",
+    "accounts/8Wf5TiAheLUqBrKXeYg2JtAFFMWtKdG2BSFgqUcPVwTt.json": "f861a87b53136a1c3d60415db015319137d780ac652b3f71787e1d79e66e8262",
+    "accounts/94qWNrtmfn42h3ZjUZwWvK1MEo9uVmmrBPd2hpNjYDjb.json": "30964cb2c8c2735b5305c66a410918e87b7971382fe8a479319fb84c4009df8d",
+    "accounts/BwWK17cbHxwWBKZkUYvzxLcNQ1YVyaFezduWbtm2de6s.json": "fc58c39e5b6203ba1e73e1b5d23e3c7a88271623ddbcec904703e67ca3c871d0",
+    "accounts/Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1.json": "09d7380674010d8e25418fffa9886186552ae3022ac0a1bab261398de826d3e7",
+    "accounts/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v.json": "da201bd63a43a6849740f5073e43bd5b3f03f5d923723765168702826d6e06af",
+    "accounts/HjQjngTDqoHE6aaGhUqfz9aQ7WZcBRjy5xB8PScLSr8i.json": "1ad2fa7ba707e79056485cef718447ddc7f61103b263d8852c7a70840bfedb8d",
+    "accounts/Hq2wp8uJ9jCPsYgNHex8RtqdvMPfVGoYwjvF1ATiwn2Y.json": "d0a1d6fa7d31123c4ae06ce93e307d434ef728b06820fef10ca012e67f044cf0",
+    "accounts/So11111111111111111111111111111111111111112.json": "1d7405f76e497e36eaf72fde501b8dc1679b8fc58f7d537003644aa2f0325760",
+    "accounts/TSLvdd1pWpHVjahSpsvCXUbgwsL3JAcvokwaKt1eokM.json": "1e59b494dee7a450fec454aca7fd1413a8b34d6b658d33a76071246adc297c0e",
+    "mayhem.so": "a87fa9f866272514e6acb852b668c4a08aeb173d56c883039991d114d1199bdb",
+    "pump.so": "7a19affaa2c6187e04a5fe0ea298cee81fa5eb8c24cfcc30d85f615e89f7b02d",
+    "pump_amm.so": "6a7ad34596d83b4c435b32f458a56e718e9f82eb4ad38e4316616d15d24d8ff7",
+    "pump_fees.so": "4f2955d0f6b40cc9ff7daa18ccad7d19119ba1249759f4e7e3bb691beee6b35e"
+  }
+}

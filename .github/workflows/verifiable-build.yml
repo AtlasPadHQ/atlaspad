@@ -1,0 +1,89 @@
+name: Verifiable build (shop-vault)
+# Reproducible mainnet build of programs/shop-vault with `solana-verify build` (Docker on GitHub's runner), so the deploy
+# can use a verified binary without Docker on the owner's Mac (docs/OPS-AUTOMATION.md "Verified program build").
+# Download the artifact, unzip it, copy shop_vault.so to programs/shop-vault/target/deploy/ and run
+#   node scripts/go-mainnet.mjs --dry-run … --verified-artifact <unzipped dir>
+# The Docker image comes from Cargo.toml [workspace.metadata.cli] solana (the same one a local --verify uses).
+on:
+  workflow_dispatch:
+    inputs:
+      solana_verify_version:
+        description: solana-verify version (crates.io)
+        default: 0.5.2
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      # The input reaches the shell only through this variable, and only as an exact x.y.z version.
+      SOLANA_VERIFY_VERSION: ${{ inputs.solana_verify_version }}
+    steps:
+      - name: solana-verify version
+        run: |
+          [[ "$SOLANA_VERIFY_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::solana_verify_version must be x.y.z"; exit 1; }
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable branch, 2026-10-16
+        with:
+          toolchain: stable
+      - name: Cache solana-verify
+        id: sv
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ~/.cargo/bin/solana-verify
+          key: solana-verify-${{ runner.os }}-${{ inputs.solana_verify_version }}
+      - name: Install solana-verify
+        if: steps.sv.outputs.cache-hit != 'true'
+        run: cargo install solana-verify --version "$SOLANA_VERIFY_VERSION" --locked
+      - name: solana-verify build (Docker)
+        run: |
+          docker --version
+          # an absolute host path: Docker reads a relative one as a named volume and refuses it
+          solana-verify build "$GITHUB_WORKSPACE/programs/shop-vault" --library-name shop_vault
+      - name: Gates, hashes, build info
+        run: |
+          so=programs/shop-vault/target/deploy/shop_vault.so
+          bash programs/shop-vault/scripts/check-artifact.sh "$so" mainnet
+          mkdir -p out
+          cp "$so" out/shop_vault.so
+          (cd out && sha256sum shop_vault.so > shop_vault.so.sha256)
+          sha=$(cut -d' ' -f1 out/shop_vault.so.sha256)
+          exe=$(solana-verify get-executable-hash out/shop_vault.so)
+          solana=$(sed -n 's/^solana = "\(.*\)"$/\1/p' programs/shop-vault/Cargo.toml | head -1)
+          cat > out/build-info.json <<EOF
+          {
+            "program": "shop-vault",
+            "programId": "6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x",
+            "flavour": "mainnet",
+            "commit": "${GITHUB_SHA}",
+            "ref": "${GITHUB_REF}",
+            "runId": "${GITHUB_RUN_ID}",
+            "solanaVerify": "${SOLANA_VERIFY_VERSION}",
+            "solanaVersion": "${solana}",
+            "bytes": $(stat -c%s out/shop_vault.so),
+            "sha256": "${sha}",
+            "executableHash": "${exe}",
+            "builtAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          cat out/build-info.json
+          {
+            echo "### shop-vault verified build"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| commit | \`${GITHUB_SHA}\` |"
+            echo "| sha256 | \`${sha}\` |"
+            echo "| solana-verify executable hash | \`${exe}\` |"
+            echo "| size | $(stat -c%s out/shop_vault.so) B |"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: shop-vault-verified-${{ github.sha }}
+          path: out/
+          retention-days: 90
+          if-no-files-found: error

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy — AtlasPad</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>:root{color-scheme:light}body{margin:0;background:#f3f8f4;color:#1f1f1f;font:400 16px/24px "Roboto Flex",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}main{max-width:720px;margin:0 auto;padding:32px 16px 48px}a{color:#0e7c47}h1{font-size:28px;line-height:34px;font-weight:700;margin:16px 0 8px}h2{font-size:18px;line-height:24px;font-weight:600;margin:28px 0 6px}p,li{color:#3c3c3c}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#1f1f1f;font-weight:800;letter-spacing:.6px;font-stretch:120%}.brand img{width:32px;height:32px;border-radius:10px}.note{background:#ffedd0;color:#6b3a00;border-radius:12px;padding:12px 16px;font-size:14px;line-height:20px}footer{margin-top:40px;font-size:13px;color:#5e5e5e}</style>
+</head>
+<body>
+<main>
+<a class="brand" href="/"><img src="/favicon.svg" alt="">ATLASPAD</a>
+<h1>Privacy</h1>
+<p>Last updated: 26 October 2026</p>
+<p class="note">We keep as little as we can. We never store your IP address or a phone number in plain form, and we don't use advertising or analytics cookies. Anything you do on Solana is public there, forever.</p>
+
+<h2 id="controller">Who is responsible for your data</h2>
+<p>The controller of your personal data under the UK GDPR and the Data Protection Act 2018 is AtlasPad, operated from London, United Kingdom. For any privacy question or request, email <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a>.</p>
+
+<h2 id="what">What we store, why, and for how long</h2>
+<ul>
+<li><b>IP addresses, as a keyed hash.</b> We use your IP address to apply rate limits and stop abuse. We store only an HMAC of it (a keyed one-way hash), next to the records it limits (uploads, launches, claims, reports) and in short-lived counters, which we delete after 2 days. Our logs never contain your IP address. Cloudflare tells our server which country and region a request comes from so we can block restricted areas; we don't store that. <i>Why: our legitimate interest in keeping AtlasPad secure.</i></li>
+<li><b>Public wallet addresses.</b> When you launch, trade, claim or withdraw, we record the wallet addresses and transactions involved to show feeds, holders and shop owners. These are public on Solana anyway. <i>Why: to provide the service you asked for.</i></li>
+<li><b>Claim records.</b> When you verify a business we keep the shop, the method, the claiming wallet, the status and timestamps. For a phone check we store only a hash of the number (an HMAC, never the number itself) to limit repeat calls; for a website check, the website's address. Completed claims are kept while the shop is on AtlasPad, because they are the record of who owns a vault. Expired or failed claims are deleted after 90 days, and the hashed call log after 30 days. <i>Why: to verify owners and prevent fraud.</i></li>
+<li><b>Reports, opt-outs and review requests.</b> The reason, any details you write, and the name and email address you give us. We use them to handle your request and reply to you. After <b>180 days</b> we delete the details, your name, your email address and the IP hash; only the kind of request, its reason, the business or coin it concerns and its date are kept, as a record of the takedown. <i>Why: our legitimate interest in handling takedowns and disputes.</i></li>
+<li><b>Coin images and metadata.</b> The art, name, ticker and description you upload when you launch. Once a coin launches they are kept <b>permanently</b>, because their addresses are written on Solana. Uploads that never become a coin are deleted after 30 days, except the records of a launch transaction that failed, which we keep for audits. Please don't put personal data in them.</li>
+<li><b>Near me.</b> Your device's location is used only in your browser, to centre the map. It is never sent to our server. To show coins on the map, your browser asks our server for the area you are looking at.</li>
+</ul>
+
+<h2 id="processors">Who processes data for us</h2>
+<ul>
+<li><b>Cloudflare</b> hosts AtlasPad (website, server, database and bot protection, including Turnstile when it appears).</li>
+<li><b>Google Maps Platform</b> provides the map, search and place details, and <b>Google Fonts</b> serves our fonts and icons. Your browser loads both from Google directly, so Google receives your IP address and what you search for. See the <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google Privacy Policy</a> and the <a href="https://maps.google.com/help/terms_maps/" rel="noopener noreferrer">Google Maps Terms</a>.</li>
+<li><b>OpenFreeMap and Photon (komoot)</b>, only if Google Maps can't load: AtlasPad then shows a basic OpenStreetMap map, and your browser fetches its map tiles and search results from them, so they receive your IP address and what you search for.</li>
+<li><b>Alchemy</b> is our Solana RPC provider. Blockchain requests from your browser (such as wallet balances and the transactions you sign) pass through our server to Alchemy.</li>
+<li><b>pump.fun programs</b> on Solana create and trade the coins. Your transactions, wallet address and holdings are public on Solana and visible on pump.fun and block explorers.</li>
+<li><b>Twilio</b>, only if phone checks are switched on: it places the verification call to the number on the business's Google listing.</li>
+<li><b>Discord</b> and <b>email</b> (sent through Cloudflare Email Routing to our team's mailbox) carry internal alerts to our team about claims and system health.</li>
+</ul>
+<p>Some of these providers process data outside the UK, including in the United States. Those transfers are covered by UK adequacy regulations or by the UK's approved contract clauses.</p>
+<p>Your wallet app (for example Phantom or Solflare) is your own choice and has its own privacy policy.</p>
+
+<h2 id="rights">Your rights</h2>
+<p>You have the right to access your personal data, to have it corrected or erased, to restrict or object to how we use it, and to receive it in a portable form. To use any of these rights, email <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a>. We reply within one month and may need to confirm who you are first.</p>
+<p>We can't change or erase anything recorded on Solana or pump.fun, including transactions, wallet addresses and coin details. We can stop showing data on AtlasPad.</p>
+<p>If you're unhappy with how we handle your data, please tell us first. You also have the right to complain to the UK Information Commissioner's Office (ICO): <a href="https://ico.org.uk/make-a-complaint/" rel="noopener noreferrer">ico.org.uk/make-a-complaint</a>, telephone 0303 123 1113.</p>
+
+<h2 id="cookies">Cookies and local storage</h2>
+<p>AtlasPad sets no advertising or analytics cookies. It uses your browser's local storage and session storage only for things you'd expect it to remember:</p>
+<ul>
+<li>whether you've seen the welcome card, your map layer settings, where the map was, and your recently opened places (place IDs only);</li>
+<li>the wallet you connected (its name and public address), so it can reconnect next time, and your watchlist;</li>
+<li>that you accepted the risk warning and these terms (the version and the date), so we only ask once.</li>
+</ul>
+<p>Google Maps and Cloudflare's bot protection may set their own strictly necessary cookies or storage when they load. You can clear all of this in your browser's settings at any time.</p>
+
+<h2 id="children">Children</h2>
+<p>AtlasPad is not for anyone under 18, and we don't knowingly collect children's data.</p>
+
+<h2 id="changes">Changes</h2>
+<p>We'll update this page, and the date at the top, if anything here changes.</p>
+<footer><a href="/terms">Terms</a> · <a href="/">Back to the map</a></footer>
+</main>
+</body>
+</html>

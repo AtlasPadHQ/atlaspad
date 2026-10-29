@@ -1,0 +1,170 @@
+/* CORNERSHOP map layer — DESIGN.md §6.6 (map controls + FABs), §6.7 (Layers), §7 (pins, balloon,
+   flashes, fee dots, ticks, low-zoom dots, user dot), §13.5 (map failure), §14 (pin motion), §15.
+   Owned by MAP. Verbatim blocks are marked; everything else uses tokens or literal DESIGN values. */
+
+/* ================================================================ adapter containers */
+.map-canvas{position:absolute;inset:0}
+.cs-root{position:absolute;left:0;top:0;width:0;height:0}
+.cs-coins{z-index:1}
+.cs-results{z-index:0}
+/* MapLibre: one overlay above the canvas, below MapLibre's attribution (z 2) */
+.cs-ml-overlay{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.cs-ml-overlay .pin{pointer-events:auto}
+
+/* ================================================================ §7.1 pin CSS (verbatim) */
+.pin{position:absolute;width:0;height:0;cursor:pointer}
+.pin .mk{position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:50%;background:var(--bg,#fff);box-shadow:0 0 0 2px #fff,0 1px 3px 1px rgba(0,0,0,.28);display:grid;place-items:center;font-size:16px;line-height:1;transition:transform var(--cs-dur-2) var(--cs-ease)}
+.pin .mk::before{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--cs-green-bright);opacity:.9}
+.pin:hover .mk{transform:scale(1.12)}
+.pin .lb{position:absolute;left:21px;top:-17px;white-space:nowrap;pointer-events:none;text-shadow:-1.5px -1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px 1.5px 0 #fff,0 -1.5px 0 #fff,0 1.5px 0 #fff,-1.5px 0 0 #fff,1.5px 0 0 #fff,0 0 4px #fff}
+.pin .lb b{display:block;font-size:13.5px;line-height:17px;font-weight:750;color:var(--cs-green);letter-spacing:.1px}
+.pin .lb small{display:block;font-size:11px;line-height:14px;font-weight:600;color:var(--cs-text-2);font-variant-numeric:tabular-nums}
+.pin.left .lb{left:auto;right:21px;text-align:right}
+.pin .fee-dot{position:absolute;left:7px;top:-19px;width:12px;height:12px;border-radius:50%;background:var(--cs-amber-bright);box-shadow:0 0 0 2px #fff}
+.pin .vtick{position:absolute;left:5px;top:3px;width:15px;height:15px;border-radius:50%;background:var(--cs-green);box-shadow:0 0 0 2px #fff;display:grid;place-items:center;color:#fff}
+.pin .vtick .ms{font-size:12px;font-variation-settings:'FILL' 1,'wght' 700,'GRAD' 0,'opsz' 20}
+.pin.flash .mk::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:3px solid var(--cs-green-bright);animation:flash 1.4s var(--cs-ease-decel) infinite}
+.pin.flash.sell .mk::after{border-color:var(--cs-down)}
+.pin .tag{position:absolute;left:21px;top:16px;height:18px;padding:0 6px;border-radius:9px;background:var(--cs-green);color:#fff;font-size:10.5px;line-height:18px;font-weight:700;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.pin.flash.sell .tag{background:var(--cs-down)}
+.pin.sel{z-index:5}
+.pin.sel .mk{display:none}
+.pin .balloon{display:none}
+.pin.sel .balloon{display:block;position:absolute;left:-20px;top:-54px;width:40px;height:54px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.pin .bsvg{position:absolute;inset:0;width:100%;height:100%}
+.pin.sel .balloon .face{position:absolute;left:6px;top:6px;width:28px;height:28px;border-radius:50%;background:var(--bg,#fff);display:grid;place-items:center;font-size:16px}
+.pin.sel .lb{left:24px;top:-46px}
+.pin.sel .lb b{font-size:15px;line-height:19px}
+.pin.sel .lb small{font-size:12px}
+.pin.launchable .balloon .face{background:#fff;color:var(--cs-green)}
+.pin.launchable .balloon .face .ms{font-size:20px;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20}
+body.lowzoom .pin:not(.sel) .mk{left:-6px;top:-6px;width:12px;height:12px;font-size:0;background:var(--cs-green-bright)}
+body.lowzoom .pin:not(.sel) .mk::before,body.lowzoom .pin:not(.sel) .lb,body.lowzoom .pin:not(.sel) .vtick,body.lowzoom .pin:not(.sel) .fee-dot,body.lowzoom .pin:not(.sel) .tag{display:none}
+
+/* ================================================================ pin additions */
+/* pins are <button>s: reset the UA box, anchor at the root origin (positioned by transform) */
+.pin{left:0;top:0;padding:0;border:0;background:none;color:var(--cs-text);font:400 14px/20px var(--cs-font);letter-spacing:normal;text-align:left;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+/* hit area: the 30px marker on desktop; 44×44 on mobile (§15), 24px around low-zoom dots */
+.pin .pin-hit{position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:50%}
+body.lowzoom .pin:not(.sel) .pin-hit{left:-12px;top:-12px;width:24px;height:24px}
+@media (max-width:767px){
+  .pin .pin-hit,body.lowzoom .pin:not(.sel) .pin-hit{left:-22px;top:-22px;width:44px;height:44px}
+}
+/* label-left pins carry the flash tag on the left too (§7.2) */
+.pin.left .tag{left:auto;right:21px}
+/* decluttered: marker only; the label returns on hover / focus (§7.2) */
+.pin.nolabel .lb{display:none}
+.pin.nolabel:hover .lb,.pin.nolabel:focus-visible .lb{display:block}
+/* hovered / focused pin (and its label) above its neighbours */
+.cs-pins .pin:hover,.cs-pins .pin:focus-visible{z-index:100000 !important}
+/* focus: round ring around the marker / balloon face with a white halo for map imagery (§15) */
+.cs-pins .pin:focus-visible{outline:none}
+.pin:focus-visible .mk{outline:2px solid var(--cs-focus);outline-offset:6px;box-shadow:0 0 0 2px #fff,0 1px 3px 1px rgba(0,0,0,.28),0 0 0 10px #fff}
+.pin.sel:focus-visible .balloon .face{outline:2px solid var(--cs-focus);outline-offset:3px}
+/* Layers toggles (§6.7) */
+.cs-pins.no-fees .fee-dot,.cs-pins.no-ticks .vtick{display:none}
+/* select: balloon drops in from -8px, label fades (§14, 300ms decel) */
+@keyframes cs-balloon-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.pin.sel .balloon{animation:cs-balloon-in var(--cs-dur-3) var(--cs-ease-decel)}
+.pin.sel .lb{animation:cs-fade-in var(--cs-dur-3) var(--cs-ease-decel)}
+/* new launch "pop" (§14: scale 0 → 1.12 → 1, 450ms) */
+.pin.pop .mk{animation:cs-pop 450ms var(--cs-ease-decel)}
+/* selected place without launch rights (OpenStreetMap fallback): neutral face */
+.pin.sel.other .balloon .face{color:var(--cs-text-2)}
+/* search-result pins: category emoji on white, dashed green ring, no label (no Google names on pins) */
+.pin.res .mk{background:#fff}
+.pin.res .mk::before{border-style:dashed;border-color:var(--cs-green)}
+body.lowzoom .pin.res .mk{background:#fff;box-shadow:0 0 0 2px var(--cs-green)}
+
+/* ================================================================ §7.3 user location (verbatim + accuracy halo) */
+.me{position:absolute;width:0;height:0}
+.me i{position:absolute;left:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:var(--cs-loc);box-shadow:0 0 0 3px #fff,0 1px 4px 3px rgba(0,0,0,.25)}
+.me::before{content:"";position:absolute;left:-36px;top:-36px;width:72px;height:72px;border-radius:50%;background:rgba(45,108,223,.16)}
+.me{left:0;top:0;pointer-events:none}
+.me::before{left:calc(var(--halo,72px) / -2);top:calc(var(--halo,72px) / -2);width:var(--halo,72px);height:var(--halo,72px);background:var(--cs-loc-halo)}
+
+/* ================================================================ §6.6 map controls (verbatim) */
+.mapctl{position:fixed;right:20px;bottom:40px;z-index:var(--z-map-ctrl);display:flex;flex-direction:column;align-items:center;gap:8px}
+.ctl{width:32px;height:32px;background:#fff;display:grid;place-items:center;color:var(--cs-text);border-radius:8px;box-shadow:var(--cs-elev-1)}
+.ctl:hover{background:#f5f5f5}
+.ctl .ms{font-size:20px}
+.ctl.locate .ms{color:var(--cs-icon)}
+.zoom{display:flex;flex-direction:column;border-radius:8px;box-shadow:var(--cs-elev-ctrl);background:#fff;overflow:hidden}
+.zoom .ctl{box-shadow:none;border-radius:0}
+.zoom hr{margin:0 6px;border:0;height:1px;background:var(--cs-divider)}
+/* .m-fab base rule (§6.6) lives in src/styles/components.css (shared by the Layers and locate FABs) */
+
+/* ================================================================ map controls additions */
+.ctl{transition:background var(--cs-dur-2) var(--cs-ease)}
+.ctl:active{background-image:linear-gradient(var(--cs-state-press),var(--cs-state-press))}
+.ctl.locate.located .ms{color:var(--cs-loc)}
+.ctl[disabled]{opacity:.38;cursor:default}
+.ctl[disabled]:hover{background:#fff}
+/* the zoom group clips its children: draw their focus ring inside */
+.zoom .ctl:focus-visible{outline-offset:-3px;box-shadow:none}
+.zoom:focus-within{box-shadow:var(--cs-elev-ctrl),0 0 0 4px #fff}
+.m-fab:active{background-image:linear-gradient(var(--cs-state-press),var(--cs-state-press))}
+@media (max-width:1023px){ .mapctl{right:12px} }
+@media (max-width:767px){ .mapctl{display:none} }
+
+/* ================================================================ §6.7 Layers tile (verbatim) */
+.layers{position:fixed;left:88px;bottom:34px;width:79px;height:79px;border-radius:8px;border:2px solid #fff;box-shadow:var(--cs-elev-1);z-index:var(--z-map-ctrl);overflow:hidden;background:#eef3ef}
+body.panel-open .layers{left:512px}
+.layers .mini{position:absolute;inset:0;background:
+  radial-gradient(circle at 30% 38%,rgba(21,163,90,.95) 0 4px,transparent 5px),
+  radial-gradient(circle at 64% 30%,rgba(21,163,90,.95) 0 3px,transparent 4px),
+  radial-gradient(circle at 52% 58%,rgba(245,158,11,.95) 0 4px,transparent 5px),
+  radial-gradient(circle at 76% 62%,rgba(21,163,90,.95) 0 3px,transparent 4px),
+  radial-gradient(circle at 40% 45%,rgba(21,163,90,.25) 0 16px,transparent 26px),
+  linear-gradient(115deg,transparent 46%,#fff 46% 52%,transparent 52%),
+  linear-gradient(20deg,transparent 60%,#fff 60% 65%,transparent 65%),
+  linear-gradient(160deg,#e9efe9,#dfe8e1)}
+.layers .lab{position:absolute;inset:auto 0 0 0;height:28px;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;display:flex;align-items:center;gap:4px;padding:6px 6px 0;font-size:11px;line-height:13px}
+.layers .lab .ms{font-size:16px}
+
+/* ================================================================ Layers additions */
+.layers{padding:0;cursor:pointer;text-align:left}
+.layers .mini{transition:transform var(--cs-dur-2) var(--cs-ease)}
+.layers:hover .mini{transform:scale(1.06)}
+.layers[aria-expanded="true"]{border-color:var(--cs-green)}
+@media (max-width:767px){ .layers{display:none} }
+
+/* popover (desktop/tablet): right of the tile, bottom 34px, 296 wide, r16, elev-2, padding 16, z float */
+.popover.layers-pop{z-index:var(--z-float);border-radius:var(--cs-r-lg);padding:16px;box-shadow:var(--cs-elev-2)}
+.lyr-h{font-size:11px;line-height:16px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:var(--cs-text-3);margin:0 0 8px}
+.lyr-h2{margin-top:16px;margin-bottom:0}
+.lyr-types{display:flex;gap:16px}
+.lyr-type{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--cs-text);border-radius:10px}
+.lyr-thumb{display:block;width:72px;height:72px;border-radius:8px;border:2px solid var(--cs-outline-2);transition:border-color var(--cs-dur-2) var(--cs-ease);background:
+  radial-gradient(circle at 30% 38%,rgba(21,163,90,.95) 0 4px,transparent 5px),
+  radial-gradient(circle at 64% 30%,rgba(21,163,90,.95) 0 3px,transparent 4px),
+  radial-gradient(circle at 52% 58%,rgba(245,158,11,.95) 0 4px,transparent 5px),
+  radial-gradient(circle at 40% 45%,rgba(21,163,90,.25) 0 16px,transparent 26px),
+  linear-gradient(115deg,transparent 46%,#fff 46% 52%,transparent 52%),
+  linear-gradient(20deg,transparent 60%,#fff 60% 65%,transparent 65%),
+  linear-gradient(160deg,#e9efe9,#dfe8e1)}
+/* imagery look from the same artwork (no new colours): darker, more saturated */
+.lyr-thumb.hybrid{filter:saturate(1.8) brightness(.52) contrast(1.1)}
+.lyr-type:hover .lyr-thumb{border-color:var(--cs-outline)}
+.lyr-type.on .lyr-thumb{border-color:var(--cs-green)}
+.lyr-type.on .lyr-l{font-weight:600;color:var(--cs-green)}
+.lyr-type[aria-disabled="true"]{opacity:.38;cursor:default}
+.lyr-type[aria-disabled="true"]:hover .lyr-thumb{border-color:var(--cs-outline-2)}
+.lyr-rows .toggle-row{min-height:48px}
+
+/* mobile Layers FAB (§4.4: right 12, top safe + 112) + sheet */
+.m-fab.layers-fab{top:calc(env(safe-area-inset-top) + 112px);display:none}
+@media (max-width:767px){
+  .m-fab.layers-fab{display:grid}
+  body.search-open .m-fab.layers-fab{display:none}
+  body[data-sheet="full"] .m-fab.layers-fab{display:none}
+}
+.layers-sheet .dlg-h h2{margin:0;font-size:22px;line-height:28px;font-weight:600}
+.layers-sheet .lyr{padding:4px 0 8px}
+
+/* ================================================================ §13.5 map failure (neither provider could render) */
+.map-fail{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:24px;background:var(--cs-map-bg)}
+.map-fail-card{max-width:320px;background:var(--cs-surface);border-radius:var(--cs-r-lg);box-shadow:var(--cs-elev-2);padding:20px 20px 12px;text-align:center}
+.map-fail-ic{color:var(--cs-text-3)}
+.map-fail-t{margin:8px 0 0;font-size:14px;line-height:20px;font-weight:600}
+.map-fail-s{margin:2px 0 8px;font-size:12px;line-height:16px;color:var(--cs-text-2)}

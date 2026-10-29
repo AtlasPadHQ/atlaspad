@@ -1,0 +1,94 @@
+/* CORNERSHOP global base — DESIGN.md §3.2, §5, §14, §15. SHARED (src/styles).
+   Only tokens and literal values from DESIGN.md. Module CSS lives next to each module. */
+
+/* The wordmark + map watermark are the only text with font-stretch: they get a 3.6 KB ATLASPAD-only subset of
+   Roboto Flex with the wdth axis, so the body font (index.html) can load without it (85 KB instead of 196 KB; LCP on
+   slow mobile, INTEGRATION §8). See src/styles/fonts/README.md. unicode-range = exactly the subset's glyphs
+   (space A D L P S T; src/styles/wordmarkFont.test.ts). */
+@font-face{font-family:"CS Wordmark";src:url("./fonts/roboto-flex-wordmark.woff2") format("woff2");font-style:normal;font-weight:100 1000;font-stretch:25% 151%;font-display:swap;unicode-range:U+20,U+41,U+44,U+4C,U+50,U+53-54}
+
+/* ---------------------------------------------------------------- §3.2 base (verbatim) */
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:var(--cs-font);color:var(--cs-text);background:var(--cs-map-bg);-webkit-font-smoothing:antialiased;font-optical-sizing:auto}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.ms{font-family:var(--cs-icons);font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;user-select:none;flex:none}
+.ms.fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.num{font-variant-numeric:tabular-nums}
+.up{color:var(--cs-up)} .down{color:var(--cs-down)}
+:focus-visible{outline:2px solid var(--cs-focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:13px}
+
+/* ---------------------------------------------------------------- extras */
+#root{height:100%}
+select,textarea{font:inherit;color:inherit}
+a{color:var(--cs-green)}
+img{max-width:100%}
+.muted{color:var(--cs-text-2)}
+.amb{color:var(--cs-amber)}
+.dot-sep{font-weight:700;padding:0 2px}
+.m-only{display:none}
+@media (max-width:767px){
+  .d-only{display:none !important}
+  .m-only{display:revert}
+}
+
+/* §15 hit-area utility: ≥44×44 tap targets on mobile without changing layout.
+   Every `.btn` (40px, or 32–36px in cards) and `.icon-btn` (40px) gets it too, so dialog close /
+   footer buttons, text buttons (`See all top shops`, `Call me again`…) all meet 44×44 on mobile.
+   Both classes are already positioned (components.css), so the ::after anchors to the button. */
+.hit{position:relative}
+@media (max-width:767px){
+  .hit::after,.btn::after,.icon-btn::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+  /* Phase-1 minor #1: text links in footers, Help, the wallet terms line, the fees card and the
+     demo-shop block also get a 44×44 target (src/ui/hitAudit.ts checks every control at 375px). */
+  .link-btn,.foot a,.wterms a,.gb-btn,button.link,a.link,.pop-link{position:relative}
+  .link-btn::after,.foot a::after,.wterms a::after,.gb-btn::after,button.link::after,a.link::after,.pop-link::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+  .help-foot{display:flex;flex-wrap:wrap;align-items:center;column-gap:4px}
+  .help-foot a{display:inline-flex;align-items:center;min-height:44px}
+}
+
+/* §15 focus: round controls get a round ring */
+.icon-btn:focus-visible,.act:focus-visible .circ,.pin:focus-visible{border-radius:50%}
+
+/* spinner (§14): rotate 1s linear; reduced motion → static icon + "Working…" */
+.ms.spin{animation:cs-spin 1s linear infinite}
+.spinner{display:inline-flex;align-items:center;gap:6px}
+.spinner-rm{display:none;font-size:12px;color:var(--cs-text-2)}
+
+/* number tick flash (§14) */
+.tick-up{animation:cs-tick-up 600ms var(--cs-ease-decel)}
+.tick-down{animation:cs-tick-down 600ms var(--cs-ease-decel)}
+
+/* ---------------------------------------------------------------- keyframes (§14) */
+@keyframes cs-spin{to{transform:rotate(360deg)}}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+@keyframes flash{0%{transform:scale(1);opacity:1}100%{transform:scale(2.3);opacity:0}}
+@keyframes rowin{from{background:var(--cs-green-tint)}to{background:transparent}}
+@keyframes sk{to{transform:translateX(100%)}}
+@keyframes cs-tick-up{from{background:var(--cs-up-bg)}to{background:transparent}}
+@keyframes cs-tick-down{from{background:var(--cs-down-bg)}to{background:transparent}}
+@keyframes cs-shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
+@keyframes cs-pop{0%{transform:scale(0)}66%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes cs-burst{from{transform:scale(1);opacity:.6}to{transform:scale(1.8);opacity:0}}
+@keyframes cs-fade-in{from{opacity:0}to{opacity:1}}
+@keyframes cs-fade-out{from{opacity:1}to{opacity:0}}
+@keyframes cs-dialog-in{from{opacity:0;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes cs-dialog-out{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(.98)}}
+@keyframes cs-sheet-in{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes cs-sheet-out{from{transform:translateY(0)}to{transform:translateY(100%)}}
+@keyframes cs-panel-in{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes cs-panel-out{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-12px)}}
+@keyframes cs-step-in{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes cs-toast-in{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes cs-drawer-in{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+
+/* ---------------------------------------------------------------- reduced motion (§14) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  .spinner .ms.spin{animation:none}
+  .spinner-rm{display:inline}
+}

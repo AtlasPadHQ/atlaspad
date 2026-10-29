@@ -1,0 +1,14 @@
+# Static asset caching (INTEGRATION.md §8). Vite emits content-hashed file names under /assets/,
+# so they can be cached forever. index.html and other files keep the default (revalidate).
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Anti-clickjacking for every page (Launch / Buy / Claim must never be framed by another site; the devnet test wallet
+# signs in-page). Only frame-ancestors is set, so Google Maps, fonts and wallets are unaffected. HSTS keeps browsers on
+# https for a year. The Worker sets the same headers on the /c/ and /p/ share pages (worker/share.ts
+# PAGE_SECURITY_HEADERS).
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

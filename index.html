@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AtlasPad — launch a coin for any business on earth</title>
+    <meta name="description" content="your cafe. your barber. your kebab shop. launch a coin for any business on earth. 100% of creator fees are held for the shop's verified owner. paste a google maps link. launch. done." />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+    <meta name="application-name" content="AtlasPad" />
+    <meta name="apple-mobile-web-app-title" content="AtlasPad" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Open Graph / Twitter, on the canonical origin (www and workers.dev redirect there). The Worker rewrites them
+         for /c/ and /p/ share URLs on its PUBLIC_ORIGIN (worker/share.ts). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AtlasPad" />
+    <meta property="og:title" content="AtlasPad — launch a coin for any business on earth" />
+    <meta property="og:description" content="your cafe. your barber. your kebab shop. 100% of creator fees are held for the shop's verified owner. paste a google maps link. launch. done." />
+    <meta property="og:url" content="https://atlaspad.online/" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content="https://atlaspad.online/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AtlasPad — launch a coin for any business on earth" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AtlasPadx" />
+    <meta name="twitter:image" content="https://atlaspad.online/og.png" />
+    <meta name="twitter:title" content="AtlasPad — launch a coin for any business on earth" />
+    <meta name="twitter:description" content="your cafe. your barber. your kebab shop. 100% of creator fees are held for the shop's verified owner." />
+
+    <!-- Google Maps: connect early, and start the Maps JS download in parallel with the app bundle (LCP, INTEGRATION.md §8).
+         Same URL parameters as src/lib/google.ts, which picks this download up instead of starting its own. Skipped for
+         ?map=demo and keyless builds. -->
+    <link rel="preconnect" href="https://maps.googleapis.com" />
+    <link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+    <script>
+      (function () {
+        try {
+          var k = '%VITE_GOOGLE_MAPS_KEY%';
+          if (!k || k.charAt(0) === '%' || /[?&]map=demo(&|$)/.test(location.search)) return;
+          var w = window;
+          var g = (w.google = w.google || {});
+          var m = (g.maps = g.maps || {});
+          if (m.importLibrary) return;
+          w.gm_authFailure = function () {
+            w.__csMapsAuthFailed = true;
+          };
+          w.__csMapsBoot = new Promise(function (resolve, reject) {
+            m.__ib__ = resolve;
+            var s = document.createElement('script');
+            var q = new URLSearchParams({ key: k, v: 'weekly', language: 'en-GB', region: 'GB', libraries: 'maps', callback: 'google.maps.__ib__' });
+            s.src = 'https://maps.googleapis.com/maps/api/js?' + q.toString();
+            s.async = true;
+            // 3 KB on the map's critical path: an async script is fetched at Low priority and held back behind the
+            // app bundle on slow connections (≈0.9 s on slow 4G), which delays every Maps module and the first view.
+            s.fetchPriority = 'high';
+            s.onerror = function () {
+              reject(new Error('maps script'));
+            };
+            document.head.appendChild(s);
+          });
+          w.__csMapsBoot.catch(function () {});
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Fonts (DESIGN §3.1, in this order; icon_names must stay alphabetical). Roboto Flex loads WITHOUT the wdth axis
+         (85 KB instead of 196 KB latin on slow mobile, INTEGRATION §8): only the wordmark/watermark stretch, and they use the
+         ATLASPAD-only subset in src/styles/fonts (family "CS Wordmark"). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0&icon_names=account_balance_wallet,add,add_photo_alternate,add_shopping_cart,arrow_back,arrow_downward,arrow_drop_down,arrow_left,arrow_right,arrow_upward,bakery_dining,block,bolt,call,candlestick_chart,celebration,check,check_circle,chevron_right,close,cloud_off,content_copy,content_cut,download,edit,error,expand_more,flag,help,info,ios_share,kebab_dining,language,layers,leaderboard,link,local_cafe,local_pizza,location_on,lock,logout,mail,my_location,near_me,notifications,notifications_active,open_in_new,payments,phone_disabled,phone_in_talk,photo_camera,photo_library,progress_activity,public,refresh,remove,rocket_launch,schedule,science,search,search_off,sell,settings,share,shield,sports_bar,storefront,support_agent,task_alt,toll,verified,warning,water_drop,wifi_off&display=block" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>AtlasPad needs JavaScript to show the map.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

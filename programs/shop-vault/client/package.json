@@ -1,0 +1,42 @@
+{
+  "name": "@cornershop/shop-vault-client",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "TS client for the CORNERSHOP shop-vault program: instruction builders, PDAs, account decoders, Appendix-A attestation encoding and the SPEC §8.4 attestor signing-policy checks.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.ts",
+    "vectors": "node scripts/gen-vectors.ts > test/vectors.json"
+  },
+  "dependencies": {
+    "@noble/hashes": "1.8.0",
+    "@solana/web3.js": "1.99.0",
+    "buffer": "6.0.3"
+  },
+  "devDependencies": {
+    "@pump-fun/pump-sdk": "3.2.0",
+    "@solana/spl-token": "0.4.14",
+    "@types/bn.js": "5.2.0",
+    "@types/node": "22.20.5",
+    "bn.js": "5.2.2",
+    "typescript": "5.9.3"
+  }
+}

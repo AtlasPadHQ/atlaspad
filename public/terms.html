@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms — AtlasPad</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>:root{color-scheme:light}body{margin:0;background:#f3f8f4;color:#1f1f1f;font:400 16px/24px "Roboto Flex",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}main{max-width:720px;margin:0 auto;padding:32px 16px 48px}a{color:#0e7c47}h1{font-size:28px;line-height:34px;font-weight:700;margin:16px 0 8px}h2{font-size:18px;line-height:24px;font-weight:600;margin:28px 0 6px}p,li{color:#3c3c3c}.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#1f1f1f;font-weight:800;letter-spacing:.6px;font-stretch:120%}.brand img{width:32px;height:32px;border-radius:10px}.note{background:#ffedd0;color:#6b3a00;border-radius:12px;padding:12px 16px;font-size:14px;line-height:20px}footer{margin-top:40px;font-size:13px;color:#5e5e5e}</style>
+</head>
+<body>
+<main>
+<a class="brand" href="/"><img src="/favicon.svg" alt="">ATLASPAD</a>
+<h1>Terms of use</h1>
+<p>Last updated: 29 October 2026</p>
+<p class="note"><b>Real money, high risk.</b> Coins on AtlasPad are memecoins traded with real SOL on Solana. Don't put in money you can't afford to lose: most memecoins lose all their value, and Solana transactions can't be reversed. Nothing on AtlasPad is investment advice.</p>
+
+<h2 id="who">1. Who we are</h2>
+<p>AtlasPad is operated from London, United Kingdom ("AtlasPad", "we", "us"). These terms apply to the AtlasPad website at atlaspad.online and to the same service at any other address we run it on. Contact us at <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a>.</p>
+<p>By connecting a wallet or sending any transaction through AtlasPad you agree to these terms. If you don't agree, don't use AtlasPad.</p>
+
+<h2 id="eligibility">2. Who can use AtlasPad</h2>
+<ul>
+<li>You must be <b>18 or older</b> and able to enter into a binding agreement.</li>
+<li>You must not be in, or ordinarily resident in, a country or region where we block or restrict AtlasPad. Today that includes North Korea, Iran, Syria, Cuba, Russia, Belarus, and the Crimea, Sevastopol, Donetsk and Luhansk regions of Ukraine. The list can change at any time without notice.</li>
+<li>You must not be named on a UK, UN, EU or US sanctions list, or act for anyone who is.</li>
+<li>You must not use a VPN, proxy or any other means to get around a block or restriction. If you do, you break these terms and use AtlasPad entirely at your own risk.</li>
+<li>Using AtlasPad, and buying or selling memecoins, must be lawful where you are. Checking that, and paying any tax you owe, is your responsibility.</li>
+</ul>
+<p>We may refuse, restrict or block access to anyone, or any area, at any time.</p>
+
+<h2 id="what">3. What AtlasPad is</h2>
+<p>AtlasPad is a launch interface for coins on <b>pump.fun</b>, named after businesses you find on the map. Anyone can launch a coin for any open business. The coin is created by pump.fun's programs on Solana and trades there; AtlasPad shows it on the map and helps you send the transactions.</p>
+<p><b>A coin is not affiliated with, endorsed by or connected to the business it is named after</b> unless the business's owner has claimed it on AtlasPad. Even a claim only shows that someone passed our verification (section 9); it is not an endorsement by us or by the business.</p>
+<p>AtlasPad never holds your wallet's keys and cannot move money out of your wallet. AtlasPad is not a bank, exchange, broker or investment adviser, and is not authorised or registered by the UK Financial Conduct Authority.</p>
+
+<h2 id="transactions">4. Your wallet and transactions</h2>
+<ul>
+<li>You use your own self-custody Solana wallet and you are responsible for keeping it safe. We will never ask for your recovery phrase or private key.</li>
+<li>Every launch, trade, claim and withdrawal is a transaction you approve in your wallet. Once it is confirmed on Solana it <b>cannot be reversed, cancelled or refunded</b>, by you or by us.</li>
+<li>Prices and amounts shown before you sign are estimates. The final result can differ (slippage), and a transaction can fail and still cost a network fee.</li>
+<li>AtlasPad's server co-signs launches and claims to enforce our rules, such as one coin per place and our content rules. We can refuse to co-sign at any time.</li>
+</ul>
+
+<h2 id="fees">5. Fees</h2>
+<p>AtlasPad charges <b>no platform fee</b> and takes <b>0% of creator fees</b>. 100% of the pump.fun creator fee of a coin launched through AtlasPad is held in that shop's vault for its verified owner.</p>
+<p>pump.fun's own fees apply to every trade and launch, and Solana network fees apply to every transaction. A launch also pays the one-off rent for the coin's and the shop's new accounts on Solana. pump.fun sets and can change its fees; they are not ours.</p>
+
+<h2 id="control">6. Who controls the shop fees</h2>
+<p>We want you to understand exactly who controls what:</p>
+<ul>
+<li>Each shop has its own <b>vault</b> on Solana, run by our "shop-vault" program. The vault is the coin's creator on pump.fun, so the creator fees from trading collect there.</li>
+<li>Only the shop's current verified owner can withdraw from the vault, and only to the owner wallet. No admin key in the program can send vault money anywhere else.</li>
+<li><b>AtlasPad's attestor decides who becomes the owner.</b> The attestor is a key run by our server. A claim needs its co-signature, which it gives only after the claimant passes our verification.</li>
+<li>Every claim waits through a <b>public window of 72 hours</b> before it takes effect. During the window our <b>guardian</b> key and our <b>governance</b> key (being moved to a multisig) can cancel it, for example after a dispute or if we suspect fraud.</li>
+<li>A shop that already has an owner can be claimed again (a lost wallet, a sold business, a dispute) by someone who passes verification. The same public window applies, and the current owner can keep withdrawing until the new claim takes effect.</li>
+<li>The program has an <b>upgrade authority held by a multisig</b> that we control. An upgrade could change how vaults work, including how and to whom vault money can be paid. Upgrades and admin actions are public on Solana, but you are trusting us to use these powers properly.</li>
+<li>We can pause new launches. Pausing does not stop trading, claims or withdrawals.</li>
+<li>pump.fun's programs are outside our control. pump.fun can upgrade them and change its fees, and its admins can redirect the future creator fees of any coin. We watch for this but cannot prevent it.</li>
+</ul>
+
+<h2 id="risks">7. Risks</h2>
+<ul>
+<li><b>Memecoins can go to zero.</b> They have no intrinsic value, no issuer standing behind them and no connection to the business's income. Most lose all or nearly all their value, often within minutes.</li>
+<li>Prices move extremely fast, liquidity can disappear, and you may be unable to sell at any price.</li>
+<li><b>Transactions are irreversible.</b> A mistake, such as the wrong wallet, the wrong coin or the wrong amount, cannot be undone.</li>
+<li><b>Smart-contract risk:</b> pump.fun's programs, our shop-vault program, Solana itself and your wallet software can have bugs or be attacked, and you could lose money.</li>
+<li><b>Third-party risk:</b> AtlasPad depends on pump.fun, Solana, our RPC provider (Alchemy), Cloudflare, Google and your wallet provider. Any of them can fail, change or stop.</li>
+<li><b>Regulatory risk:</b> the law on cryptoassets is changing and could restrict what you or we can do.</li>
+<li>Don't invest unless you're prepared to lose all the money you invest. This is a high-risk investment and you are unlikely to be protected if something goes wrong: the Financial Ombudsman Service and the Financial Services Compensation Scheme do not cover it.</li>
+<li><b>No investment advice.</b> Nothing on AtlasPad is investment, financial, legal or tax advice, or a recommendation to buy or sell anything. Prices, market caps and fee figures on AtlasPad are estimates and can be delayed or wrong.</li>
+</ul>
+
+<h2 id="launching">8. Launching a coin</h2>
+<p>If you launch a coin, you promise that:</p>
+<ul>
+<li>you do <b>not impersonate</b> the business or anyone else, and do not suggest an affiliation, endorsement or official status that doesn't exist;</li>
+<li>the name, ticker, art and description are <b>not misleading</b>, offensive, hateful or unlawful, and contain no links or scam bait;</li>
+<li>you do <b>not abuse trademarks</b> or copyright: no logos or artwork you don't have the right to use.</li>
+</ul>
+<p><b>Names are permanent.</b> A coin's name and ticker are written to Solana when you launch and can never be changed. Its art and description are published at a permanent address recorded on-chain; we don't edit them unless the law requires us to remove something. Hiding a coin on AtlasPad doesn't remove it from Solana or pump.fun. Each place can have one coin, and the first launch wins. Every coin's description ends with: "Community coin. Not affiliated with this business unless claimed on atlaspad.online."</p>
+<p>You let us display your coin's name, ticker and art on AtlasPad and in share images. We can refuse any launch and hide any coin from AtlasPad.</p>
+
+<h2 id="claims">9. Claims and disputes</h2>
+<ul>
+<li>An owner verifies with a code: a phone call to the number on the business's Google listing (when phone checks are switched on), or a code published on the business's own website.</li>
+<li><b>A code proves control of the listed contact, not legal ownership.</b> It shows that you could answer that phone number or edit that website at that moment. We do not check company records or legal title.</li>
+<li>After you verify, your wallet signs the claim. It takes effect only after the <b>72-hour public window</b>. Anyone can see a pending claim during that time.</li>
+<li><b>Disputes:</b> if you think a claim is wrong, email <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a> before the window ends, with the shop, your evidence and how to reach you. We decide disputes at our discretion.</li>
+<li><b>Cancellation:</b> we may cancel any claim during its window, after a dispute, for suspected fraud, a hijacked listing, a mistake or a breach of these terms. Once a claim has taken effect we can't reverse it, and we can never reverse a withdrawal; a rightful owner can verify again (section 6).</li>
+<li>Only claim a business you own or are authorised to act for. Disagreements between people over a business (partners, buyers, sellers) are for you to settle between yourselves.</li>
+</ul>
+
+<h2 id="takedown">10. Takedown and opt-out</h2>
+<p>If a coin is named after your business and you don't want it, use <em>Business opt-out</em> in the app or email <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a>. Anyone can use <em>Report a coin</em> for impersonation, offensive content or scams, and trademark owners can email us with details of their rights.</p>
+<p>We review requests, usually within 3 days. We can hide a coin from AtlasPad's map and lists and stop new launches for a place. We cannot delete a coin from Solana or pump.fun, where it may keep trading. A business can also claim its shop and the fees instead.</p>
+
+<h2 id="google">11. Google Maps</h2>
+<p>AtlasPad uses Google Maps features and content. By using them you agree to the <a href="https://maps.google.com/help/terms_maps/" rel="noopener noreferrer">Google Maps/Google Earth Additional Terms of Service</a> and the <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google Privacy Policy</a>. Business details on the map come from Google; we don't verify them.</p>
+
+<h2 id="use">12. Fair use</h2>
+<p>Don't attack, overload or scrape AtlasPad, get around its limits or checks, manipulate markets or deceive other users, or use it for money laundering or any other unlawful purpose. We may suspend access for anyone who does.</p>
+
+<h2 id="service">13. The service</h2>
+<p>AtlasPad is provided "as is" and "as available". We may change, suspend or stop any part of it at any time, and we don't promise it will be available, error-free or secure. On-chain coins, vaults and transactions keep existing on Solana whatever happens to this website.</p>
+
+<h2 id="liability">14. Limitation of liability</h2>
+<p>Nothing in these terms limits liability that the law doesn't allow us to limit, such as for death or personal injury caused by our negligence, or for fraud. Nothing affects your statutory rights as a consumer.</p>
+<p>Otherwise, we are not liable for: losses from launching, buying, selling or holding coins; price movements; anything done by pump.fun, Solana, wallet providers or other third parties; bugs or attacks on smart contracts; transactions you approve; lost keys or a compromised wallet; or the outcome of a claim or dispute. We are not liable for indirect or consequential loss, or for loss of profit, revenue or opportunity. Our total liability to you for everything relating to AtlasPad is limited to £100.</p>
+
+<h2 id="changes">15. Changes to these terms</h2>
+<p>We may update these terms. We'll change the date at the top, and for important changes we'll ask you to accept the new terms before your next transaction. If you keep using AtlasPad after a change, the new terms apply.</p>
+
+<h2 id="law">16. Law</h2>
+<p>These terms are governed by the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction. If you are a consumer living in Scotland or Northern Ireland, you may also bring proceedings in your local courts.</p>
+
+<h2 id="contact">17. Contact</h2>
+<p>Questions, disputes, takedowns: <a href="mailto:hello@atlaspad.online">hello@atlaspad.online</a>.</p>
+<footer><a href="/privacy">Privacy</a> · <a href="/">Back to the map</a></footer>
+</main>
+</body>
+</html>

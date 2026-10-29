@@ -1,0 +1,93 @@
+/* Left rail (DESIGN §6.1), mobile navigation drawer (§6.9) and the "This area" card (§6.5).
+   OWNED BY RAIL+FEED. Tokens and DESIGN literals only. */
+
+/* ================================================================ rail (§6.1, verbatim + states) */
+.rail{position:fixed;left:0;top:0;bottom:0;width:var(--rail-w);background:var(--cs-rail);z-index:var(--z-rail);display:flex;flex-direction:column;align-items:center;padding:16px 0 12px;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail-home{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;flex:none}
+.rail-home:focus-visible{outline-offset:3px}
+.rail-list{list-style:none;margin:0;padding:0;width:100%}
+.rail-item{display:flex;flex-direction:column;align-items:center;width:100%;height:64px;margin-top:16px;padding-top:8px;color:var(--cs-text-2)}
+.rail-item .ind{position:relative;width:48px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background var(--cs-dur-2) var(--cs-ease)}
+.rail-item:hover .ind{background:var(--cs-state-hover)}
+.rail-item:active .ind{background:var(--cs-state-press)}
+.rail-item .ms{color:var(--cs-icon)}
+.rail-item .lbl{margin-top:4px;font-size:12px;line-height:16px;font-weight:500;letter-spacing:.2px;max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail-item.active .ind{background:var(--cs-green-container)}
+.rail-item.active .ms{color:var(--cs-on-green-container);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.rail-item.active .lbl{color:var(--cs-on-green-container);font-weight:600}
+.rail-item:focus-visible{outline:none}
+.rail-item:focus-visible .ind{outline:2px solid var(--cs-focus);outline-offset:2px}
+.rail-item.rail-help{height:56px;flex:none}
+a.rail-item,a.drawer-item{text-decoration:none}
+.rail-x .ind,.drawer-x .di{color:var(--cs-icon)}
+.rail-x + .rail-help{margin-top:4px}
+.badge{position:absolute;top:-2px;left:28px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--cs-green);color:#fff;font-size:11px;line-height:14px;font-weight:700;border:2px solid var(--cs-rail);display:grid;place-items:center;font-variant-numeric:tabular-nums;font-style:normal}
+.badge.amber{background:var(--cs-amber-bright);color:#3d2200}
+.live-dot{position:absolute;top:2px;left:31px;width:10px;height:10px;border-radius:50%;background:var(--cs-green-bright);border:2px solid var(--cs-rail)}
+.live-dot::after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--cs-green-bright);animation:ping 1.6s var(--cs-ease-decel) infinite}
+.live-dot.idle{background:var(--cs-text-3)}
+.live-dot.idle::after{display:none}
+.rail-sep{width:40px;height:1px;background:var(--cs-outline-2);margin:16px 0 0;flex:none}
+.rail-place{display:flex;flex-direction:column;align-items:center;margin-top:12px;width:100%;flex:none}
+.rail-place .thumb{width:40px;height:40px;border-radius:var(--cs-r-thumb);display:grid;place-items:center;font-size:22px;line-height:1;box-shadow:inset 0 0 0 2px var(--cs-green)}
+.rail-place .thumb.dashed{box-shadow:none;border:2px dashed var(--cs-green);background:#fff;color:var(--cs-green)}
+.rail-place .thumb.dashed .ms{font-size:22px;color:var(--cs-green)}
+.rail-place .lbl{margin-top:4px;font-size:12px;line-height:16px;font-weight:600;color:var(--cs-on-green-container);max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rail-place:hover .thumb{box-shadow:inset 0 0 0 2px var(--cs-green),var(--cs-elev-1)}
+.rail-place:hover .thumb.dashed{box-shadow:var(--cs-elev-1)}
+.rail-place:focus-visible{outline:none}
+.rail-place:focus-visible .thumb{outline:2px solid var(--cs-focus);outline-offset:2px}
+.rail-spacer{flex:1;min-height:8px}
+@media (max-width:767px){ .rail{display:none} }
+/* short windows: tighten the rail so Help stays reachable */
+@media (min-width:768px) and (max-height:600px){
+  .rail-item{height:56px;margin-top:8px;padding-top:4px}
+}
+
+/* ================================================================ mobile drawer (§6.9) */
+.drawer{position:fixed;left:0;top:0;bottom:0;width:var(--drawer-w);background:#fff;border-radius:0 16px 16px 0;box-shadow:var(--cs-elev-3);z-index:var(--z-modal);display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;padding:env(safe-area-inset-top) 0 calc(16px + env(safe-area-inset-bottom));outline:none}
+.drawer[data-state="open"]{animation:cs-drawer-in var(--cs-dur-3) var(--cs-ease-decel)}
+.drawer[data-state="closing"]{animation:cs-drawer-out var(--cs-dur-2) var(--cs-ease-accel) forwards}
+@keyframes cs-drawer-out{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.drawer-h{height:64px;padding:0 4px 0 16px;display:flex;align-items:center;gap:10px;flex:none}
+.drawer-h .app-icon{width:32px;height:32px;border-radius:var(--cs-r-thumb)}
+.drawer-h .wordmark{flex:1;min-width:0}
+.drawer-list{list-style:none;margin:0;padding:0 8px}
+.drawer-item{position:relative;display:flex;align-items:center;gap:16px;width:100%;height:56px;padding:0 16px;border-radius:28px;font-size:16px;line-height:24px;font-weight:500;letter-spacing:.1px;color:var(--cs-text);text-align:left;transition:background var(--cs-dur-2) var(--cs-ease)}
+.drawer-item:hover{background:var(--cs-state-hover)}
+.drawer-item:active{background:var(--cs-state-press)}
+.drawer-item .ms{color:var(--cs-icon)}
+.drawer-item .di{position:relative;display:grid;place-items:center;width:24px;height:24px;flex:none}
+.drawer-item .di .live-dot{top:-3px;left:15px;border-color:#fff}
+.drawer-item.active{background:var(--cs-green-container);color:var(--cs-on-green-container);font-weight:600}
+.drawer-item.active .ms{color:var(--cs-on-green-container);font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.drawer-item.active .di .live-dot{border-color:var(--cs-green-container)}
+.drawer-item:focus-visible{outline-offset:-2px}
+.drawer-item .dl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drawer-badge{min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--cs-green);color:#fff;font-size:12px;line-height:16px;font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums;flex:none}
+.drawer-badge.amber{background:var(--cs-amber-bright);color:#3d2200}
+.drawer-sep{height:1px;background:var(--cs-divider);border:0;margin:8px 24px}
+.drawer-f{margin-top:auto;padding:16px 24px 0;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.drawer-optout{font-size:12px;line-height:16px;color:var(--cs-text-2);text-decoration:underline;text-underline-offset:2px}
+
+/* ================================================================ "This area" card (§6.5, verbatim) */
+.area{position:fixed;left:88px;top:72px;width:var(--search-w);background:#fff;border-radius:var(--cs-r-lg);box-shadow:var(--cs-elev-1);z-index:var(--z-float);overflow:hidden}
+body.panel-open .area,body.hero-on .area,body.live-on .area,body.panel-collapsed .area{display:none}
+.area-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px 0;height:40px}
+.area-h h2{margin:0;font-size:16px;line-height:20px;font-weight:600}
+.area-row{display:flex;align-items:center;width:100%;min-height:56px;padding:6px 16px 8px 16px;gap:16px;text-align:left;color:var(--cs-text)}
+button.area-row:hover{background:var(--cs-state-hover)}
+button.area-row:active{background:var(--cs-state-press)}
+button.area-row:focus-visible{outline-offset:-2px}
+.area-ic{width:32px;height:32px;border-radius:50%;background:var(--cs-amber-container);display:grid;place-items:center;color:var(--cs-amber);flex:none}
+.area-ic .ms{font-size:18px}
+.area-ic.green{background:var(--cs-green-container);color:var(--cs-on-green-container)}
+.area-row .tx{flex:1;min-width:0}
+.area-row .t1{display:block;font-size:16px;line-height:24px;letter-spacing:.1px}
+.area-row .t2{display:block;font-size:12px;line-height:16px;letter-spacing:.2px;color:var(--cs-text-2)}
+.area-row .t2 b{color:var(--cs-amber);font-weight:700}
+.area-row > .ms{color:var(--cs-icon)}
+.area-sk{padding:12px 20px 16px}
+@media (min-width:768px) and (max-width:1023px){ .area{top:116px} }
+@media (max-width:767px){ .area{display:none} }

@@ -1,0 +1,67 @@
+/* First-visit hero card (DESIGN §11). OWNED BY RAIL+FEED. Tokens and DESIGN literals only.
+   Visibility is driven by mounting (store.heroDismissed) so the exit animation can run. */
+.herocard{display:block;position:fixed;left:88px;top:72px;width:440px;max-width:calc(100vw - 104px);background:#fff;border-radius:var(--cs-r-2xl);box-shadow:var(--cs-elev-3);z-index:var(--z-float);padding:24px 24px 20px;overflow:hidden}
+.herocard[data-state="open"]{animation:cs-hero-in var(--cs-dur-3) var(--cs-ease-decel)}
+.herocard[data-state="closing"]{animation:cs-hero-out var(--cs-dur-2) var(--cs-ease-accel) forwards;pointer-events:none}
+@keyframes cs-hero-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cs-hero-out{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-8px)}}
+.herocard .close{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--cs-icon)}
+.herocard .close:hover{background:var(--cs-state-hover)}
+.herocard .close:active{background:var(--cs-state-press)}
+.herocard .brand .app-icon{width:32px;height:32px;border-radius:var(--cs-r-thumb)}
+.herocard h1{margin:18px 0 0;font-size:32px;line-height:38px;font-weight:750;letter-spacing:-.6px;font-variation-settings:'opsz' 40}
+.herocard h1 span{color:var(--cs-green)}
+.herocard p{margin:10px 0 0;font-size:16px;line-height:24px;color:var(--cs-text-2);letter-spacing:.1px}
+.herocard p b{color:var(--cs-text);font-weight:600}
+.herocard p.hero-p2{margin-top:6px}
+.paste{margin-top:20px;display:flex;align-items:center;gap:8px;height:56px;border-radius:28px;background:var(--cs-surface-2);padding:0 6px 0 18px;border:1px solid transparent}
+.paste:focus-within{background:#fff;border-color:var(--cs-green);box-shadow:0 0 0 1px var(--cs-green)}
+.paste.err{border-color:var(--cs-down);box-shadow:0 0 0 1px var(--cs-down);background:#fff}
+.paste > .ms{color:var(--cs-icon);font-size:22px}
+.paste input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:15px;height:100%;padding:0}
+.paste input::placeholder{color:var(--cs-text-2);opacity:1}
+.paste input:focus-visible{outline:none}
+.paste input[readonly]{color:var(--cs-text-2)}
+.paste .btn{height:44px;border-radius:22px;padding:0 22px;font-size:15px;flex:none}
+.herocard p.hero-err{margin:8px 0 0 18px;font-size:12px;line-height:16px;color:var(--cs-down);letter-spacing:0}
+.hero-or{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;line-height:16px;color:var(--cs-text-2);flex-wrap:wrap}
+.hero-or .chip{height:28px;font-size:12px;padding:0 10px 0 8px;box-shadow:none;border:1px solid var(--cs-outline-2);gap:4px}
+.hero-or .chip .ms{font-size:16px}
+.hero-or .chip .em{font-size:13px}
+.hero-stats{display:flex;gap:0;margin:20px -24px -20px;border-top:1px solid var(--cs-divider);background:var(--cs-rail)}
+.hero-stats div{flex:1;min-width:0;padding:12px 16px 14px 24px}
+.hero-stats div+div{border-left:1px solid var(--cs-divider);padding-left:16px}
+.hero-stats b{display:block;font-size:18px;line-height:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.hero-stats b.amb{color:var(--cs-amber)}
+.hero-stats small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+.hero-grab{display:none}
+
+@media (min-width:768px) and (max-width:1023px){ .herocard{top:116px} }
+
+/* mobile (<768): the hero becomes a bottom sheet over the 330px map */
+@media (max-width:767px){
+  .herocard{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;border-radius:var(--cs-r-2xl) var(--cs-r-2xl) 0 0;box-shadow:var(--cs-elev-sheet);padding:28px 20px calc(20px + env(safe-area-inset-bottom));max-height:calc(100dvh - 140px);overflow:auto;overscroll-behavior:contain;z-index:var(--z-sheet);display:flex;flex-direction:column;min-height:min(calc(100dvh - 330px),calc(100dvh - 140px))}
+  .herocard > *{flex:none}
+  .hero-or{margin-bottom:18px}
+  .herocard[data-state="open"]{animation:cs-hero-sheet-in var(--cs-dur-4) var(--cs-ease-decel)}
+  .herocard[data-state="closing"]{animation:cs-hero-sheet-out var(--cs-dur-3) var(--cs-ease-accel) forwards}
+  .herocard.dragging{animation:none;transition:none}
+  .herocard.settling{transition:transform var(--cs-dur-2) var(--cs-ease)}
+  .herocard::before{content:"";position:absolute;left:50%;top:8px;width:32px;height:4px;margin-left:-16px;border-radius:2px;background:var(--cs-handle)}
+  .hero-grab{display:block;position:absolute;left:0;right:0;top:0;height:28px;touch-action:none;cursor:grab;z-index:0}
+  .herocard .close{z-index:1}
+  .herocard h1{font-size:28px;line-height:34px}
+  .herocard p{font-size:15px;line-height:22px}
+  .paste input{font-size:16px}
+  .hero-or .chip{position:relative}
+  .hero-stats{margin:auto -20px calc(-20px - env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+  .hero-stats div{padding-left:20px}
+  .hero-stats div+div{padding-left:12px}
+  body.hero-on .m-fab.locate-fab{display:none}
+}
+@keyframes cs-hero-sheet-in{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes cs-hero-sheet-out{from{transform:translateY(var(--hero-drag,0px))}to{transform:translateY(100%)}}
+@media (max-width:359px){
+  .paste .btn{padding:0 16px}
+  .hero-stats div{padding-right:8px}
+}

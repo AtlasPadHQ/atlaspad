@@ -1,0 +1,50 @@
+/* CORNERSHOP app-level layout — DESIGN.md §4, §5, §6.4, §6.8, §15. SHARED file.
+   Positions of the chrome that App itself renders (map container, top-right, mobile DEMO,
+   watermark, skip links). Module chrome positions live in the module CSS. */
+
+/* ---------------------------------------------------------------- map container (§4.1–§4.4) */
+#mapwrap{position:fixed;top:0;right:0;bottom:0;left:var(--rail-w);z-index:var(--z-map);background:var(--cs-map-bg)}
+#map{width:100%;height:100%}
+#map:focus-visible{outline-offset:-2px}
+body.panel-open #mapwrap{left:calc(var(--rail-w) + var(--panel-w) + var(--panel-gutter))}
+@media (max-width:767px){
+  #mapwrap,body.panel-open #mapwrap{left:0;bottom:var(--sheet-h)}
+  body:not(.panel-open):not(.hero-on) #mapwrap{bottom:0}
+  body.hero-on:not(.panel-open) #mapwrap{bottom:calc(100dvh - 330px)}
+}
+
+/* ---------------------------------------------------------------- top-right (§6.4, §4.3) */
+.topright{position:fixed;right:28px;top:12px;height:40px;display:flex;align-items:center;gap:12px;z-index:var(--z-float)}
+@media (max-width:1023px){ .topright{right:16px} }
+@media (max-width:767px){ .topright{display:none} }
+
+/* ---------------------------------------------------------------- mobile DEMO / Basic map (§4.4) */
+.m-chrome{display:none}
+@media (max-width:767px){
+  .m-chrome{position:fixed;left:12px;top:calc(env(safe-area-inset-top) + 116px);z-index:var(--z-float);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+  .m-chrome .demo-chip,.m-chrome .basic-chip{height:28px;padding:0 10px 0 8px;font-size:11px}
+  body.search-open .m-chrome{display:none}
+  /* Full sheet: the chips row is under the sheet, so the DEMO chip (always visible, §6.4) takes its
+     slot, and Google's logo fits between it and the sheet (tokens.css --sheet-full) */
+  body[data-sheet="full"] .m-chrome{top:calc(env(safe-area-inset-top) + 68px);flex-direction:row}
+}
+
+/* ---------------------------------------------------------------- watermark (§6.8, verbatim) */
+.watermark{font-family:"CS Wordmark",var(--cs-font);position:fixed;bottom:9px;left:calc(var(--rail-w) + (100vw - var(--rail-w)) / 2);transform:translateX(-50%);z-index:var(--z-map-ctrl);font-size:15px;line-height:20px;font-weight:800;font-stretch:118%;letter-spacing:.4px;color:var(--cs-watermark);pointer-events:none;text-shadow:0 0 2px #fff,0 0 2px #fff,0 0 3px #fff,0 0 4px #fff;display:flex;align-items:center;gap:5px}
+.watermark svg{width:14px;height:14px}
+body.panel-open .watermark{left:calc(488px + (100vw - 488px) / 2)}
+@media (max-width:767px){ .watermark{display:none} }
+/* A narrow map puts the centred watermark on Google's right-aligned attribution row ("Keyboard
+   shortcuts", "Map data ©…", Terms), which must stay unobstructed (DESIGN §6.8, §17). Watermark
+   (src/ui/Wordmark.tsx) measures the attribution after each layout change and sets .is-blocked;
+   visibility (not display) keeps its box measurable so it comes back when there is room. */
+.watermark.is-blocked{visibility:hidden}
+
+/* ---------------------------------------------------------------- skip links (§15) */
+.skip{position:fixed;top:12px;left:88px;z-index:var(--z-tooltip);transform:translateY(-200%);background:#fff;border-radius:var(--cs-r-pill);padding:10px 16px;box-shadow:var(--cs-elev-2);font-size:14px;line-height:20px;font-weight:600;color:var(--cs-green);text-decoration:none}
+.skip:focus{transform:none}
+@media (max-width:767px){ .skip{left:12px;padding:12px 16px} }
+
+/* ---------------------------------------------------------------- root error boundary (src/ui/ErrorBoundary) */
+.app-crash{position:fixed;inset:0;z-index:var(--z-tooltip);display:grid;place-items:center;padding:24px;background:var(--cs-map-bg)}
+.app-crash .empty{background:var(--cs-surface);border-radius:var(--cs-r-xl);box-shadow:var(--cs-elev-2);max-width:360px}

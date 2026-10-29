@@ -1,0 +1,135 @@
+/* CORNERSHOP design tokens — DESIGN.md §2. SHARED (src/styles). Do not edit values. */
+
+/* ---- §2.1 Mock tokens (copied verbatim) ---- */
+:root{
+  /* neutrals (measured on maps.google.com, Oct 2026) */
+  --cs-surface:#ffffff;
+  --cs-rail:#f3f8f4;            /* Maps rail #f4fbfc, nudged to our green */
+  --cs-surface-2:#f1f4f2;       /* fills: inputs, close buttons, skeleton base */
+  --cs-surface-3:#e8ede9;
+  --cs-text:#1f1f1f;
+  --cs-text-2:#5e5e5e;
+  --cs-text-3:#80868b;
+  --cs-icon:#5e5e5e;
+  --cs-divider:#e3e3e3;
+  --cs-outline:#c7c7c7;
+  --cs-outline-2:#dadce0;
+  --cs-map-bg:#e8e6e1;
+  --cs-scrim:rgba(31,31,31,.42);
+  --cs-state-hover:rgba(31,31,31,.06);
+  --cs-state-press:rgba(31,31,31,.12);
+
+  /* brand */
+  --cs-green:#0e7c47;
+  --cs-green-hover:#0b6b3d;
+  --cs-green-press:#095c34;
+  --cs-green-bright:#15a35a;
+  --cs-green-container:#d7f5e1;
+  --cs-on-green-container:#0b4d2b;
+  --cs-green-tint:#eef8f1;
+  --cs-amber:#b45f00;
+  --cs-amber-bright:#f59e0b;
+  --cs-amber-container:#ffedd0;
+  /* Phase 2 (INTEGRATION.md §7.1): devnet network chip */
+  --cs-devnet-container:#ede7ff;
+  --cs-on-devnet-container:#3b2a8c;
+  --cs-devnet-dot:#7b4fd5;
+  --cs-on-amber-container:#6b3a00;
+  --cs-up:#0e7c47;
+  --cs-up-bg:#e3f5e9;
+  --cs-down:#cc2f3a;
+  --cs-down-bg:#fde8e9;
+  --cs-star:#f2a71b;
+  --cs-loc:#2d6cdf;
+  --cs-focus:#0e7c47;
+
+  /* type */
+  --cs-font:"Roboto Flex",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --cs-icons:"Material Symbols Rounded";
+
+  /* radii */
+  --cs-r-xs:4px; --cs-r-sm:8px; --cs-r-md:12px; --cs-r-lg:16px; --cs-r-xl:24px; --cs-r-2xl:28px; --cs-r-pill:999px;
+
+  /* elevation (Maps-measured) */
+  --cs-elev-search:0 2px 4px rgba(0,0,0,.2),0 -1px 0 rgba(0,0,0,.02);
+  --cs-elev-1:0 1px 2px rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.15);
+  --cs-elev-2:0 1px 2px rgba(60,64,67,.3),0 2px 6px 2px rgba(60,64,67,.15);
+  --cs-elev-3:0 1px 3px rgba(60,64,67,.3),0 4px 8px 3px rgba(60,64,67,.15);
+  --cs-elev-ctrl:0 1px 4px rgba(0,0,0,.3);
+  --cs-elev-sheet:0 -1px 3px rgba(60,64,67,.16),0 -4px 12px 2px rgba(60,64,67,.12);
+
+  /* z */
+  --z-map:0; --z-pins:10; --z-map-ctrl:20; --z-float:30; --z-panel:40; --z-rail:50; --z-search:60; --z-sheet:70; --z-scrim:90; --z-modal:100; --z-toast:110; --z-tooltip:120;
+
+  /* motion */
+  --cs-ease:cubic-bezier(.2,0,0,1);
+  --cs-ease-decel:cubic-bezier(0,0,0,1);
+  --cs-ease-accel:cubic-bezier(.3,0,1,1);
+  --cs-dur-1:100ms; --cs-dur-2:200ms; --cs-dur-3:300ms; --cs-dur-4:450ms;
+
+  /* layout */
+  --rail-w:72px; --panel-w:408px; --panel-gutter:8px;
+  --search-w:392px; --search-h:48px;
+  --sheet-h:50dvh;
+}
+@media (max-width:767px){ :root{ --sheet-h:52dvh } }
+
+/* ---- §2.2 Additions ---- */
+:root{
+  color-scheme: light;
+
+  /* literals promoted from the mock */
+  --cs-amber-text-2:#7d5426;     /* fees card body, dlg-box small text */
+  --cs-amber-hover:#563000;      /* .btn-amber:hover */
+  --cs-handle:#c4c7c5;           /* sheet / hero grab handle */
+  --cs-chip-hover:#f5f7f6;       /* .chip:hover */
+  --cs-ctl-hover:#f5f5f5;        /* .ctl:hover */
+  --cs-star-empty:#dadce0;       /* empty stars */
+  --cs-hero-placeholder:#d9d4cc; /* panel hero before image loads */
+  --cs-watermark:#6b6f73;        /* CORNERSHOP map watermark text */
+  --cs-toast-bg:#1f1f1f;
+  --cs-loc-halo:rgba(45,108,223,.16);
+  --cs-pin-ring:0 0 0 2px #fff,0 1px 3px 1px rgba(0,0,0,.28);
+  --cs-pin-halo:-1.5px -1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px 1.5px 0 #fff,0 -1.5px 0 #fff,0 1.5px 0 #fff,-1.5px 0 0 #fff,1.5px 0 0 #fff,0 0 4px #fff;
+  --cs-balloon-shadow:drop-shadow(0 2px 3px rgba(0,0,0,.3));
+  --cs-seg-on-shadow:0 1px 2px rgba(60,64,67,.25);
+  --cs-app-icon-shadow:0 1px 2px rgba(14,124,71,.35);
+  --cs-lhero-bg:radial-gradient(120% 90% at 70% 10%,#e8f8ee 0%,#d2f0dd 45%,#bfe6cf 100%);
+  --cs-spark-up-fill:#15a35a;    /* gradient stop, opacity .22 → 0 */
+  --cs-spark-down-fill:#cc2f3a;  /* gradient stop, opacity .18 → 0 */
+
+  /* Solana (currency glyph ONLY — never as a UI accent) */
+  --cs-sol-1:#9945ff;
+  --cs-sol-2:#14f195;
+  --cs-sol-chip:#000000;
+
+  /* extra radii used by the mock */
+  --cs-r-2xs:6px;               /* ticker badge, hero "Coin art" button, photo badge */
+  --cs-r-thumb:10px;            /* rail place thumb, hero brand icon */
+
+  /* spacing scale (4px grid; all mock paddings are on it except the noted 14/15/18/22 literals) */
+  --cs-sp-1:4px; --cs-sp-2:8px; --cs-sp-3:12px; --cs-sp-4:16px; --cs-sp-5:20px; --cs-sp-6:24px; --cs-sp-8:32px;
+
+  /* type roles (see §3.2) */
+  --cs-type-display:750 32px/38px var(--cs-font);
+  --cs-type-title-l:600 22px/28px var(--cs-font);
+  --cs-type-title:500 22px/28px var(--cs-font);
+  --cs-type-title-s:600 16px/22px var(--cs-font);
+  --cs-type-body-l:400 16px/24px var(--cs-font);
+  --cs-type-body:400 14px/20px var(--cs-font);
+  --cs-type-label:500 14px/20px var(--cs-font);
+  --cs-type-caption:400 12px/16px var(--cs-font);
+  --cs-type-overline:600 11px/16px var(--cs-font);
+  --cs-mono:ui-monospace,"SF Mono",Menlo,monospace;
+
+  /* layout additions */
+  --tap-min:44px;
+  /* Full snap (DESIGN §8.3 says 100dvh − 72px). At 72px the map strip is shorter than the search pill +
+     Google's logo, so the pill covered the logo (§6.8, §17). Full now stops 126px down: search pill
+     (10–58) · DEMO chip moved into the chips row slot (68–96) · Google's logo (100–126) above the sheet. */
+  --chips-left:529px; --chips-left-panel:508px; --chips-right:396px;
+  --sheet-peek:148px; --sheet-half:52dvh; --sheet-full:calc(100dvh - 126px - env(safe-area-inset-top));
+  --dialog-w:520px;
+  --drawer-w:min(320px,85vw);
+  --skeleton-shine:linear-gradient(90deg,var(--cs-surface-2) 0%,var(--cs-surface-3) 50%,var(--cs-surface-2) 100%);
+}

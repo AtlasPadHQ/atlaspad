@@ -1,0 +1,7 @@
+/* AtlasPad consent sheet (src/legal/ConsentGate.tsx; the dialog shell, .dlg-box, .check and .dlg-f come from
+   src/styles/components.css). SHARED module CSS. */
+
+.consent-dlg h2:focus{outline:none}
+.consent-risks{margin:12px 0 0;padding-left:20px;font-size:14px;line-height:20px;color:var(--cs-text-2)}
+.consent-risks li+li{margin-top:4px}
+.consent-dlg .check a{color:var(--cs-green);font-weight:500}

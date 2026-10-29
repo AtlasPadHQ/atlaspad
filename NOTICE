@@ -1,0 +1,34 @@
+AtlasPad
+Copyright 2026 The AtlasPad Authors
+https://github.com/AtlasPadHQ/atlaspad
+
+Licences in this repository
+  programs/shop-vault/ ............ Apache License 2.0 (programs/shop-vault/LICENSE)
+  everything else, unless a file or directory says otherwise
+                         .......... GNU Affero General Public License v3.0 or later (LICENSE)
+  *.woff2 font files .............. SIL Open Font License 1.1 (see Fonts); the project licences do not apply
+  AtlasPad name, wordmark and logos (brand/, public/favicon.svg, public/og.png)
+                         .......... not licensed; see TRADEMARKS.md
+
+Fonts
+  Roboto Flex: Copyright The Roboto Flex Project Authors (https://github.com/googlefonts/roboto-flex).
+  SIL OFL 1.1, LICENSES/OFL-1.1-RobotoFlex.txt. Files: src/styles/fonts/roboto-flex-wordmark.woff2 (subset),
+  brand/x/RobotoFlex-latin.woff2.
+
+Third-party material
+  Octicons "mark-github" glyph (src/ui/Icons.tsx): Copyright (c) GitHub, Inc., MIT License.
+    GitHub and the Invertocat mark are trademarks of GitHub, Inc.
+  Wallet icons (src/wallet/walletIcons.ts): data URIs from @solana/wallet-adapter-phantom 0.9.30,
+    @solana/wallet-adapter-solflare 0.6.34 and @solana/wallet-adapter-backpack 0.1.14 (Apache License 2.0).
+    The logos are trademarks of their owners and are used only to identify those wallets.
+  Share image (public/og.png): shows Apple Color Emoji glyphs, (c) Apple Inc., as rendered by macOS; they are not
+    covered by the project licences.
+  pump.fun / PumpSwap instruction and account layouts (worker/pumpIx.ts, src/chain/curve.ts,
+    programs/shop-vault/tests/common/pump.rs): derived from the IDLs in @pump-fun/pump-sdk 3.2.0 and
+    @pump-fun/pump-swap-sdk 2.1.0 (MIT License per their package metadata). pump.fun is a trademark of its owner.
+
+Not part of this repository (loaded at runtime or build time)
+  Map tiles and place data: (c) Google (Google Maps Platform), or (c) OpenStreetMap contributors (ODbL) and
+    OpenMapTiles via OpenFreeMap, always shown with the provider's attribution.
+  Demo-mode photos: hot-linked from Unsplash (Unsplash License), credited in src/data/mockCoins.ts.
+  npm and Cargo dependencies: see package-lock.json and programs/shop-vault/Cargo.lock.

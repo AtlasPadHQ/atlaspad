@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1000px; height: 1000px; overflow: hidden; background: #0e7c47; }
+  /* X crops the avatar to a circle: the white tile is sized so its rounded corners stay inside it */
+  .tile { position: absolute; left: 180px; top: 180px; width: 640px; height: 640px; border-radius: 168px; background: #fff; }
+  svg { position: absolute; left: 280px; top: 262px; width: 440px; height: 476px; }
+</style>
+</head>
+<body>
+  <div class="tile"></div>
+  <svg viewBox="17 12 30 40" aria-label="AtlasPad">
+    <path d="M32 12c-8.3 0-15 6.5-15 14.6C17 37.5 32 52 32 52s15-14.5 15-25.4C47 18.5 40.3 12 32 12z" fill="#0e7c47"/>
+    <circle cx="32" cy="26.5" r="8.6" fill="#fff"/>
+    <ellipse cx="32" cy="26.5" rx="3.5" ry="8.6" fill="none" stroke="#0e7c47" stroke-width="1.8"/>
+    <path d="M23.4 26.5h17.2" stroke="#0e7c47" stroke-width="1.8"/>
+  </svg>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "cluster": "mainnet",
+  "squadsProgram": "SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf",
+  "threshold": 2,
+  "multisigA": "7R8zT9766QL4PtExBSa4bC8AaNnE4ez5Ls9w81CPV49A",
+  "vaultA": "CvtvjVDJ7fGsHyfL1sRLLzd5AiZ2WFZYaX6Kb3ay3ryd",
+  "timeLockA": 0,
+  "multisigB": "EpdZ1GKCCABayXirQLVQhytevicLqcsaGkU9WnazNrwf",
+  "vaultB": "9MsjBLAV5DHkPau5RjKaS2r6D2f2hf4sf5bmdxNfjkkZ",
+  "timeLockB": 604800,
+  "members": [
+    "EnnSyjqsJBDzFU1q6ZTHSXZHQUhFyUrG27tvnWebeXxk",
+    "CtYJwatjVhKeEiV7Ahw3rZXvFWdF9Vt7JpjXjj2Tgn23",
+    "24qYEcJiBWX6uc6izHPmQAAVDtiiFU7wF9E64xdUeM5m"
+  ],
+  "createdAt": "2026-10-26T19:04:34.249Z",
+  "updatedAt": "2026-10-26T19:04:35.391Z",
+  "signatures": {
+    "A": "2jtbU1gydAdtuDdshmZeDMAyGaGa7bCjwtQHCPogmBTURXJ2FhC91YEtHpSSSe6NAPHP6CiboRPt33bb7RyuvRzw",
+    "B": "3Kiv1GAiY7fLz3vd6LvwD7KDR5ZZ88bMAYaMHbTGMd4bRdmYdqCpCvTS95VMezGDKeiq836Mo8BPdmZUqEnioZsR"
+  }
+}
