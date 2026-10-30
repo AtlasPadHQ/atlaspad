@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@pump-fun/pump-sdk": "3.2.0",
-    "@solana/spl-token": "0.4.14",
+    "@solana/spl-token": "0.4.15",
     "@types/bn.js": "5.2.0",
     "@types/node": "22.20.5",
     "bn.js": "5.2.2",
