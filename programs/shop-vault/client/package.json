@@ -32,7 +32,7 @@
     "buffer": "6.0.3"
   },
   "devDependencies": {
-    "@pump-fun/pump-sdk": "3.2.0",
+    "@pump-fun/pump-sdk": "4.3.1",
     "@solana/spl-token": "0.4.14",
     "@types/bn.js": "5.2.0",
     "@types/node": "22.20.5",
