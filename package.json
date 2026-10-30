@@ -53,7 +53,7 @@
     "@cloudflare/workers-types": "^5.20261007.1",
     "@solana/spl-token": "0.4.14",
     "@types/bn.js": "5.2.0",
-    "@types/google.maps": "^3.66.5",
+    "@types/google.maps": "^3.66.7",
     "@types/node": "^22.19.0",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
