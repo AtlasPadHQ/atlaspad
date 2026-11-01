@@ -25,7 +25,8 @@ The Alchemy key is only ever piped into the Worker secret. Node ≥ 22.18. How-t
 | `guardian.mjs --cluster … [cancel <placeId> \| pause \| unpause] [--lan]` | Local page for a guardian on Phantom: builds and simulates `cancel_claim` / `set_paused`, refuses unless the connected account is `Config.guardian` on chain, then Phantom signs and sends. Holds no key. `--lan` serves it on the Wi-Fi address for Phantom's in-app browser. `../RUNBOOK.md` §8 "Guardian". |
 | `go-mainnet.mjs` | The only path to mainnet. Default `--dry-run` (read-only, lists what is missing); `--execute` needs a TTY, all ✓, typed confirmations and `DEPLOY ATLASPAD TO MAINNET`. Serves https://atlaspad.online (`env.mainnet` PUBLIC_ORIGIN). |
 | `og-card.mjs` | Renders the AtlasPad share card `public/og.png` (1200×630) from `design/og-card.html` with the local headless Chrome. |
-| `lib/` | Shared helpers: env parsing, key files, redaction, RPC, deploy json, wrangler, secrets piping, Squads decode, events, public origin (`origin.mjs`). |
+| `release-notes.mjs [--title] <tag>` | A version tag's GitHub Release from its `CHANGELOG.md` entry: the notes, or with `--title` the title. `.github/workflows/release.yml` publishes it on every tag push and keeps "Latest" on the highest version; `../docs/OPS-AUTOMATION.md` §11. |
+| `lib/` | Shared helpers: env parsing, key files, redaction, RPC, deploy json, wrangler, secrets piping, Squads decode, events, public origin (`origin.mjs`), the CHANGELOG parser (`changelog.mjs`). |
 | `test/` | `node --test scripts/test/*.test.mjs` (pure logic, no network). |
 
 Outputs (reports, run records) go to `scripts/out/` (gitignored). Public addresses live in `../deploy/<cluster>.json`.

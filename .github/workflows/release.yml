@@ -1,0 +1,62 @@
+name: Release
+# Every version tag gets a GitHub Release whose notes are its CHANGELOG.md entry (scripts/release-notes.mjs), published
+# by github-actions[bot] with this run's GITHUB_TOKEN (docs/OPS-AUTOMATION.md "GitHub Releases"). A rerun, or a run for
+# a tag that already has a Release, edits it. A tag pushed before this workflow (v0.7.0): Run workflow on main.
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag, already pushed (vX.Y.Z)
+        required: true
+
+# A read-only token for every job, whatever the repo default is; only the release job may write (a Release).
+permissions:
+  contents: read
+
+# One release run at a time, so each sees the Latest the one before it left: two tags pushed together, or a tag push
+# and a dispatch for the same tag, never race. GitHub keeps one run waiting and cancels an older waiting one.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      # The tag reaches the shell only through this variable, and is used only once it is an exact vX.Y.Z.
+      TAG: ${{ inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Version tag
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::the tag must be vX.Y.Z"; exit 1; }
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # nothing is pushed from here: the write token stays out of .git/config
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 22
+      - name: Publish the Release
+        run: |
+          # release-notes.mjs reads only CHANGELOG.md (no npm ci); a tag without an entry fails here, before gh runs
+          notes="$RUNNER_TEMP/notes.md"
+          node scripts/release-notes.mjs "$TAG" > "$notes"
+          title=$(node scripts/release-notes.mjs --title "$TAG")
+          # "Latest" unless GitHub's Latest (gh release view, no tag) is a newer version, by number (sort -V), so an
+          # older tag, a backfill or a rerun never takes it over. Not the checked-out CHANGELOG: a tag's own tree always
+          # has that tag as its newest entry.
+          current=$(gh release view --json tagName --jq .tagName 2>/dev/null || true)
+          latest=true
+          if [ "$(printf '%s\n' "$current" "$TAG" | sort -V | tail -n1)" != "$TAG" ]; then latest=false; fi
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --title "$title" --notes-file "$notes" --latest="$latest"
+          else
+            gh release create "$TAG" --verify-tag --title "$title" --notes-file "$notes" --latest="$latest"
+          fi

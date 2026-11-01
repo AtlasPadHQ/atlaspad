@@ -1,8 +1,9 @@
 # AtlasPad ops automation (free tier)
 
-How AtlasPad watches mainnet, backs it up, ships a fix and builds a verifiable program, at no cost. Everything here
-runs on GitHub Actions in the repo `AtlasPadHQ/atlaspad` or on your own machine. Nothing here holds a key that can move
-money. Background: `../RUNBOOK.md` (how to operate), `../MAINNET-CHECKLIST.md` (what must be true first).
+How AtlasPad watches mainnet, backs it up, ships a fix, builds a verifiable program and publishes GitHub Releases, at
+no cost. Everything here runs on GitHub Actions in the repo `AtlasPadHQ/atlaspad` or on your own machine. Nothing here
+holds a key that can move money. Background: `../RUNBOOK.md` (how to operate), `../MAINNET-CHECKLIST.md` (what must be
+true first).
 
 The repo is public, and so is everything its workflows leave behind: anyone can read the run logs, and any signed-in
 GitHub user can download the artifacts. The workflows are written for that: the watchdog logs alert counts only
@@ -251,6 +252,7 @@ a month):
 | CI `web` | each push / PR, ≈ 90 s (billed as 2 minutes) | ≈ 2 per push |
 | CI `rust` | weekly + when `programs/shop-vault` changes, 5-15 minutes; 1 minute on every other push / PR | ≈ 60-120, plus 1 per push |
 | Verifiable build | on demand, 10-20 minutes | per run |
+| Release | each version tag, < 1 minute | 1 per tag |
 
 In a private repo that leaves roughly 400 minutes a month for CI: about 130 pushes (3 minutes each: `web` + the
 `rust` check). With the default $0 spending limit nothing is ever charged: when the month's minutes run out,
@@ -295,3 +297,30 @@ Proven on devnet on 2026-10-26 (`deploy/devnet-squads.json`, three throwaway mem
 autonomous, and they pass go-mainnet's Squads checks. The instruction is encoded by hand (no Squads SDK) and was checked
 against the published Squads v4 IDL, the transaction that landed on devnet, and a read-only simulation against the
 mainnet program.
+
+## 11. GitHub Releases (`.github/workflows/release.yml`)
+
+Every version tag pushed to GitHub publishes a Release whose notes are that version's `CHANGELOG.md` entry, so the repo
+page shows the latest release and anyone watching "Releases" is told. github-actions[bot] publishes it with the run's
+own `GITHUB_TOKEN` (only this job may write, and only repository contents); no secret or personal token is involved.
+
+- **A release commit** adds `## vX.Y.Z — YYYY-MM-DD` (optionally ` · title`) at the top of `CHANGELOG.md` and sets
+  the same version in `package.json` and in both root `version` fields of `package-lock.json`, by hand (`npm install`
+  can rewrite other lock entries). `scripts/test/release.test.mjs` fails while the four disagree. Then tag it `vX.Y.Z`
+  and push the tag.
+- **Title and notes**: `vX.Y.Z — <title>`, or `vX.Y.Z — <date>` when the heading has no title; the notes are the
+  entry with its wrapped lines joined, and a bare `@name` (an X handle, say) goes in a code span so it mentions no
+  GitHub account. Preview both with `node scripts/release-notes.mjs --title vX.Y.Z` and
+  `node scripts/release-notes.mjs vX.Y.Z`.
+- **Latest** stays on the highest version: a run marks its tag Latest unless GitHub's current Latest Release is a
+  newer version (compared by number: v0.10.0 is newer than v0.9.0). It cannot go by the checked-out `CHANGELOG.md`,
+  whose newest entry on a tag push is always that tag. So a tag pushed after a newer version's Release, the v0.7.0
+  backfill, or an old run re-run never takes Latest over. Release runs go one at a time, so two tags pushed together
+  end the same way.
+- **Reruns are safe**: a tag that already has a Release gets its title and notes edited, and Latest follows the rule
+  above. To fix published notes, correct the entry on `main`, then Actions → **Release** → Run workflow on `main` with
+  the tag. GitHub keeps only one release run waiting: with three or more tags pushed at once, an older waiting run is
+  cancelled, so run it again.
+- **A tag pushed before this workflow existed** (v0.7.0) gets its Release the same way, by hand on `main` (the tag's
+  own tree has no `scripts/release-notes.mjs`). A Release is public and notifies everyone watching releases, so
+  decide first.

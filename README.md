@@ -48,7 +48,7 @@ programs/shop-vault/  the on-chain vault program (Rust, Pinocchio), its TypeScri
 scripts/              operator scripts: devnet deploy, go-mainnet, watchdog, guardian page, moderation, audits
                       (dry runs unless given --execute; scripts/README.md)
 migrations/           D1 (SQLite) schema migrations
-docs/                 free GitHub Actions monitoring, backups and the verified build (OPS-AUTOMATION.md)
+docs/                 free GitHub Actions monitoring, backups, the verified build and Releases (OPS-AUTOMATION.md)
 deploy/               public on-chain addresses per cluster
 public/               favicon, share card, Terms, Privacy
 brand/                brand artwork (not licensed; see TRADEMARKS.md)
@@ -61,7 +61,7 @@ brand/                brand artwork (not licensed; see TRADEMARKS.md)
 | [`INTEGRATION.md`](INTEGRATION.md) | Real mode: environments, D1 schema, Worker API, chain layer, budgets, accuracy rules, scripts |
 | [`programs/shop-vault/SPEC.md`](programs/shop-vault/SPEC.md) | The on-chain vault program (accounts, instructions, co-sign rules, threat model, go-mainnet) |
 | [`RUNBOOK.md`](RUNBOOK.md) · [`MAINNET-CHECKLIST.md`](MAINNET-CHECKLIST.md) | Operating devnet and mainnet, incidents, and the go-live checklist |
-| [`docs/OPS-AUTOMATION.md`](docs/OPS-AUTOMATION.md) | Watchdog and backups on GitHub Actions, hotfixes, the verified build, Squads setup |
+| [`docs/OPS-AUTOMATION.md`](docs/OPS-AUTOMATION.md) | Watchdog and backups on GitHub Actions, hotfixes, the verified build, Squads setup, GitHub Releases |
 | [`CHANGELOG.md`](CHANGELOG.md) | Every release |
 
 Design notes cited in code comments and docs as `research/…` or `BRIEF.md` are internal and not published.

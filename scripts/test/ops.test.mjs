@@ -16,6 +16,7 @@ import { Checks } from '../lib/log.mjs';
 import { ROOT } from '../lib/paths.mjs';
 import { PROGRAM_SOURCE_PATHS, readVerifiedArtifact, sourceDriftProblems, verifiedArtifactProblems } from '../lib/verifiedBuild.mjs';
 import { afterSend, ALERTS_WINDOW, alertsQuery, CRANK_CRITICAL, CRANK_WARN, crankFinding, GUARDIAN_WARN, guardianFinding, loopAlert, reportAlerts } from '../watchdog.mjs';
+import { runBash, stepScript } from './workflow-step.mjs';
 
 const DEPLOYER = '4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf';
 const SQUADS_A = 'Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1';
@@ -453,28 +454,12 @@ test('watchdog workflow: the public GitHub log runs --public-log', () => {
   assert.match(readFileSync(join(ROOT, 'scripts', 'watchdog.mjs'), 'utf8'), /parseArgs\(process\.argv\.slice\(2\), \[[^\]]*'public-log'[^\]]*\]\)/, '--public-log is an on/off flag');
 });
 
-/** The `run: |` script of the workflow step named `name` (dedented), for running it under bash as Actions would. */
-function stepScript(yml, name) {
-  const lines = yml.split('\n');
-  const at = lines.findIndex((l) => l.trim() === `- name: ${name}`);
-  assert.ok(at >= 0, `no step "${name}"`);
-  const runAt = lines.findIndex((l, i) => i > at && /^\s+run: \|$/.test(l));
-  const indent = lines[runAt].search(/\S/);
-  const body = [];
-  for (const l of lines.slice(runAt + 1)) {
-    if (l.trim() && l.search(/\S/) <= indent) break;
-    body.push(l);
-  }
-  const pad = Math.min(...body.filter((l) => l.trim()).map((l) => l.search(/\S/)));
-  return body.map((l) => l.slice(pad)).join('\n');
-}
-
-/** Runs a step script in `cwd` with GitHub's shell flags; returns the exit code, output and the $GITHUB_OUTPUT file. */
+/** Runs a step script (workflow-step.mjs) in `cwd`; returns the exit code, output and the $GITHUB_OUTPUT file. */
 function runStep(script, cwd, env) {
   const out = join(cwd, 'github-output');
   writeFileSync(out, '');
-  const r = spawnSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', script], { cwd, env: { PATH: process.env.PATH, GITHUB_OUTPUT: out, ...env }, encoding: 'utf8' });
-  return { code: r.status, text: r.stdout + r.stderr, output: readFileSync(out, 'utf8') };
+  const r = runBash(script, cwd, { PATH: process.env.PATH, GITHUB_OUTPUT: out, ...env });
+  return { ...r, output: readFileSync(out, 'utf8') };
 }
 
 const hasTool = (cmd) => spawnSync('bash', ['-c', `command -v ${cmd}`]).status === 0;

@@ -2,6 +2,9 @@
 
 Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH`). Newest first.
 
+## v0.7.1 — 2026-11-01 · GitHub Releases
+- Every version tag now publishes a GitHub Release from CHANGELOG.md; package.json's version follows the CHANGELOG.
+
 ## v0.7.0 — 2026-10-29 · first public release
 AtlasPad is open source: https://github.com/AtlasPadHQ/atlaspad. This is the repository's first public commit; the
 earlier history stays private. The shop-vault program source is unchanged from the verified mainnet build (sha256
