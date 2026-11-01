@@ -1,5 +1,10 @@
 # AtlasPad
 
+[![CI](https://github.com/AtlasPadHQ/atlaspad/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AtlasPadHQ/atlaspad/actions/workflows/ci.yml)
+[![Licence: AGPL-3.0, shop-vault Apache-2.0](https://img.shields.io/badge/licence-AGPL--3.0%20%C2%B7%20shop--vault%20Apache--2.0-blue)](#licence)
+
+[![AtlasPad: launch a coin for any business on earth. 100% of creator fees are held for the shop's verified owner.](public/og.png)](https://atlaspad.online)
+
 > your cafe. your barber. your kebab shop.
 > launch a coin for any business on earth. 100% of creator fees are held for the shop's verified owner.
 > paste a google maps link. launch. done.
@@ -13,11 +18,52 @@ mainnet: a code on the shop's own website), after a public 72-hour window.
 Internal ids keep the earlier working name `cornershop` on purpose (Worker names, D1/KV names, storage keys, the
 program crate): renaming them would break deployed URLs and on-chain metadata.
 
+## How it works
+
+Where a coin's creator fees go on mainnet, from launch to the shop owner's wallet. `pump::` marks pump.fun's
+instructions and `shop_vault::` ours ([`programs/shop-vault/SPEC.md`](programs/shop-vault/SPEC.md) §5 and §8).
+
+```mermaid
+sequenceDiagram
+    actor L as Launcher
+    participant W as AtlasPad Worker
+    participant P as pump.fun
+    participant V as shop-vault
+    actor O as Shop owner
+
+    L->>W: place, name, ticker
+    W-->>L: attestor co-signs the<br/>moderated launch tx
+    rect rgba(66, 133, 244, 0.12)
+        Note over L,V: one transaction
+        L->>P: pump::create_v2 (creator = vault PDA<br/>["vault", sha256(place ID)])
+        L->>V: shop_vault::register_launch
+        L->>P: optional dev buy:<br/>pump::buy_exact_quote_in_v3
+    end
+    Note over P: trades accrue creator fees
+    W->>P: crank (or anyone):<br/>pump::sweep_creator_fee,<br/>pump::collect_creator_fee
+    P->>V: creator fees into<br/>the shop's vault
+    O->>W: verify: a code on<br/>the shop's own website
+    W-->>O: attestor co-signs<br/>shop_vault::request_claim
+    O->>V: shop_vault::request_claim<br/>(owner's wallet signs)
+    Note over V: public 72 h window:<br/>guardian (or governance) may cancel<br/>(shop_vault::cancel_claim)
+    W->>V: cron (or anyone):<br/>shop_vault::finalize_claim
+    O->>V: shop_vault::withdraw
+    V-->>O: SOL, only to<br/>the verified owner
+```
+
+- Lamports leave a shop's vault only in `withdraw`, and only to its verified owner (SPEC
+  [I1](programs/shop-vault/SPEC.md#1-invariants-what-reviewers-must-be-able-to-confirm)).
+- The owner changes only in `finalize_claim`, to a claim that the attestor and the new owner both signed and that
+  nobody cancelled during the public window (SPEC
+  [I3](programs/shop-vault/SPEC.md#1-invariants-what-reviewers-must-be-able-to-confirm)).
+- No guardian or governance instruction moves lamports: there is no admin withdrawal (SPEC
+  [I8](programs/shop-vault/SPEC.md#1-invariants-what-reviewers-must-be-able-to-confirm)).
+
 ## Status
 
 - **Live on Solana mainnet** since 2026-10-27 (v0.6.0, see [`CHANGELOG.md`](CHANGELOG.md)). Program id
-  `6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x`; every public address is in
-  [`deploy/mainnet.json`](deploy/mainnet.json).
+  [`6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x`](https://explorer.solana.com/address/6t4zkDgNkFZdGcrxCxrDwqa7CPhSgYXT8ai48UW4BV8x)
+  (Solana Explorer); every public address is in [`deploy/mainnet.json`](deploy/mainnet.json).
 - `shop-vault` has **not** had an independent external audit. [`SECURITY.md`](SECURITY.md) covers its audit status,
   who can do what on chain, and how to report a vulnerability.
 - A devnet copy with test SOL runs at https://cornershop-devnet.tiejiucai.workers.dev. Any build shows the simulated

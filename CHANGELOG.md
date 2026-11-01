@@ -2,6 +2,13 @@
 
 Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH`). Newest first.
 
+## v0.7.3 — 2026-11-04 · README status, product card, fee-flow diagram
+- The README opens with the CI and licence badges and the product card, linking to https://atlaspad.online, and the
+  program id links to the Solana Explorer.
+- A "How it works" diagram follows creator fees from the launch transaction to the verified owner's withdraw
+  (pump.fun instructions as `pump::`, ours as `shop_vault::`), with links to the SPEC invariants behind it.
+- scripts/test/docs.test.mjs keeps the badges, images, links and the diagram's instruction names true to the tree.
+
 ## v0.7.2 — 2026-11-02 · Empty lists lead to a first launch
 - Live, Top shops and Launched now offer Find a shop / Launch a coin when their list is empty, like My coins; Top
   shops "This area" keeps Show everywhere unless no shop has a coin anywhere yet.
