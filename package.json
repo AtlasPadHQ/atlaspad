@@ -2,7 +2,7 @@
   "name": "cornershop",
   "private": true,
   "license": "AGPL-3.0-or-later",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
   "description": "AtlasPad: launch a coin for any business on the map, on Solana via pump.fun, with its creator fees held for the business's verified owner.",
   "engines": {

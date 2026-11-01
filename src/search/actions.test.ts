@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMockCoins } from '../data/mockCoins';
 import { useStore } from '../store';
-import type { Coin } from '../types';
+import type { Coin, FeedEvent } from '../types';
 import { applyChip, closeResults, exactTickerCoin, matchCoins, nearbyRadius, nearMe, runCategorySearch, runTextSearch } from './actions';
 import { useSearchUi } from './searchState';
 
@@ -133,6 +133,49 @@ describe('chips', () => {
     expect(s.flyTarget?.bounds).toBeDefined(); // fit to the Dalston coins with fees waiting
     applyChip('live');
     expect(useStore.getState().category).toBe('live');
+  });
+
+  it('Live coins on an empty registry: "No coins yet" instead of "nothing traded"', () => {
+    useStore.setState({ coins: {}, feed: [], dataReady: true });
+    applyChip('live');
+    expect(useStore.getState().category).toBe('live');
+    expect(useStore.getState().toasts[0]?.msg).toBe('No coins yet. Tap any shop on the map to launch the first one.');
+    applyChip('fees');
+    expect(useStore.getState().toasts[0]?.msg).toBe('No shops have fees waiting right now.');
+  });
+
+  it('real mode: no "No coins yet" while the registry is still loading (the store is empty then too)', async () => {
+    vi.stubEnv('VITE_CLUSTER', 'mainnet');
+    vi.resetModules();
+    try {
+      const { IS_REAL } = await import('../mode');
+      const { useStore: store } = await import('../store');
+      const { applyChip: chip } = await import('./actions');
+      expect(IS_REAL).toBe(true);
+      store.setState({ coins: {}, feed: [], dataReady: false, category: null, toasts: [] });
+      chip('live');
+      expect(store.getState().toasts[0]?.msg).toBe('No coins have traded in the last hour.');
+      store.setState({ dataReady: true, category: null });
+      chip('live');
+      expect(store.getState().toasts[0]?.msg).toBe('No coins yet. Tap any shop on the map to launch the first one.');
+    } finally {
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
+  });
+
+  it('a feed launch whose coin has not loaded yet (store empty) keeps the old copy', () => {
+    const launch: FeedEvent = { id: 'ev_launch_x', ts: Date.now(), placeId: 'p1', ticker: 'KEBAB', name: 'Kebab', emoji: '🥙', bg: '#ffe4cc', kind: 'launch', wallet: 'L' };
+    useStore.setState({ coins: {}, feed: [launch], dataReady: true });
+    applyChip('live');
+    expect(useStore.getState().toasts[0]?.msg).toBe('No coins have traded in the last hour.');
+  });
+
+  it('Live coins with coins but no recent trades keeps "No coins have traded in the last hour."', () => {
+    const old = Object.fromEntries(coins.map((c) => [c.placeId, { ...c, lastTradeAt: Date.now() - 2 * 3_600_000 }]));
+    useStore.setState({ coins: old, dataReady: true });
+    applyChip('live');
+    expect(useStore.getState().toasts[0]?.msg).toBe('No coins have traded in the last hour.');
   });
 
   it('switching from a category chip to Live closes the category list', async () => {

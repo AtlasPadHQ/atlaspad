@@ -12,7 +12,8 @@
  *      Errors show inline: `That doesn't look like a Google Maps link.` /
  *      `Couldn't find that place. Copy the link from Share in Google Maps.`
  *      An empty input → dismiss and focus the search box with the link tip open (DESIGN §18.3).
- *  - `Live coins` chip → dismiss + Live coins filter; `Near me` chip → dismiss + locate.
+ *  - `Live coins` chip → dismiss + the chip row's Live coins (applyChip: fit or toast);
+ *    `Near me` chip → dismiss + locate.
  *  - stats: live shop count, fees waiting for owners, 0% platform cut.
  * Desktop: card at left 88 / top 72 (tablet top 116). Mobile: bottom sheet; dragging the handle
  * down > 80px dismisses. Reduced motion: no animations. OWNED BY RAIL+FEED.
@@ -22,7 +23,7 @@ import { usdCompactFloor } from '../lib/format';
 import { useIsMobile } from '../lib/media';
 import { placeFromParsedLink } from '../places';
 import { looksLikeMapsLink, parseMapsLink } from '../search/parseMapsLink';
-import { nearMe as runNearMe } from '../search/actions';
+import { applyChip, nearMe as runNearMe } from '../search/actions';
 import { openResolvedLink, resolveErrorMessage, resolveMapsLink } from '../search/resolveLink';
 import { IS_REAL } from '../mode';
 import { lamportsToUsdFloor } from '../realdata/units';
@@ -144,7 +145,8 @@ function HeroCard({ state, mobile }: { state: 'open' | 'closing' | 'closed'; mob
   const liveCoins = () => {
     const s = useStore.getState();
     s.dismissHero();
-    s.setCategory('live');
+    // same path as the chip row: brings live coins into view, or toasts why there are none
+    if (s.category !== 'live') applyChip('live');
   };
 
   const nearMe = () => {

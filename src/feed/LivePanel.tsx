@@ -1,8 +1,9 @@
 /**
  * Live panel (DESIGN §10.2): live stream of launches / trades / pumps / claims (newest first,
  * max 100 shown, new rows play `rowin`), a global stats line, filter tabs, and a Top shops
- * preview (Market cap | Fees earned, top 5, "See all top shops").
+ * preview (Market cap | Fees earned, top 5, "See all top shops"; hidden while no shop has a coin).
  *
+ *  - Nothing in the feed (All) → `Quiet right now` + `Find a shop` / `Launch a coin`.
  *  - Rows open the coin (fly to zoom 16 + panel with a "Live" back chip).
  *  - While the browser tab is hidden no rows are inserted; on return a single
  *    "<n> new events · Show" row appears at the top (the simulator also catches up).
@@ -16,6 +17,7 @@ import { usdCompact } from '../lib/format';
 import { feedHealth, topByFees, topByMc, totals, useShallow, useStore } from '../store';
 import type { FeedEvent } from '../types';
 import { Button, EmptyState, Icon, Seg, SkRows } from '../ui';
+import { FirstLaunchActions } from './FirstLaunchActions';
 import { FeedRow, TopRow } from './rows';
 import { SORT_OPTIONS, useFreshness } from './util';
 import { useTicker } from './useTicker';
@@ -151,7 +153,9 @@ export default function LivePanel() {
 
       {seeded && rows.length === 0 ? (
         filter === 'all' ? (
-          <EmptyState icon="bolt" title="Quiet right now" body="Launches, trades and claims show up here live." />
+          <EmptyState icon="bolt" title="Quiet right now" body="Launches, trades and claims show up here live.">
+            <FirstLaunchActions />
+          </EmptyState>
         ) : (
           <EmptyState icon="bolt" title="Nothing here yet" body={`No recent ${f.none}.`}>
             <Button variant="tonal" onClick={() => setFilter('all')}>
@@ -161,7 +165,8 @@ export default function LivePanel() {
         )
       ) : null}
 
-      {seeded ? (
+      {/* hidden while no shop has a coin: it would be an empty list under a toggle that sorts nothing */}
+      {seeded && top.length > 0 ? (
         <>
           <div className="sec-title lp-top">
             <h2 className="sec-title-h">Top shops</h2>

@@ -4,11 +4,14 @@
  * "This area" card opens it with that scope). Rows: rank · sticker · `$TICKER` (+ verified tick)
  * · coin name · category · fees / mcap · change. Click → fly to the coin + open it (back chip).
  * Ticker + launcher-typed coin name only; never Google data.
+ * Empty: `No coins yet` + `Find a shop` / `Launch a coin`; `This area` offers `Show everywhere`
+ * instead, unless no shop has a coin anywhere yet.
  * OWNED BY RAIL+FEED. Rendered by PanelHost inside PanelShell when store.panel === 'top'.
  */
 import { useAreaBounds } from '../rail/useAreaBounds';
 import { coinsInBounds, topByFees, topByMc, useShallow, useStore } from '../store';
 import { Button, EmptyState, Seg, SkRows } from '../ui';
+import { FirstLaunchActions } from './FirstLaunchActions';
 import { ScopeTabs, TopRow } from './rows';
 import { SORT_OPTIONS, useFreshness } from './util';
 
@@ -19,6 +22,8 @@ export default function TopShopsPanel() {
   const setTopShops = useStore((s) => s.setTopShops);
   const solUsd = useStore((s) => s.solUsd);
   const seeded = useStore((s) => s.dataReady || Object.keys(s.coins).length > 0);
+  // the feed counts too: real mode loads the feed's coins a beat after dataReady
+  const noCoins = useStore((s) => s.dataReady && Object.keys(s.coins).length === 0 && s.feed.length === 0);
   const area = useAreaBounds();
   const areaPending = scope === 'area' && !area.ready;
 
@@ -46,12 +51,18 @@ export default function TopShopsPanel() {
       ) : list.length === 0 ? (
         scope === 'area' ? (
           <EmptyState icon="leaderboard" title="No coins in this area" body="Zoom out or move the map, or launch the first one here.">
-            <Button variant="tonal" onClick={() => setTopShops({ scope: 'everywhere' })}>
-              Show everywhere
-            </Button>
+            {noCoins ? (
+              <FirstLaunchActions />
+            ) : (
+              <Button variant="tonal" onClick={() => setTopShops({ scope: 'everywhere' })}>
+                Show everywhere
+              </Button>
+            )}
           </EmptyState>
         ) : (
-          <EmptyState icon="leaderboard" title="No coins yet" body="Be the first — tap any shop on the map." />
+          <EmptyState icon="leaderboard" title="No coins yet" body="Be the first — tap any shop on the map.">
+            <FirstLaunchActions />
+          </EmptyState>
         )
       ) : (
         <ul className="feed" aria-label={sort === 'mcap' ? 'Top shops by market cap' : 'Top shops by fees earned'}>

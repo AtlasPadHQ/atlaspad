@@ -5,6 +5,7 @@
  * · `<category> · launched by 7xKX…3pQa` (`by you` for your own) · mcap / age.
  * Opening the panel marks launches as seen (store.setPanel → markLaunchedSeen, clears the rail
  * badge); launches that arrive while it is open are marked seen too.
+ * Empty: `No launches yet` + `Find a shop` / `Launch a coin`.
  * OWNED BY RAIL+FEED. Rendered by PanelHost inside PanelShell when store.panel === 'launched'.
  */
 import { useEffect } from 'react';
@@ -12,6 +13,7 @@ import { shortAddr, timeAgoLong, usdCompact } from '../lib/format';
 import { coinCategoryLabel, newestCoins, useShallow, useStore } from '../store';
 import type { Coin } from '../types';
 import { EmptyState, SkRows } from '../ui';
+import { FirstLaunchActions } from './FirstLaunchActions';
 import { Avatar, ListRow, Tick } from './rows';
 import { useTicker } from './useTicker';
 import { openCoin, useFreshness } from './util';
@@ -81,7 +83,9 @@ export default function LaunchedPanel() {
           <SkRows n={6} />
         </div>
       ) : list.length === 0 ? (
-        <EmptyState icon="rocket_launch" title="No launches yet" body="Be the first — tap any shop on the map." />
+        <EmptyState icon="rocket_launch" title="No launches yet" body="Be the first — tap any shop on the map.">
+          <FirstLaunchActions />
+        </EmptyState>
       ) : (
         <ul className="feed" aria-label="Launched coins, newest first">
           {list.map((c) => (

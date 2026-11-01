@@ -2,6 +2,13 @@
 
 Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH`). Newest first.
 
+## v0.7.2 — 2026-11-02 · Empty lists lead to a first launch
+- Live, Top shops and Launched now offer Find a shop / Launch a coin when their list is empty, like My coins; Top
+  shops "This area" keeps Show everywhere unless no shop has a coin anywhere yet.
+- Live hides its Top shops preview while no shop has a coin.
+- The hero's Live coins chip works like the chip row's, and with no coins yet it explains: "No coins yet. Tap any shop
+  on the map to launch the first one."
+
 ## v0.7.1 — 2026-11-01 · GitHub Releases
 - Every version tag now publishes a GitHub Release from CHANGELOG.md; package.json's version follows the CHANGELOG.
 

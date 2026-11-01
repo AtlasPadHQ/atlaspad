@@ -10,7 +10,6 @@
  * OWNED BY RAIL+FEED. Rendered by PanelHost inside PanelShell when store.panel === 'mine'.
  */
 import { getDemoPlace } from '../lib/demoBridge';
-import { isMobileNow } from '../lib/media';
 import { pct, solNumber, timeAgo, tokenAmount, usdCompact, usdFull } from '../lib/format';
 import { sourceFromId } from '../lib/place';
 import { getPlaceDetails } from '../places';
@@ -18,6 +17,7 @@ import { useWalletPolling } from '../realdata/hooks';
 import { coinCategoryLabel, isOwner, useShallow, useStore } from '../store';
 import type { Coin } from '../types';
 import { Button, EmptyState, Icon } from '../ui';
+import { FirstLaunchActions } from './FirstLaunchActions';
 import { Avatar, ListRow, Tick } from './rows';
 import { openCoin, ownerFeesUsd } from './util';
 
@@ -130,28 +130,7 @@ export default function MyCoinsPanel() {
 
       {empty ? (
         <EmptyState icon="account_balance_wallet" title="No coins yet" body="Buy a shop's coin or launch one.">
-          <Button
-            variant="outline"
-            icon="storefront"
-            onClick={() => {
-              useStore.getState().closePanel();
-              document.getElementById('map')?.focus({ preventScroll: true });
-            }}
-          >
-            Find a shop
-          </Button>
-          <Button
-            variant="primary"
-            icon="rocket_launch"
-            onClick={() => {
-              const st = useStore.getState();
-              // on mobile the sheet would cover the full-screen search dropdown
-              if (isMobileNow()) st.closePanel();
-              st.focusSearch({ tip: true });
-            }}
-          >
-            Launch a coin
-          </Button>
+          <FirstLaunchActions />
         </EmptyState>
       ) : null}
 

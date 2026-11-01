@@ -6,6 +6,7 @@ import { INITIAL_CAMERA } from '../config';
 import { CHIPS } from '../lib/categories';
 import { boundsContains, boundsFromPoints, distanceM, padBounds } from '../lib/geo';
 import { placeFromCoin } from '../lib/place';
+import { IS_REAL } from '../mode';
 import { isAbortError, searchNearby, searchText } from '../places';
 import { coinsInBounds, filterCoins, useStore } from '../store';
 import type { Bounds, ChipFilter, Coin, LatLng, Place, SearchBias, Viewport } from '../types';
@@ -238,7 +239,11 @@ function revealFilter(filter: 'live' | 'fees'): void {
   const st = useStore.getState();
   const matches = filterCoins(st.coins, filter);
   if (matches.length === 0) {
-    st.toast(filter === 'live' ? 'No coins have traded in the last hour.' : 'No shops have fees waiting right now.');
+    // no coin anywhere yet (real mode: only once the registry has loaded; the store is empty before that
+    // too). Any live coin has a launch event on the first feed page, which lands before its coin does.
+    const none = Object.keys(st.coins).length === 0 && st.feed.length === 0 && (st.dataReady || !IS_REAL);
+    if (filter === 'live') st.toast(none ? 'No coins yet. Tap any shop on the map to launch the first one.' : 'No coins have traded in the last hour.');
+    else st.toast('No shops have fees waiting right now.');
     return;
   }
   const vb: Bounds | null | undefined = st.viewport?.bounds;

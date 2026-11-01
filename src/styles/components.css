@@ -117,8 +117,9 @@
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 32px}
 .empty-ic{width:96px;height:96px;border-radius:50%;background:var(--cs-green-tint);border:2.5px dashed var(--cs-green);display:grid;place-items:center;color:var(--cs-green)}
 .empty-t{margin:16px 0 0;font-size:16px;line-height:22px;font-weight:600}
-.empty-b{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--cs-text-2);max-width:280px}
+.empty-b{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--cs-text-2);max-width:280px;text-wrap:pretty}
 .empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+@media (max-width:767px){ .empty{padding:48px 24px} }
 
 /* ================================================================ panel shell (§8.1, §8.3, §4.2) */
 .panel{position:fixed;left:0;top:0;bottom:0;width:calc(var(--rail-w) + var(--panel-w) + var(--panel-gutter));padding:var(--panel-gutter) var(--panel-gutter) var(--panel-gutter) var(--rail-w);background:var(--cs-rail);z-index:var(--z-panel)}

@@ -1233,7 +1233,7 @@ Mobile: `.lp-h{padding:8px 16px 8px}`, `.lp-tabs,.frow{padding-left:16px;padding
 | Launch | `rocket_launch` on `--cs-green` | same | `… launched · first launch wins` | `New` / `1m ago` |
 | Claim | `payments` on `--cs-amber-bright` | same | `… claimed fees` | `$412` / `3m ago` |
 
-- Below the feed: `.sec-title` `Top shops` + `.seg` `Market cap` | `Fees earned`, then the top 5 rows (§10.3 row format) and a `.btn-text` `See all top shops` that opens the Top shops panel.
+- Below the feed (hidden while no shop has a coin): `.sec-title` `Top shops` + `.seg` `Market cap` | `Fees earned`, then the top 5 rows (§10.3 row format) and a `.btn-text` `See all top shops` that opens the Top shops panel.
 - Pause: when the browser tab is hidden, stop inserting rows; on return insert a single `.frow`-styled button `12 new events · Show` at the top.
 
 ### 10.3 Top shops
@@ -1241,7 +1241,7 @@ Mobile: `.lp-h{padding:8px 16px 8px}`, `.lp-tabs,.frow{padding-left:16px;padding
 - Scope chips (`.lp-tabs` style): `Everywhere` (default) · `This area` (coins inside the current map bounds).
 - Rows (top 50): `.rank` 1–50 · `.av` emoji on `--bg` · t1 `<b>$KEBAB</b> · Bosphorus Grill` (+ 16px `verified` FILL green icon after the ticker if claimed) · t2 `Kebab shop · <span class="amb" style="font-weight:600">$1,240</span> fees` · rt `$212k` / `small` `▲ 12.4%`.
 - With `Fees earned` selected: sorted by fees; t2 becomes `Kebab shop · $212k mcap`; rt becomes `.amb` `$1,240` / `small` `≈ 8.27 SOL`.
-- Empty (This area with no coins): §13.4.
+- Empty (no coins, or none in This area): §13.4.
 
 ### 10.4 Launched
 - Header: h1 `Launched` + caption `Newest first`.
@@ -1564,14 +1564,15 @@ Single step, width 520px. Opened from Share (action, pill, mobile `.ph-x`), laun
 | Share card preview | 472×265.5 block radius 12 |
 
 ### 13.4 Empty states
-Layout for panel empties: centred column, padding `48px 32px`; 96px circle (`--cs-green-tint`, 2.5px dashed `--cs-green`) with a 40px green icon; title 16/22 600 (margin-top 16); body 14/20 text-2 (max-width 280px, margin-top 4); optional buttons (margin-top 16, gap 8).
+Layout for panel empties: centred column, padding `48px 32px` (mobile `48px 24px`, so the two-button pair stays on one row at 360px); 96px circle (`--cs-green-tint`, 2.5px dashed `--cs-green`) with a 40px green icon; title 16/22 600 (margin-top 16); body 14/20 text-2 (max-width 280px, margin-top 4); optional buttons (margin-top 16, gap 8).
 
 | Where | Icon | Title | Body | Buttons |
 |---|---|---|---|---|
-| Live (no events) | `bolt` | `Quiet right now` | `Launches, trades and claims show up here live.` | — |
+| Live (no events) | `bolt` | `Quiet right now` | `Launches, trades and claims show up here live.` | `Find a shop` · `Launch a coin` |
 | Live filter with no matches | `bolt` | `Nothing here yet` | `No recent <launches/trades/claims>.` | `Show all` |
-| Top shops · This area | `leaderboard` | `No coins in this area` | `Zoom out or move the map, or launch the first one here.` | `Show everywhere` |
-| Launched (none) | `rocket_launch` | `No launches yet` | `Be the first — tap any shop on the map.` | — |
+| Top shops · Everywhere (none) | `leaderboard` | `No coins yet` | `Be the first — tap any shop on the map.` | `Find a shop` · `Launch a coin` |
+| Top shops · This area | `leaderboard` | `No coins in this area` | `Zoom out or move the map, or launch the first one here.` | `Show everywhere` (no coins anywhere yet: `Find a shop` · `Launch a coin`) |
+| Launched (none) | `rocket_launch` | `No launches yet` | `Be the first — tap any shop on the map.` | `Find a shop` · `Launch a coin` |
 | My coins (disconnected) | `account_balance_wallet` | `Connect a wallet to see your coins` | `Your holdings, coins you launched and shops you own show up here.` | `Connect wallet` |
 | My coins (connected, none) | `account_balance_wallet` | `No coins yet` | `Buy a shop's coin or launch one.` | `Find a shop` · `Launch a coin` |
 | Recent trades (none) | — (inline text) | — | `No trades yet. Be the first to buy.` | — |
@@ -1927,7 +1928,7 @@ The user's rule: **every button must work**. This table is the contract for QA; 
 | Category query row | Click | Turn on the matching chip and fit the map to matching coins |
 | Recent row | Click | Same as a coin/place row |
 | Mobile search `arrow_back` | Tap | Close the dropdown, blur, restore chips/FABs |
-| Chips (category, Live coins, Fees waiting) | Click | Toggle the filter (single-select); pins and "This area" update; on again → off |
+| Chips (category, Live coins, Fees waiting) | Click | Toggle the filter (single-select); pins and "This area" update; on again → off. `Live coins` with no coins at all yet → toast `No coins yet. Tap any shop on the map to launch the first one.` |
 | `.chips-next` | Click | Scroll the chips row right by 240px (smooth unless reduced motion) |
 | DEMO chip | Click | Open the DEMO explainer (§12.6) |
 | `Connect wallet` pill | Click | Open the wallet modal |
@@ -2000,7 +2001,7 @@ The user's rule: **every button must work**. This table is the contract for QA; 
 | Empty-state buttons | Click | As written in §13.4 (`Show all` clears the filter; `Show everywhere` switches scope; `Find a shop` closes the panel and focuses the map; `Launch a coin` focuses search with the link tip) |
 | Hero `close` | Click | Dismiss the hero, set `cs_hero_seen` |
 | Hero `try now` | Submit | Empty input → dismiss the hero and focus search with the link tip. Link → resolve (spinner) → dismiss → open the place (launchable: also open the launch modal). Error → inline message (§11) |
-| Hero `Live coins` chip | Click | Dismiss the hero + turn on the `Live coins` filter |
+| Hero `Live coins` chip | Click | Dismiss the hero + the chip row's `Live coins` (filter on, live coins brought into view). No coins at all yet → toast `No coins yet. Tap any shop on the map to launch the first one.` |
 | Hero `Near me` chip | Click | Dismiss the hero + Near me |
 | Dialog `close` / scrim / Esc | Click / key | Close (ignored during busy steps) |
 | Launch: art button, stickers, swatches, fields, category, first-buy seg | Click / type | §12.2 |

@@ -11,6 +11,7 @@ import { loadDemoData } from '../lib/demoBridge';
 import Rail from '../rail/Rail';
 import ThisAreaCard from '../rail/ThisAreaCard';
 import { useStore } from '../store';
+import type { FeedEvent } from '../types';
 import LaunchedPanel from './LaunchedPanel';
 import LivePanel from './LivePanel';
 import MyCoinsPanel from './MyCoinsPanel';
@@ -20,8 +21,19 @@ import TopShopsPanel from './TopShopsPanel';
 vi.mock('../search/resolveLink', () => ({ resolveMapsLink: async () => ({ status: 'error', error: 'unsupported' }) }));
 vi.mock('../search/parseMapsLink', () => ({ looksLikeMapsLink: () => false, parseMapsLink: () => null }));
 vi.mock('../places', () => ({ getPlaceDetails: async () => null, placeFromParsedLink: () => null }));
+// no clicks without a DOM: remember each text button's handler by its label (as in src/ui/mainnetCopy.test.ts)
+const { clicks } = vi.hoisted(() => ({ clicks: new Map<string, () => void>() }));
+vi.mock('../ui/Button', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../ui/Button')>();
+  const Button = (props: import('../ui/Button').ButtonProps) => {
+    if (typeof props.children === 'string' && props.onClick) clicks.set(props.children, props.onClick as () => void);
+    return h(actual.Button, props);
+  };
+  return { ...actual, Button };
+});
 
 const DALSTON = { north: 51.558, south: 51.536, east: -0.043, west: -0.099 };
+const REYKJAVIK = { center: { lat: 64.146, lng: -21.94 }, zoom: 15, bounds: { north: 64.156, south: 64.136, east: -21.92, west: -21.96 } };
 
 /** Strip tags and decode the few entities React emits, for text assertions. */
 function text(html: string): string {
@@ -48,9 +60,12 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  clicks.clear();
   const coins = createMockCoins(150, Date.now());
   useStore.setState({
     coins: {},
+    dataReady: false,
+    searchFocus: null,
     trades: {},
     feed: [],
     online: true,
@@ -168,6 +183,71 @@ describe('rail panels', () => {
     // nothing sends a notification when a watched shop launches: never promise one
     expect(t).toContain('No coin yet');
     expect(t).not.toMatch(/let you know/i);
+  });
+});
+
+describe('empty registry (no coins yet)', () => {
+  const PANELS = { Live: LivePanel, 'Top shops': TopShopsPanel, Launched: LaunchedPanel };
+  beforeEach(() => {
+    useStore.setState({ coins: {}, trades: {}, feed: [], dataReady: true });
+  });
+
+  for (const [name, panel] of Object.entries(PANELS)) {
+    it(`${name}: offers Find a shop / Launch a coin; Launch a coin focuses search with the link tip`, () => {
+      const t = text(render(panel));
+      expect(t).toContain('Find a shop');
+      expect(t).toContain('Launch a coin');
+      clicks.get('Launch a coin')?.();
+      expect(useStore.getState().searchFocus).toMatchObject({ tip: true });
+    });
+  }
+
+  it('Find a shop closes the panel and focuses the map', () => {
+    const focus = vi.fn();
+    vi.stubGlobal('document', { getElementById: (id: string) => (id === 'map' ? { focus } : null) });
+    try {
+      useStore.setState({ panel: 'launched' });
+      render(LaunchedPanel);
+      clicks.get('Find a shop')?.();
+      expect(useStore.getState().panel).toBe('none');
+      expect(focus).toHaveBeenCalledOnce();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it('Live: no empty Top shops preview', () => {
+    const html = render(LivePanel);
+    expect(text(html)).toContain('Quiet right now');
+    expect(text(html)).not.toContain('See all top shops');
+    expect(html).not.toContain('Rank top shops by');
+  });
+
+  it('Top shops · This area: the first-launch buttons instead of Show everywhere', () => {
+    useStore.setState({ topShops: { sort: 'mcap', scope: 'area' } });
+    const t = text(render(TopShopsPanel));
+    expect(t).toContain('No coins in this area');
+    expect(t).toContain('Launch a coin');
+    expect(t).not.toContain('Show everywhere');
+  });
+
+  it('feed coins still loading (store empty, feed has a launch): This area keeps Show everywhere', () => {
+    const launch: FeedEvent = { id: 'ev_launch_x', ts: Date.now(), placeId: 'p1', ticker: 'KEBAB', name: 'Kebab', emoji: '🥙', bg: '#ffe4cc', kind: 'launch', wallet: 'L' };
+    useStore.setState({ feed: [launch], topShops: { sort: 'mcap', scope: 'area' } });
+    const t = text(render(TopShopsPanel));
+    expect(t).toContain('Show everywhere');
+    expect(t).not.toContain('Launch a coin');
+  });
+
+  it('with coins elsewhere, This area still offers Show everywhere', () => {
+    useStore.getState().seedCoins(createMockCoins(150, Date.now()));
+    useStore.setState({ topShops: { sort: 'mcap', scope: 'area' }, viewport: REYKJAVIK });
+    const t = text(render(TopShopsPanel));
+    expect(t).toContain('No coins in this area');
+    expect(t).toContain('Show everywhere');
+    expect(t).not.toContain('Launch a coin');
+    clicks.get('Show everywhere')?.();
+    expect(useStore.getState().topShops.scope).toBe('everywhere');
   });
 });
 
