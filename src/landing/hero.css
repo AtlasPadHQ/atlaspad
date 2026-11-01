@@ -34,6 +34,8 @@
 .hero-stats b{display:block;font-size:18px;line-height:24px;font-weight:700;font-variant-numeric:tabular-nums}
 .hero-stats b.amb{color:var(--cs-amber)}
 .hero-stats small{display:block;font-size:12px;line-height:16px;color:var(--cs-text-2)}
+/* the loading bars sit on the rail strip, where surface-2 vanishes: one step darker (§13.3) */
+.hero-stats .sk{background:var(--cs-surface-3)}
 .hero-grab{display:none}
 
 @media (min-width:768px) and (max-width:1023px){ .herocard{top:116px} }

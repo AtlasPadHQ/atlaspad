@@ -2,6 +2,11 @@
 
 Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH`). Newest first.
 
+## v0.7.4 — 2026-11-12 · First-visit copy for an empty registry
+- Hero stats invite the first launch ("Be first / no shops launched yet") instead of showing 0 shops and $0 once the
+  registry has loaded empty; skeleton bars stand in for the numbers until then, and one coin reads "1 shop launched".
+- Help tells owners to open their shop and tap Claim, the button they actually see.
+
 ## v0.7.3 — 2026-11-04 · README status, product card, fee-flow diagram
 - The README opens with the CI and licence badges and the product card, linking to https://atlaspad.online, and the
   program id links to the Solana Explorer.

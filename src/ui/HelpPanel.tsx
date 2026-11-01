@@ -11,6 +11,12 @@ import { useStore } from '../store';
 import type { HelpSection } from '../types';
 import { Icon } from './Icons';
 
+/**
+ * First line of every "Claiming your shop" answer. `Claim` is the action every shop shows (Actions.tsx: launchable
+ * and unclaimed launched shops alike); `I own this business` is only on the fees card of a shop that has a coin.
+ */
+export const CLAIM_HOW = 'Own the business? Open your shop and tap Claim.';
+
 const DEMO_ROWS: { key: HelpSection; title: string; body: string[] }[] = [
   {
     key: 'launching',
@@ -33,7 +39,7 @@ const DEMO_ROWS: { key: HelpSection; title: string; body: string[] }[] = [
     key: 'claiming',
     title: 'Claiming your shop',
     body: [
-      'Own the business? Open your shop and tap "I own this business".',
+      CLAIM_HOW,
       "We call the phone number on your Google listing and read out a 6-digit code. Enter it, choose the wallet that should get paid, and you're done.",
       "Can't take the call? You can verify with a code on your website, an email at your website's domain, or a manual review.",
       'The first payout has a 72-hour hold so a hijacked listing can be disputed before any money moves.',
@@ -83,7 +89,7 @@ const REAL_ROWS: { key: HelpSection; title: string; body: string[] }[] = [
     key: 'claiming',
     title: 'Claiming your shop',
     body: [
-      'Own the business? Open your shop and tap "I own this business".',
+      CLAIM_HOW,
       'We call the phone number on your Google listing and read out a 6-digit code. Enter it, then your wallet signs a claim. Only the owner wallet can withdraw.',
       `Every claim has a public window (72 hours) before you can withdraw, so a hijacked listing can be disputed before any money moves. To dispute a claim, email ${CONTACT_EMAIL}.`,
     ],
@@ -104,7 +110,7 @@ const ROWS = IS_REAL ? REAL_ROWS : DEMO_ROWS;
 
 /** Real mode while phone verification is off (/api/config phoneVerification 'none', or no config yet on mainnet). */
 const CLAIMING_NO_PHONE: string[] = [
-  'Own the business? Open your shop and tap "I own this business".',
+  CLAIM_HOW,
   "Phone check isn't switched on yet. Verify with a short code on your shop's own website (we check it automatically), then your wallet signs a claim. Only the owner wallet can withdraw.",
   `No website of your own? Verification for shops without their own website isn't available yet. Email ${CONTACT_EMAIL} and we'll tell you when it is; your shop's fees stay safe in its vault.`,
   `Every claim has a public window (72 hours) before you can withdraw, so a hijacked listing can be disputed before any money moves. To dispute a claim, email ${CONTACT_EMAIL}.`,

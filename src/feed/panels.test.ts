@@ -262,7 +262,43 @@ describe('hero', () => {
     expect(t).toContain('or tap any shop on the map');
     expect(t).toContain('shops launched');
     expect(t).toContain('platform cut of fees');
+    expect(t).not.toContain('Be first');
     useStore.setState({ heroDismissed: true });
     expect(render(Hero)).toBe('');
+  });
+
+  it('empty registry, loaded: "Be first" instead of 0 shops and $0', () => {
+    useStore.setState({ heroDismissed: false, coins: {}, feed: [], dataReady: true });
+    const t = text(render(Hero));
+    expect(t).toContain('Be first');
+    expect(t).toContain('no shops launched yet');
+    expect(t).toContain('0% platform cut of fees');
+    expect(t).not.toContain('$0');
+    expect(t).not.toMatch(/\d shops? launched/);
+    expect(t).not.toContain('waiting for owners');
+  });
+
+  it('one coin: "1 shop launched", not "1 shops"', () => {
+    const one = useStore.getState().coins['demo-kebab']!;
+    useStore.setState({ heroDismissed: false, coins: { [one.placeId]: one } });
+    const t = text(render(Hero));
+    expect(t).toContain('1 shop launched');
+    expect(t).not.toContain('shops launched');
+    expect(t).not.toContain('Be first');
+  });
+
+  it('still loading: skeletons in place of the numbers, no zeros and no "Be first" flash', () => {
+    const launch: FeedEvent = { id: 'ev_launch_x', ts: Date.now(), placeId: 'p1', ticker: 'KEBAB', name: 'Kebab', emoji: '🥙', bg: '#ffe4cc', kind: 'launch', wallet: 'L' };
+    // before the first load, and after a feed load whose coins have not arrived yet
+    for (const st of [{ dataReady: false, feed: [] }, { dataReady: true, feed: [launch] }]) {
+      useStore.setState({ heroDismissed: false, coins: {}, ...st });
+      const html = render(Hero);
+      const t = text(html);
+      expect(html).toContain('aria-busy="true"');
+      expect(html).toContain('class="sk"');
+      expect(t).not.toContain('Be first');
+      expect(t).not.toMatch(/\b0 shops|\$0/);
+      expect(t).toContain('0% platform cut of fees');
+    }
   });
 });

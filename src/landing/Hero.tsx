@@ -14,7 +14,9 @@
  *      An empty input → dismiss and focus the search box with the link tip open (DESIGN §18.3).
  *  - `Live coins` chip → dismiss + the chip row's Live coins (applyChip: fit or toast);
  *    `Near me` chip → dismiss + locate.
- *  - stats: live shop count, fees waiting for owners, 0% platform cut.
+ *  - stats: live shop count (`1 shop launched`), fees waiting for owners, 0% platform cut. Skeleton
+ *    bars stand in for the two numbers until the registry has loaded; an empty registry shows
+ *    `Be first` / `no shops launched yet` and the 0% cell instead of two zeros.
  * Desktop: card at left 88 / top 72 (tablet top 116). Mobile: bottom sheet; dragging the handle
  * down > 80px dismisses. Reduced motion: no animations. OWNED BY RAIL+FEED.
  */
@@ -29,11 +31,13 @@ import { IS_REAL } from '../mode';
 import { lamportsToUsdFloor } from '../realdata/units';
 import { totals, useShallow, useStore } from '../store';
 import type { ParsedMapsLink, ResolvedLink } from '../types';
-import { Brand, Button, Icon, usePresence } from '../ui';
+import { Brand, Button, Icon, Sk, usePresence } from '../ui';
 import './hero.css';
 
 const ERR_LINK = "That doesn't look like a Google Maps link.";
 const DRAG_DISMISS_PX = 80;
+/** A stat number's skeleton: an 18px bar that keeps the number's 24px line, so numbers don't shift on load. */
+const SK_NUM = { margin: '3px 0' };
 
 export default function Hero() {
   const dismissed = useStore((s) => s.heroDismissed);
@@ -58,10 +62,13 @@ function HeroCard({ state, mobile }: { state: 'open' | 'closing' | 'closed'; mob
       // otherwise the registry snapshot loaded on boot (top 300 by market cap + the viewport)
       const g = (s.chain.config as { stats?: { coins?: number; feesWaitingLamports?: string } } | null)?.stats;
       if (IS_REAL && g && typeof g.coins === 'number') {
-        return { shops: g.coins, fees: lamportsToUsdFloor(g.feesWaitingLamports ?? '0', s.solUsd) };
+        return { shops: g.coins, fees: lamportsToUsdFloor(g.feesWaitingLamports ?? '0', s.solUsd), ready: true };
       }
       const t = totals(s.coins, s.solUsd);
-      return { shops: t.shops, fees: t.feesWaitingUsd };
+      // loaded: a coin is in, or the first feed load came back empty (demo: seeded). Feed events with no
+      // coin yet mean the snapshot is still on its way (it loads alongside the feed), so no "Be first" flash.
+      const ready = t.shops > 0 || (s.dataReady && s.feed.length === 0);
+      return { shops: t.shops, fees: t.feesWaitingUsd, ready };
     }),
   );
   const [value, setValue] = useState('');
@@ -267,20 +274,34 @@ function HeroCard({ state, mobile }: { state: 'open' | 'closing' | 'closed'; mob
           Near me
         </button>
       </div>
-      <div className="hero-stats">
-        <div>
-          <b>{stats.shops.toLocaleString('en-GB')}</b>
-          <small>shops launched</small>
+      {stats.ready && stats.shops === 0 ? (
+        // nothing launched yet: an invitation instead of `0 shops launched · $0 waiting for owners`
+        <div className="hero-stats">
+          <div>
+            <b>Be first</b>
+            <small>no shops launched yet</small>
+          </div>
+          <div>
+            <b>0%</b>
+            <small>platform cut of fees</small>
+          </div>
         </div>
-        <div>
-          <b className="amb">{usdCompactFloor(stats.fees)}</b>
-          <small>waiting for owners</small>
+      ) : (
+        <div className="hero-stats" aria-busy={stats.ready ? undefined : true}>
+          <div>
+            {stats.ready ? <b>{stats.shops.toLocaleString('en-GB')}</b> : <Sk w={40} h={18} style={SK_NUM} />}
+            <small>{stats.shops === 1 ? 'shop launched' : 'shops launched'}</small>
+          </div>
+          <div>
+            {stats.ready ? <b className="amb">{usdCompactFloor(stats.fees)}</b> : <Sk w={56} h={18} style={SK_NUM} />}
+            <small>waiting for owners</small>
+          </div>
+          <div>
+            <b>0%</b>
+            <small>platform cut of fees</small>
+          </div>
         </div>
-        <div>
-          <b>0%</b>
-          <small>platform cut of fees</small>
-        </div>
-      </div>
+      )}
     </section>
   );
 }

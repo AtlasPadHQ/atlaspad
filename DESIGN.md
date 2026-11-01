@@ -1305,7 +1305,7 @@ Content, top to bottom (exact strings):
 5. p (`margin-top:6px`): `paste a google maps link. launch. done.`
 6. Paste form: `link` icon · input placeholder `paste a google maps link` (`aria-label="Paste a Google Maps link"`) · `.btn-primary` `try now` (type submit).
 7. `.hero-or`: `or tap any shop on the map` + chip `🔥 Live coins` + chip `near_me Near me` (both `<button>`s).
-8. `.hero-stats` (live numbers, non-interactive): `128` `shops launched` · `.amb` `$18.4k` `waiting for owners` · `0%` `platform cut of fees`.
+8. `.hero-stats` (live numbers, non-interactive): `128` `shops launched` (`1` `shop launched`) · `.amb` `$18.4k` `waiting for owners` · `0%` `platform cut of fees`. Until the registry has loaded (real mode: until a coin arrives or the first feed load comes back empty) an 18px `.sk` bar stands in for each of the two numbers (§13.3) and the row has `aria-busy="true"`. Loaded with no coins at all: two cells, `Be first` `no shops launched yet` · `0%` `platform cut of fees`, never `0` / `$0` (the three loading cells become these two, so that row reflows once).
 
 States: idle · focused (paste field white with green border) · resolving (`try now` shows spinner, input read-only) · error (12/16 `--cs-down` line under the form, `margin:8px 0 0 18px`: `That doesn't look like a Google Maps link.` or `Couldn't find that place. Copy the link from Share in Google Maps.`) · dismissed (sets `cs_hero_seen=1`). While the hero is on: "This area" hidden; on mobile the map is 330px tall and the locate FAB hidden. Mobile: dragging the handle down > 80px dismisses.
 
@@ -1561,6 +1561,7 @@ Single step, width 520px. Opened from Share (action, pill, mobile `.ph-x`), laun
 | Search suggestions | 2 rows: 28px circle + 55% bar (14px) |
 | Feed / leaderboards | 6 rows: 40px circle + bars 60%×14px and 35%×12px + right bar 48×14px |
 | "This area" card | Header bars only (row replaced by a 100%×16px bar) for at most 600ms; after that, render the real state |
+| Hero stats | The two numbers become 40×18px and 56×18px bars (`--cs-surface-3` on the rail strip; margin 3px 0, so the 24px line keeps its height); labels and `0%` stay (§11 item 8) |
 | Share card preview | 472×265.5 block radius 12 |
 
 ### 13.4 Empty states
@@ -1696,7 +1697,7 @@ Target: WCAG 2.2 AA.
 | hero.cta | `try now` |
 | hero.input | `paste a google maps link` |
 | hero.or | `or tap any shop on the map` · chips `Live coins`, `Near me` |
-| hero.stats | `shops launched` · `waiting for owners` · `platform cut of fees` |
+| hero.stats | `shops launched` (1: `shop launched`) · `waiting for owners` · `platform cut of fees` · no coins yet: `Be first` / `no shops launched yet` · `platform cut of fees` |
 | hero.err.link | `That doesn't look like a Google Maps link.` |
 | hero.err.place | `Couldn't find that place. Copy the link from Share in Google Maps.` |
 
