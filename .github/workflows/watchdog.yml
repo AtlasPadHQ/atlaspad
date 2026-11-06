@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Mainnet live?
         id: live
         run: |
@@ -35,7 +35,7 @@ jobs:
             echo "live=false" >> "$GITHUB_OUTPUT"
             echo "::notice::deploy/mainnet.json has no ALT yet: mainnet is not live, nothing to watch."
           fi
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         if: steps.live.outputs.live == 'true'
         with:
           node-version: 22
@@ -43,7 +43,7 @@ jobs:
       - name: Restore node_modules
         id: nm
         if: steps.live.outputs.live == 'true'
-        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             node_modules
