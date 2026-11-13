@@ -1,16 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  colourRole,
-  isMapType,
-  lightness,
-  MAP_TYPE_LIST,
-  NIGHT_BG,
-  NIGHT_GOOGLE_STYLES,
-  NIGHT_RECOLOUR,
-  nightColour,
-  nightPaint,
-  parseColour,
-} from './night';
+import { isMapType, MAP_TYPE_LIST, NIGHT_BG, NIGHT_GOOGLE_STYLES } from './night';
+import { colourRole, lightness, NIGHT_RECOLOUR, nightColour, nightPaint, parseColour } from './nightOsm';
 
 const L = (c: string) => {
   const l = lightness(c);

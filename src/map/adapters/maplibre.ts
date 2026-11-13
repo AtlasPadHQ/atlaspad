@@ -5,7 +5,7 @@
  *  - the worker is resolved through Vite (`?url`) because MapLibre v6 looks for it next to the
  *    module, which does not exist in a bundled app;
  *  - a light recolour of the liberty style toward the CORNERSHOP/Google map tints, or the dark Night palette
- *    (src/map/night.ts) when the `night` map type is on;
+ *    (src/map/nightOsm.ts, a lazy chunk) when the `night` map type is on;
  *  - OSM POIs (`poi_r1/r7/r20`) are clickable → onPlaceClick({source:'osm', place});
  *  - the same HTML pin layer as Google, in an overlay inside the canvas container (so dragging
  *    from a pin still pans the map).
@@ -31,7 +31,6 @@ import type {
   Viewport,
 } from '../../types';
 import { markMapPainted } from '../mapBridge';
-import { NIGHT_RECOLOUR, nightPaint } from '../night';
 import { PinLayer, type Projector } from '../pins';
 import { clamp, Emitter, withinOneViewport } from '../util';
 import type { ContainerPoint, CsMapAdapter, MapPadding } from './types';
@@ -110,14 +109,33 @@ function nullSafeRefLength(expr: unknown): unknown {
   return expr.map(nullSafeRefLength);
 }
 
-/** The style transform for day (RECOLOUR) or night (every colour → night palette, then NIGHT_RECOLOUR). */
+type NightOsm = typeof import('../nightOsm');
+let nightOsm: NightOsm | null = null;
+let nightOsmPromise: Promise<NightOsm> | null = null;
+
+/** The night palette is only needed once Night is picked on this map, so it stays off the initial bundle. */
+function loadNightOsm(): Promise<NightOsm> {
+  nightOsmPromise ??= import('../nightOsm')
+    .then((m) => (nightOsm = m))
+    .catch((err: unknown) => {
+      nightOsmPromise = null; // allow a retry
+      throw err;
+    });
+  return nightOsmPromise;
+}
+
+/**
+ * The style transform for day (RECOLOUR) or night (every colour → night palette, then NIGHT_RECOLOUR).
+ * `night` needs the palette chunk loaded (loadNightOsm); without it the day style is used.
+ */
 function styleFor(night: boolean): TransformStyleFunction {
+  const n = night ? nightOsm : null;
   return (_prev, next): StyleSpec => {
     try {
       const layers = (next.layers as unknown as LooseLayer[]).map((layer) => {
         let out = layer;
-        const paint = (night ? NIGHT_RECOLOUR : RECOLOUR)[layer.id];
-        const base = night ? nightPaint(layer.paint) : layer.paint;
+        const paint = (n ? n.NIGHT_RECOLOUR : RECOLOUR)[layer.id];
+        const base = n ? n.nightPaint(layer.paint) : layer.paint;
         if (paint || base !== layer.paint) out = { ...out, paint: { ...(base ?? {}), ...(paint ?? {}) } };
         if (layer.id.includes('shield') && layer.filter) out = { ...out, filter: nullSafeRefLength(layer.filter) };
         return out;
@@ -191,9 +209,9 @@ export class MapLibreAdapter implements CsMapAdapter {
   /* -------------------------------------------------------------- lifecycle */
 
   async mount(el: HTMLElement, opts: { center: LatLng; zoom: number; mapType: MapType }): Promise<void> {
-    const ml = await loadMapLibre();
-    if (this.destroyed) return;
     this.mapType = opts.mapType;
+    const [ml] = await Promise.all([loadMapLibre(), opts.mapType === 'night' ? loadNightOsm().catch(() => null) : null]);
+    if (this.destroyed) return;
     const map = new ml.Map({
       container: el,
       center: [opts.center.lng, opts.center.lat],
@@ -215,7 +233,7 @@ export class MapLibreAdapter implements CsMapAdapter {
     map.setMissingStyleImageResolver((id) => {
       if (!map.hasImage(id)) map.addImage(id, { width: 1, height: 1, data: new Uint8Array(4) });
     });
-    this.styleNight = this.mapType === 'night';
+    this.styleNight = this.mapType === 'night' && nightOsm !== null;
     map.setStyle(OSM_STYLE_URL, { transformStyle: styleFor(this.styleNight) });
 
     // MapLibre logs unhandled 'error' events to the console; tile hiccups are not fatal here.
@@ -245,6 +263,7 @@ export class MapLibreAdapter implements CsMapAdapter {
 
     this.measure();
     this.wire(map);
+    this.applyStyle(); // Night picked while the map was loading
     this.layoutNow();
     this.emitMoveEnd();
     this.zoomChange.emit(fromMl(map.getZoom()));
@@ -421,9 +440,23 @@ export class MapLibreAdapter implements CsMapAdapter {
    */
   setMapType(type: MapType): void {
     this.mapType = type;
-    const night = type === 'night';
+    this.applyStyle();
+  }
+
+  private applyStyle(): void {
     const map = this.map;
-    if (!map || night === this.styleNight) return;
+    const night = this.mapType === 'night';
+    if (this.destroyed || !map || night === this.styleNight) return;
+    if (night && !nightOsm) {
+      // load the palette chunk, then apply whatever type is current by then
+      loadNightOsm().then(
+        () => this.applyStyle(),
+        () => {
+          /* offline / chunk error: stay on the day style; picking Night again retries */
+        },
+      );
+      return;
+    }
     this.styleNight = night;
     map.setStyle(OSM_STYLE_URL, { transformStyle: styleFor(night) });
   }
