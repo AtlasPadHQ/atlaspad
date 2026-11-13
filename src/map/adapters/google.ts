@@ -356,6 +356,8 @@ export class GoogleAdapter implements CsMapAdapter, OverlayHost {
     if (night !== this.night) {
       this.night = night;
       map.setOptions({ styles: night ? NIGHT_GOOGLE_STYLES : null });
+      // backgroundColor is read only when the map is created: repaint the map div behind unloaded tiles ourselves
+      map.getDiv().style.backgroundColor = night ? NIGHT_BG : MAP_BG;
     }
   }
 

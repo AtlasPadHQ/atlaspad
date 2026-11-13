@@ -412,10 +412,11 @@ const LIGHT_UP_MAX_PER_POLL = 8;
  * New launches and claim steps light their pin up on the map (trades flash from /api/market instead). Only rows
  * that weren't in the feed before this poll, and never on the first load (that is history, not news).
  */
-function lightUpNew(mapped: readonly FeedEvent[], known: ReadonlySet<string>): void {
+function lightUpNew(mapped: readonly FeedEvent[], known: ReadonlySet<string>, serverNow: number | undefined): void {
   const s = st();
   if (!s.layers.flashes) return;
-  const cutoff = Date.now() - LIGHT_UP_MAX_AGE_MS;
+  // the server's clock, so a device clock that runs fast doesn't make every new row look old
+  const cutoff = (serverNow && serverNow > 0 ? serverNow : Date.now()) - LIGHT_UP_MAX_AGE_MS;
   // one flash per pin: the newest row wins (a claim and its payout in one poll show "Owner paid", not the older step)
   const newestFirst = [...mapped].sort((a, b) => b.ts - a.ts);
   const lit = new Set<string>();
@@ -439,7 +440,7 @@ async function loadFeed(): Promise<void> {
   for (const e of events) if (e.ts > feedSince) feedSince = e.ts;
   const known = firstLoad ? null : new Set(st().feed.map((e) => e.id));
   st().mergeFeed(mapped);
-  if (known) lightUpNew(mapped, known);
+  if (known) lightUpNew(mapped, known, r.now);
   fetchUnknownMints([...new Set(events.map((e) => e.mint))]);
   tradesFromFeed(events);
   st().setDataReady(true);

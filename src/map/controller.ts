@@ -136,6 +136,7 @@ export class MapController {
     const adapter: CsMapAdapter = this.provider === 'google' ? new GoogleAdapter() : new MapLibreAdapter();
     this.adapter = adapter;
     try {
+      document.body.classList.toggle('map-night', st.layers.mapType === 'night');
       await adapter.mount(canvas, { center: cam.center, zoom: cam.zoom, mapType: st.layers.mapType });
     } catch (err) {
       if (this.disposed) return;
@@ -323,7 +324,8 @@ export class MapController {
     const prevTop = this.feedTop;
     this.feedTop = feed[0]?.id ?? null;
     const a = this.adapter;
-    if (!a || prevTop === this.feedTop) return;
+    // the first feed the map sees is history (seeded rows), not news: nothing flashes for it
+    if (!a || prevTop === this.feedTop || prevTop === null) return;
     // real mode flashes pins from market deltas instead (src/realdata → mapBridge.flashPin)
     if (IS_REAL) return;
     if (!useStore.getState().layers.flashes || document.hidden) return;

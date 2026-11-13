@@ -188,7 +188,7 @@ body.panel-open .layers{left:512px}
   linear-gradient(20deg,transparent 60%,#3a4458 60% 65%,transparent 65%),
   linear-gradient(160deg,#1f2636,#161b27)}
 /* behind the map while night tiles load */
-body.map-night{background:#1b2130}
+body.map-night,body.map-night #mapwrap{background:#1b2130}
 /* pins on the dark map: dark halo, light labels, and a soft glow that flares on every flash */
 body.map-night .pin .lb{text-shadow:-1.5px -1.5px 0 #10141d,1.5px -1.5px 0 #10141d,-1.5px 1.5px 0 #10141d,1.5px 1.5px 0 #10141d,0 -1.5px 0 #10141d,0 1.5px 0 #10141d,-1.5px 0 0 #10141d,1.5px 0 0 #10141d,0 0 4px #10141d}
 body.map-night .pin .lb b{color:#3ddc84}
@@ -202,3 +202,7 @@ body.map-night .pin.flash.launch .mk{box-shadow:0 0 0 2px #fff,0 0 24px 10px rgb
 body.map-night .pin.flash.claim .mk{box-shadow:0 0 0 2px #fff,0 0 24px 10px rgba(96,165,250,.8)}
 body.map-night.lowzoom .pin:not(.sel):not(.res) .mk{background:#3ddc84;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 10px 3px rgba(61,220,132,.55)}
 body.map-night .watermark{color:#c3cad6;text-shadow:0 0 2px #10141d,0 0 2px #10141d,0 0 3px #10141d,0 0 4px #10141d}
+/* keyboard focus keeps its white halo over the glow (§15) */
+body.map-night .pin:focus-visible .mk,body.map-night.lowzoom .pin:not(.sel):focus-visible .mk{box-shadow:0 0 0 2px #fff,0 0 0 10px #fff}
+/* the selected balloon gets a light rim so it separates from the dark map */
+body.map-night .pin.sel .balloon{filter:drop-shadow(0 0 1.5px rgba(255,255,255,.85)) drop-shadow(0 2px 6px rgba(0,0,0,.6))}
