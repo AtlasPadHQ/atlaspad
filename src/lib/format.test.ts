@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   countdown,
   curvePct,
+  flashForEvent,
   flashLabel,
   int,
   launchedAgo,
@@ -285,3 +286,17 @@ describe('mainnet-scale numbers', () => {
     expect(usdCompactFloor(1_999.99)).toBe('$1.9k');
   });
 });
+
+describe('flashForEvent', () => {
+  const base = { id: 'e1', placeId: 'p1', ticker: 'CAFE', name: 'Cafe', emoji: '☕', bg: '#fff', ts: 0 } as const;
+  it('lights trades, launches and each claim step; price moves stay quiet', () => {
+    expect(flashForEvent({ ...base, kind: 'trade', side: 'buy', sol: 1.2, usd: 200, wallet: 'w' })).toEqual({ kind: 'buy', label: '+1.2 SOL' });
+    expect(flashForEvent({ ...base, kind: 'launch', wallet: 'w' })).toEqual({ kind: 'launch', label: 'New coin' });
+    expect(flashForEvent({ ...base, kind: 'claim', usd: 0, wallet: 'w', stage: 'requested' })?.label).toBe('Claim started');
+    expect(flashForEvent({ ...base, kind: 'claim', usd: 0, wallet: 'w', stage: 'finalized' })?.label).toBe('Owner verified');
+    expect(flashForEvent({ ...base, kind: 'claim', usd: 12, wallet: 'w', stage: 'withdrawn' })).toEqual({ kind: 'claim', label: 'Owner paid' });
+    expect(flashForEvent({ ...base, kind: 'claim', usd: 12, wallet: 'w' })?.label).toBe('Owner verified');
+    expect(flashForEvent({ ...base, kind: 'pump', changePct: 40 })).toBeNull();
+  });
+});
+

@@ -36,6 +36,7 @@ import { buildCoin, quoteBuy, quoteSell, quoteSellForSol, withPrice, type Quote 
 import { coinPlaceFrom, isGooglePlaceId, isLaunchableSource, knownIneligibility, sourceFromId } from './lib/place';
 import { loadJSON, loadString, removeKey, saveJSON, saveString, storageAvailable } from './lib/storage';
 import { TICKER_RE } from './lib/ticker';
+import { isMapType } from './map/night';
 import { CLUSTER, IS_REAL } from './mode';
 import type { ConfigResponse } from '../worker/wire';
 import type {
@@ -572,7 +573,10 @@ function readLaunchedSeenAt(): number {
 
 function readLayers(): LayersState {
   const l = loadJSON<Partial<LayersState> | null>(STORAGE_KEYS.layers, null);
-  return { ...DEFAULT_LAYERS, ...(l && typeof l === 'object' ? l : {}) };
+  const out: LayersState = { ...DEFAULT_LAYERS, ...(l && typeof l === 'object' ? l : {}) };
+  // an unknown saved map type (hand-edited storage, or a type a later version removed) falls back to Default
+  if (!isMapType(out.mapType)) out.mapType = DEFAULT_LAYERS.mapType;
+  return out;
 }
 
 /** Recent ids worth keeping across reloads: Google place IDs and demo shops (DESIGN §6.2). */

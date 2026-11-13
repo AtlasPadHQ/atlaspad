@@ -625,8 +625,8 @@ body.panel-open .layers{left:512px}
 .layers .lab .ms{font-size:16px}
 ```
 **Layers popover (new):** opens to the right of the tile (`left: tile.right + 8px; bottom:34px`), width 296px, white, radius 16, `--cs-elev-2`, padding 16, z `--z-float`. Mobile: opens as a bottom sheet (half snap) from the Layers FAB.
-- Section `Map type` (overline): two 72×72 radio tiles side by side (radius 8, 2px border `--cs-outline-2`; selected 2px `--cs-green` + label 600 green): `Default` (`roadmap`) and `Satellite` (`hybrid`). Label under tile 12/16.
-- Section `On the map` (overline): toggle rows 48px (label 14/20 + 36×20 switch; on = `--cs-green` track, white 16px thumb): `Coins` (on), `Fees waiting dots` (on), `Live trade flashes` (on), `Owner-verified ticks` (on).
+- Section `Map type` (overline): three 72×72 radio tiles side by side, 16px apart (radius 8, 2px border `--cs-outline-2`; selected 2px `--cs-green` + label 600 green): `Default` (`roadmap`), `Satellite` (`hybrid`) and `Night` (`night`: the roadmap with a dark `styles` array on Google, a recoloured style on the OpenStreetMap fallback; src/map/night.ts). Label under tile 12/16. Satellite is unavailable on the OpenStreetMap fallback (no imagery); Night works on both. Arrow keys move and select, wrapping and skipping an unavailable type.
+- Section `On the map` (overline): toggle rows 48px (label 14/20 + 36×20 switch; on = `--cs-green` track, white 16px thumb): `Coins` (on), `Fees waiting dots` (on), `Live flashes` (on: trades, new coins and owner claims, §7.2), `Owner-verified ticks` (on).
 - Settings persist in localStorage `cs_layers` (try/catch). Close: click outside, Esc, or the tile again.
 
 ### 6.8 Watermark & attribution
@@ -696,6 +696,9 @@ The pin's anchor (0×0) is the place's lat/lng. The marker is a 30px circle show
 | **Selected (balloon)** | Pin clicked, search result opened, deep link | `.pin.sel`: marker hidden; 40×54 green balloon whose tip is the anchor; 28px face with the emoji on `--bg`; label moves to `left:24px; top:-46px` at 15/19 + 12px. The pin moves to `floatPane` |
 | **Buy flash** | Simulated/real buy event on that coin | `.pin.flash` (buy): 3px `--cs-green-bright` ring scales 1 → 2.3 and fades over 1.4s; tag `+1.2 SOL` (green pill, `left:21px; top:16px`, `right:21px` on `.left` pins). Runs **2 cycles (2.8s), then is removed**; a new trade restarts it. Not shown on the selected pin |
 | **Sell flash** | Sell event | Same, with a `--cs-down` ring and a red tag `−2.5 SOL` |
+| **Launch flash** | A new coin (demo feed; real mode: a new `launch` feed row under 5 min old, never on the first load) | Same, with a `--cs-amber-bright` ring and an amber tag `New coin` (`#9a5b00`); if the coin's pin isn't on the map yet it lights up when it arrives (up to 15s) |
+| **Claim flash** | An owner claim step (`claim` feed row) | Same, with a blue ring and tag (`#1a73e8`): `Claim started` (requested), `Owner verified` (finalized), `Owner paid` (withdrawn) |
+| **Night pins** | Map type `Night` (`body.map-night`) | Labels light on a dark halo (ticker `#3ddc84`, meta `#c3cad6`), markers carry a soft green glow that flares in the flash colour on every flash; low-zoom dots glow too; the watermark turns light |
 | **Fees waiting dot** | Unclaimed and fees ≥ $500 | 12px `--cs-amber-bright` dot at `left:7px; top:-19px` with a 2px white ring (`title="Fees waiting"`) |
 | **Owner-verified tick** | Shop claimed | 15px green circle with a white `check` (FILL, wght 700) at `left:5px; top:3px`. Replaces the fee dot (claimed shops never show it) |
 | **Launchable** | A real Google POI with no coin is selected | `.pin.sel.launchable`: white dashed balloon, face = green `rocket_launch` (FILL, wght 500, 20px); label `Launch here` / `No coin yet`. Exists only while selected; removed when the panel closes |
@@ -1731,7 +1734,7 @@ Target: WCAG 2.2 AA.
 | area.empty | `No coins here yet` / `Tap any shop on the map to launch one` · `Zoom in to see shops` |
 | rail | `Live` · `Top shops` · `Launched` · `My coins` · `Help` · place `$<TICKER>` / `New coin` · app icon aria `CORNERSHOP home` |
 | mapctl (aria) | `Near me` · `Zoom in` · `Zoom out` · `Layers` |
-| layers | `Layers` · `Map type` · `Default` · `Satellite` · `On the map` · `Coins` · `Fees waiting dots` · `Live trade flashes` · `Owner-verified ticks` |
+| layers | `Layers` · `Map type` · `Default` · `Satellite` · `Night` · `On the map` · `Coins` · `Fees waiting dots` · `Live flashes` · `Owner-verified ticks` |
 | fallback.chip | `Basic map` · tooltip `Google Maps is unavailable. Showing OpenStreetMap; launching is paused.` |
 | drawer | `Live` · `Top shops` · `Launched` · `My coins` · `Help` · `About CORNERSHOP` · `Business opt-out` |
 | collapse (aria) | `Collapse side panel` · `Expand side panel` |
@@ -1743,7 +1746,7 @@ Target: WCAG 2.2 AA.
 |---|---|
 | pin.label | `$<TICKER>` / `▲<12>% · <$212k>` |
 | pin.launchable | `Launch here` / `No coin yet` |
-| pin.flash | `+<1.2> SOL` · `−<2.5> SOL` |
+| pin.flash | `+<1.2> SOL` · `−<2.5> SOL` · `New coin` · `Claim started` · `Owner verified` · `Owner paid` |
 | pin.feedot.title | `Fees waiting` |
 | pin.aria | `$<TICKER>, <coin name>, up <12> percent, market cap <$212k>[, fees waiting][, owner verified]` · launchable `Launch a coin here` |
 
@@ -1942,8 +1945,8 @@ The user's rule: **every button must work**. This table is the contract for QA; 
 | Locate (`Near me`) / mobile locate FAB / hero `Near me` chip | Click | Request geolocation → centre at zoom 16, show the user dot (§6.6 states); errors → toast |
 | Zoom in / out | Click | `map.setZoom(±1)`; disabled at limits |
 | Layers tile / mobile Layers FAB | Click | Toggle the Layers popover / sheet |
-| Layers `Default` / `Satellite` | Click | `map.setMapTypeId('roadmap' / 'hybrid')`; saved |
-| Layers toggles | Click | Show/hide coins, fee dots, trade flashes, verified ticks; saved |
+| Layers `Default` / `Satellite` / `Night` | Click | `map.setMapTypeId('roadmap' / 'hybrid')`; Night = `roadmap` + `setOptions({styles})` (OpenStreetMap: the style re-applied with the night recolour) and `body.map-night`; saved |
+| Layers toggles | Click | Show/hide coins, fee dots, live flashes (trades, new coins, claims), verified ticks; saved |
 | Pin (coin) | Click / Enter | Select it (balloon), open its panel, pan per §4.5 |
 | Pin (launchable balloon) | Click | Scroll the panel to the top and pulse the Launch action once (200ms scale 1.06) |
 | Google POI icon on the map | Click | `event.stop()` + open its panel (§7.4) |

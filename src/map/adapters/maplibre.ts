@@ -4,7 +4,8 @@
  *  - lazy chunk: `await import('maplibre-gl')` (its CSS is imported once in main.tsx);
  *  - the worker is resolved through Vite (`?url`) because MapLibre v6 looks for it next to the
  *    module, which does not exist in a bundled app;
- *  - a light recolour of the liberty style toward the CORNERSHOP/Google map tints;
+ *  - a light recolour of the liberty style toward the CORNERSHOP/Google map tints, or the dark Night palette
+ *    (src/map/night.ts) when the `night` map type is on;
  *  - OSM POIs (`poi_r1/r7/r20`) are clickable → onPlaceClick({source:'osm', place});
  *  - the same HTML pin layer as Google, in an overlay inside the canvas container (so dragging
  *    from a pin still pans the map).
@@ -20,16 +21,17 @@ import type {
   Coin,
   LatLng,
   LayersState,
+  FlashKind,
   MapType,
   Place,
   PlaceClickEvent,
   SelectedPin,
-  TradeSide,
   Unsubscribe,
   UserLocation,
   Viewport,
 } from '../../types';
 import { markMapPainted } from '../mapBridge';
+import { NIGHT_RECOLOUR, nightPaint } from '../night';
 import { PinLayer, type Projector } from '../pins';
 import { clamp, Emitter, withinOneViewport } from '../util';
 import type { ContainerPoint, CsMapAdapter, MapPadding } from './types';
@@ -108,20 +110,24 @@ function nullSafeRefLength(expr: unknown): unknown {
   return expr.map(nullSafeRefLength);
 }
 
-const transformStyle: TransformStyleFunction = (_prev, next): StyleSpec => {
-  try {
-    const layers = (next.layers as unknown as LooseLayer[]).map((layer) => {
-      let out = layer;
-      const paint = RECOLOUR[layer.id];
-      if (paint) out = { ...out, paint: { ...(layer.paint ?? {}), ...paint } };
-      if (layer.id.includes('shield') && layer.filter) out = { ...out, filter: nullSafeRefLength(layer.filter) };
-      return out;
-    });
-    return { ...next, layers: layers as unknown as StyleSpec['layers'] };
-  } catch {
-    return next; // never block the map on a cosmetic tweak
-  }
-};
+/** The style transform for day (RECOLOUR) or night (every colour → night palette, then NIGHT_RECOLOUR). */
+function styleFor(night: boolean): TransformStyleFunction {
+  return (_prev, next): StyleSpec => {
+    try {
+      const layers = (next.layers as unknown as LooseLayer[]).map((layer) => {
+        let out = layer;
+        const paint = (night ? NIGHT_RECOLOUR : RECOLOUR)[layer.id];
+        const base = night ? nightPaint(layer.paint) : layer.paint;
+        if (paint || base !== layer.paint) out = { ...out, paint: { ...(base ?? {}), ...(paint ?? {}) } };
+        if (layer.id.includes('shield') && layer.filter) out = { ...out, filter: nullSafeRefLength(layer.filter) };
+        return out;
+      });
+      return { ...next, layers: layers as unknown as StyleSpec['layers'] };
+    } catch {
+      return next; // never block the map on a cosmetic tweak
+    }
+  };
+}
 
 /**
  * OpenMapTiles/planetiler POI feature ids encode the OSM element: id = osmId × 10 + type
@@ -160,6 +166,8 @@ export class MapLibreAdapter implements CsMapAdapter {
   private poiHover = 0;
   private offs: Array<() => void> = [];
   private mapType: MapType = 'roadmap';
+  /** Whether the committed style is the night one (switching re-runs the style transform). */
+  private styleNight = false;
 
   private readonly placeClick = new Emitter<PlaceClickEvent>();
   private readonly coinClick = new Emitter<string>();
@@ -207,7 +215,8 @@ export class MapLibreAdapter implements CsMapAdapter {
     map.setMissingStyleImageResolver((id) => {
       if (!map.hasImage(id)) map.addImage(id, { width: 1, height: 1, data: new Uint8Array(4) });
     });
-    map.setStyle(OSM_STYLE_URL, { transformStyle });
+    this.styleNight = this.mapType === 'night';
+    map.setStyle(OSM_STYLE_URL, { transformStyle: styleFor(this.styleNight) });
 
     // MapLibre logs unhandled 'error' events to the console; tile hiccups are not fatal here.
     let loaded = false;
@@ -406,9 +415,17 @@ export class MapLibreAdapter implements CsMapAdapter {
     this.map?.panTo([ll.lng, ll.lat], { animate, duration: 400 });
   }
 
-  /** OpenFreeMap has no imagery; the Layers UI disables Satellite on this provider. */
+  /**
+   * OpenFreeMap has no imagery; the Layers UI disables Satellite on this provider. Night re-applies the style
+   * with the night transform (MapLibre diffs it, so the map, its camera and pins stay put).
+   */
   setMapType(type: MapType): void {
     this.mapType = type;
+    const night = type === 'night';
+    const map = this.map;
+    if (!map || night === this.styleNight) return;
+    this.styleNight = night;
+    map.setStyle(OSM_STYLE_URL, { transformStyle: styleFor(night) });
   }
 
   setLayers(layers: LayersState): void {
@@ -474,8 +491,8 @@ export class MapLibreAdapter implements CsMapAdapter {
     this.pins.setUser(loc);
   }
 
-  flashCoin(placeId: string, side: TradeSide, label: string): void {
-    this.pins.flash(placeId, side, label);
+  flashCoin(placeId: string, kind: FlashKind, label: string): void {
+    this.pins.flash(placeId, kind, label);
   }
 
   /* -------------------------------------------------------------- subscriptions */

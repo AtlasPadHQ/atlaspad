@@ -1,10 +1,10 @@
 /**
  * Layers (DESIGN §6.7, §18.1): the 79×79 desktop/tablet tile (bottom-left) toggles a popover to its
  * right; on mobile a 44px Layers FAB opens the same content as a bottom sheet.
- *  - Map type: Default (`roadmap`) / Satellite (`hybrid`) → store.setLayers → adapter.setMapType.
- *    The OpenStreetMap fallback has no imagery, so Satellite is unavailable there (aria-disabled,
- *    tooltip + toast explain why).
- *  - On the map: Coins · Fees waiting dots · Live trade flashes · Owner-verified ticks.
+ *  - Map type: Default (`roadmap`) / Satellite (`hybrid`) / Night (`night`, the dark basemap: src/map/night.ts)
+ *    → store.setLayers → adapter.setMapType. The OpenStreetMap fallback has no imagery, so Satellite is
+ *    unavailable there (aria-disabled, tooltip + toast explain why); Night works on both maps.
+ *  - On the map: Coins · Fees waiting dots · Live flashes (trades, new coins, owner claims) · Owner-verified ticks.
  * Everything persists in localStorage `cs_layers` (store). Close: click outside, Esc, the tile again.
  * Contract: default export, no props.
  */
@@ -20,7 +20,10 @@ const SATELLITE_UNAVAILABLE = 'Satellite needs Google Maps. The basic map has no
 const MAP_TYPES: readonly { key: MapType; label: string }[] = [
   { key: 'roadmap', label: 'Default' },
   { key: 'hybrid', label: 'Satellite' },
+  { key: 'night', label: 'Night' },
 ];
+
+const BACK = new Set(['ArrowLeft', 'ArrowUp']);
 
 const ARROWS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
@@ -31,10 +34,11 @@ function LayersContent({ autoFocus }: { autoFocus?: boolean }) {
   const toast = useStore((s) => s.toast);
   const typeLabel = useId();
   const onMapLabel = useId();
-  const refs = useRef<Record<MapType, HTMLButtonElement | null>>({ roadmap: null, hybrid: null });
+  const refs = useRef<Record<MapType, HTMLButtonElement | null>>({ roadmap: null, hybrid: null, night: null });
 
   const satelliteOk = provider === 'google';
-  const current: MapType = satelliteOk ? layers.mapType : 'roadmap';
+  const current: MapType = layers.mapType === 'hybrid' && !satelliteOk ? 'roadmap' : layers.mapType;
+  const available = (t: MapType) => t !== 'hybrid' || satelliteOk;
 
   // Popover: move focus into the panel (on the selected map type) when it opens.
   const initial = useRef(current);
@@ -50,12 +54,14 @@ function LayersContent({ autoFocus }: { autoFocus?: boolean }) {
     if (t !== layers.mapType) setLayers({ mapType: t });
   };
 
-  // Radio group keyboard pattern: arrows move + select.
+  // Radio group keyboard pattern: arrows move + select, wrapping, skipping a type this map can't show.
   const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (!ARROWS.has(e.key)) return;
     e.preventDefault();
-    const next: MapType = current === 'roadmap' ? 'hybrid' : 'roadmap';
-    if (next !== 'hybrid' || satelliteOk) choose(next);
+    const keys = MAP_TYPES.map((t) => t.key).filter(available);
+    const i = Math.max(0, keys.indexOf(current));
+    const next = keys[(i + (BACK.has(e.key) ? keys.length - 1 : 1)) % keys.length] ?? current;
+    choose(next);
     refs.current[next]?.focus();
   };
 
@@ -67,7 +73,7 @@ function LayersContent({ autoFocus }: { autoFocus?: boolean }) {
       <div className="lyr-types" role="radiogroup" aria-labelledby={typeLabel}>
         {MAP_TYPES.map((t) => {
           const on = current === t.key;
-          const unavailable = t.key === 'hybrid' && !satelliteOk;
+          const unavailable = !available(t.key);
           return (
             <button
               key={t.key}
@@ -97,7 +103,7 @@ function LayersContent({ autoFocus }: { autoFocus?: boolean }) {
       <div className="lyr-rows" role="group" aria-labelledby={onMapLabel}>
         <ToggleRow label="Coins" checked={layers.coins} onChange={(v) => setLayers({ coins: v })} />
         <ToggleRow label="Fees waiting dots" checked={layers.feeDots} onChange={(v) => setLayers({ feeDots: v })} />
-        <ToggleRow label="Live trade flashes" checked={layers.flashes} onChange={(v) => setLayers({ flashes: v })} />
+        <ToggleRow label="Live flashes" checked={layers.flashes} onChange={(v) => setLayers({ flashes: v })} />
         <ToggleRow label="Owner-verified ticks" checked={layers.ticks} onChange={(v) => setLayers({ ticks: v })} />
       </div>
     </div>

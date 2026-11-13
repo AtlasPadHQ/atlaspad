@@ -2,6 +2,15 @@
 
 Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH`). Newest first.
 
+## v0.8.0 — 2026-11-13 · Night map
+- Layers has a third map type, Night: a dark basemap on Google Maps and on the OpenStreetMap fallback, saved with your
+  other Layers settings. Pins switch to light labels with a soft glow so they stay easy to read.
+- New coins and owner claims now light up on the map as they happen, next to the buy and sell flashes: "New coin" in
+  amber, and "Claim started", "Owner verified" and "Owner paid" in blue. A coin whose pin hasn't loaded yet lights up
+  as soon as it appears. At night every flash also flares the pin's glow.
+- The Layers switch "Live trade flashes" is now "Live flashes" and turns all of them on or off.
+- This deploy also ships v0.7.4 (first-visit copy for an empty registry), which never went out on its own.
+
 ## v0.7.4 — 2026-11-12 · First-visit copy for an empty registry
 - Hero stats invite the first launch ("Be first / no shops launched yet") instead of showing 0 shops and $0 once the
   registry has loaded empty; skeleton bars stand in for the numbers until then, and one coin reads "1 shop launched".

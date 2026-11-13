@@ -4,7 +4,8 @@
  *   store → adapter: coins (+ chip filter + Layers "Coins") → setCoinPins · selected place (+ its
  *   coin) → setSelectedPlace · results → setResultPins · userLocation → setUserLocation ·
  *   flyTarget → flyTo / fitBounds (reduced motion: no animation) · layers → setMapType/setLayers ·
- *   new trade FeedEvents → flashCoin.
+ *   new trade / launch / claim FeedEvents → flashCoin (demo; real mode flashes from src/realdata) ·
+ *   layers.mapType → `body.map-night` (night pin styles in map.css).
  *   adapter → store: Google POI → openPlace(googlePlaceStub) (no Places fetch: the panel renders
  *   Google's UI Kit) · OSM POI → openPlace(placeFromOsmFeature) · coin pin → openPlace(placeFromCoin)
  *   · idle/moveend → setViewport · drag → locateStatus 'idle' · empty-map tap (mobile, Full sheet) → Half.
@@ -14,7 +15,7 @@
 import { shallow } from 'zustand/shallow';
 import { FOCUS_ZOOM } from '../config';
 import { LAUNCH_PULSE_EVENT, LAYOUT_EVENT, type LaunchPulseDetail } from '../lib/events';
-import { flashLabel } from '../lib/format';
+import { flashForEvent } from '../lib/format';
 import { onGoogleFailure } from '../lib/google';
 import { isMobileNow, prefersReducedMotion } from '../lib/media';
 import { googlePlaceStub, isLaunchableSource, placeFromCoin } from '../lib/place';
@@ -234,6 +235,7 @@ export class MapController {
         (l) => {
           a.setMapType?.(l.mapType);
           a.setLayers?.(l);
+          document.body.classList.toggle('map-night', l.mapType === 'night');
         },
         { fireImmediately: true },
       ),
@@ -329,7 +331,8 @@ export class MapController {
     for (const ev of feed) {
       if (ev.id === prevTop || n >= MAX_FLASHES_PER_UPDATE) break;
       n++;
-      if (ev.kind === 'trade') a.flashCoin(ev.placeId, ev.side, flashLabel(ev.side, ev.sol));
+      const f = flashForEvent(ev);
+      if (f) a.flashCoin(ev.placeId, f.kind, f.label);
     }
   }
 

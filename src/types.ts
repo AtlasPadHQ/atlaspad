@@ -540,7 +540,11 @@ export interface Toast {
   action?: ToastAction;
 }
 
-export type MapType = 'roadmap' | 'hybrid';
+/** `night` = the dark basemap (Google: a `styles` array on the raster roadmap; OSM: a recoloured style). */
+export type MapType = 'roadmap' | 'hybrid' | 'night';
+
+/** What lit a pin up: a buy/sell, a new coin, or an ownership claim step (DESIGN §7.2). */
+export type FlashKind = TradeSide | 'launch' | 'claim';
 
 /** Layers popover state (DESIGN §6.7), persisted in localStorage `cs_layers`. */
 export interface LayersState {
@@ -604,8 +608,8 @@ export interface MapAdapter {
   setSelectedPlace(sel: SelectedPin | null): void;
   setResultPins(places: Place[]): void;
   setUserLocation(loc: UserLocation | null): void;
-  /** Buy/sell flash on a pin (DESIGN §7.2), label like "+1.2 SOL". */
-  flashCoin(placeId: string, side: TradeSide, label: string): void;
+  /** Flash a pin (DESIGN §7.2): buy/sell ("+1.2 SOL"), a new coin or a claim step ("New coin", "Owner verified"). */
+  flashCoin(placeId: string, kind: FlashKind, label: string): void;
   /** Re-measure after the container size changed. */
   resize(): void;
   onPlaceClick(cb: (e: PlaceClickEvent) => void): Unsubscribe;

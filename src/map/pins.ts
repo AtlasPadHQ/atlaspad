@@ -19,7 +19,7 @@ import { pctPin, pctSpoken, usdCompact } from '../lib/format';
 import { prefersReducedMotion } from '../lib/media';
 import { isLaunchableSource, knownIneligibility } from '../lib/place';
 import { feesWaiting } from '../store';
-import type { Coin, LatLng, LayersState, Place, SelectedPin, TradeSide, UserLocation } from '../types';
+import type { Coin, FlashKind, LatLng, LayersState, Place, SelectedPin, UserLocation } from '../types';
 import { BALLOON_HTML } from '../ui/Icons';
 import { declutterLabels, selectedRects, type DeclutterItem, type LabelSide } from './declutter';
 import { clamp, isUsableLocation, safeBg } from './util';
@@ -31,6 +31,9 @@ const FEE_DOT_MIN_USD = 500;
 /** Buy/sell flash: 2 cycles of 1.4s, then removed (reduced motion: static tag for 3s). */
 const FLASH_MS = 2800;
 const FLASH_MS_REDUCED = 3000;
+/** A launch / claim whose pin isn't on the map yet (its coin is still loading) lights up when it arrives. */
+const PENDING_FLASH_MS = 15_000;
+const FLASH_CLASSES = ['flash', 'buy', 'sell', 'launch', 'claim'] as const;
 /** New-launch pop (§14): 450ms. */
 const POP_MS = 450;
 /** Coins launched this recently pop in when first seen. */
@@ -220,6 +223,8 @@ export class PinLayer {
   private order: CoinPin[] = [];
   private orderDirty = false;
   private readonly known = new Set<string>();
+  /** Launch / claim flashes waiting for their pin (see flash). */
+  private readonly pendingFlash = new Map<string, { kind: FlashKind; label: string; until: number }>();
   private readonly results = new Map<string, ResultPin>();
   private sel: SelPin | null = null;
   private me: MePin | null = null;
@@ -373,6 +378,7 @@ export class PinLayer {
     }
     this.syncSuppression();
     this.scheduleDeclutter();
+    if (this.pendingFlash.size > 0) this.flushPendingFlashes();
   }
 
   private createCoinPin(coin: Coin): CoinPin {
@@ -481,34 +487,56 @@ export class PinLayer {
 
   /* -------------------------------------------------------------- flashes */
 
-  /** Buy/sell flash (DESIGN §7.2): ring ×2 cycles + tag, then removed; a new trade restarts it. */
-  flash(placeId: string, side: TradeSide, label: string): void {
+  /**
+   * Pin flash (DESIGN §7.2): ring ×2 cycles + tag, then removed; a new event restarts it. Buy/sell come from
+   * trades; `launch` / `claim` light a pin up when a coin is launched or an owner claim moves on. A launch or
+   * claim whose pin isn't placed yet (the coin is still loading, or it is off screen) waits up to 15 s for it.
+   */
+  flash(placeId: string, kind: FlashKind, label: string): void {
     if (this.destroyed) return;
     if (this.layers && !this.layers.flashes) return;
     if (typeof document !== 'undefined' && document.hidden) return;
     const p = this.coins.get(placeId);
-    if (!p || !p.shown || p.suppressed) return;
+    if (!p || !p.shown || p.suppressed) {
+      if (kind === 'launch' || kind === 'claim') this.pendingFlash.set(placeId, { kind, label, until: Date.now() + PENDING_FLASH_MS });
+      return;
+    }
+    this.pendingFlash.delete(placeId);
     const restarting = p.el.classList.contains('flash');
-    p.el.classList.remove('flash', 'buy', 'sell');
+    p.el.classList.remove(...FLASH_CLASSES);
     if (!p.tag) {
       p.tag = hiddenFromAT(span('tag'));
       p.el.append(p.tag);
     }
     p.tag.textContent = label;
     if (restarting) void p.el.offsetWidth; // restart the CSS animation
-    p.el.classList.add('flash', side);
+    p.el.classList.add('flash', kind);
     window.clearTimeout(p.flashTimer);
     p.flashTimer = window.setTimeout(() => this.endFlash(p), prefersReducedMotion() ? FLASH_MS_REDUCED : FLASH_MS);
   }
 
+  /** Pending launch / claim flashes whose pin is now placed (called after each layout). */
+  private flushPendingFlashes(): void {
+    const now = Date.now();
+    for (const [id, f] of [...this.pendingFlash]) {
+      if (f.until < now) {
+        this.pendingFlash.delete(id);
+        continue;
+      }
+      const p = this.coins.get(id);
+      if (p?.shown && !p.suppressed) this.flash(id, f.kind, f.label);
+    }
+  }
+
   private endFlash(p: CoinPin): void {
     p.flashTimer = 0;
-    p.el.classList.remove('flash', 'buy', 'sell');
+    p.el.classList.remove(...FLASH_CLASSES);
     p.tag?.remove();
     p.tag = null;
   }
 
   clearFlashes(): void {
+    this.pendingFlash.clear();
     for (const p of this.coins.values()) {
       if (p.flashTimer) {
         window.clearTimeout(p.flashTimer);
@@ -768,6 +796,7 @@ export class PinLayer {
     for (const r of this.results.values()) this.placeOne(r);
     if (this.sel) this.placeOne(this.sel);
     if (this.me) this.placeMe(this.me);
+    if (this.pendingFlash.size > 0) this.flushPendingFlashes();
   }
 
   private placeOne(item: Positioned): void {
@@ -885,6 +914,7 @@ export class PinLayer {
       r.removeEventListener('dblclick', this.onDblClick);
     }
     this.coins.clear();
+    this.pendingFlash.clear();
     this.results.clear();
     this.order = [];
     this.sel = null;

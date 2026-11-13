@@ -4,7 +4,7 @@
  * otherwise re-render every store subscriber.
  */
 import { useSyncExternalStore } from 'react';
-import type { MapProvider, TradeSide } from '../types';
+import type { FlashKind, MapProvider } from '../types';
 import type { CsMapAdapter } from './adapters/types';
 
 export interface MapCameraState {
@@ -70,13 +70,13 @@ export function zoomBy(delta: 1 | -1): void {
 }
 
 /**
- * Real mode: buy/sell flash on a pin from a market delta (INTEGRATION.md §5.2 — pin flashes come
- * from `/api/market` reserve changes, not feed rows). Honours the Layers "Flashes" toggle and
- * skips hidden tabs. `label` like "+1.2 SOL".
+ * Real mode: flash a pin. Buy/sell come from market deltas (INTEGRATION.md §5.2 — trade flashes come
+ * from `/api/market` reserve changes, not feed rows); launches and claims come from new feed rows.
+ * Honours the Layers "Live flashes" toggle and skips hidden tabs. `label` like "+1.2 SOL" / "New coin".
  */
-export function flashPin(placeId: string, side: TradeSide, label: string, enabled: boolean): void {
+export function flashPin(placeId: string, kind: FlashKind, label: string, enabled: boolean): void {
   if (!enabled || !adapter || (typeof document !== 'undefined' && document.hidden)) return;
-  adapter.flashCoin(placeId, side, label);
+  adapter.flashCoin(placeId, kind, label);
 }
 
 /* ------------------------------------------------------------------ first view painted */

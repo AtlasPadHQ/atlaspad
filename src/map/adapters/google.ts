@@ -1,7 +1,8 @@
 /**
  * Google Maps adapter (DESIGN §7, research/google.md §1 + §3):
  *  - the real Google default basemap: raster, no `mapId`, no restyling, `clickableIcons:true`,
- *    `gestureHandling:'greedy'`, `disableDefaultUI:true` (Google's logo / attribution / terms stay);
+ *    `gestureHandling:'greedy'`, `disableDefaultUI:true` (Google's logo / attribution / terms stay); the one
+ *    exception is the opt-in Night map type: the same raster roadmap with a dark `styles` array (src/map/night.ts);
  *  - ONE `OverlayView` holding every HTML pin: coin + result pins in `overlayMouseTarget`, the
  *    selected pin in `floatPane`, the user dot in `overlayLayer`; positioned in `draw()` with
  *    `fromLatLngToDivPixel`, culled outside the container;
@@ -15,17 +16,18 @@ import type {
   Bounds,
   Coin,
   LatLng,
+  FlashKind,
   LayersState,
   MapType,
   Place,
   PlaceClickEvent,
   SelectedPin,
-  TradeSide,
   Unsubscribe,
   UserLocation,
   Viewport,
 } from '../../types';
 import { markMapPainted } from '../mapBridge';
+import { NIGHT_BG, NIGHT_GOOGLE_STYLES } from '../night';
 import { PinLayer, type Projector } from '../pins';
 import { clamp, Emitter, withinOneViewport } from '../util';
 import type { ContainerPoint, CsMapAdapter, MapPadding } from './types';
@@ -82,6 +84,8 @@ export class GoogleAdapter implements CsMapAdapter, OverlayHost {
   private listeners: google.maps.MapsEventListener[] = [];
   private pendingZoom: google.maps.MapsEventListener | null = null;
   private size = { width: 0, height: 0 };
+  /** Night map type on (the roadmap with NIGHT_GOOGLE_STYLES). */
+  private night = false;
 
   private readonly roots = {
     under: document.createElement('div'),
@@ -114,24 +118,28 @@ export class GoogleAdapter implements CsMapAdapter, OverlayHost {
     const [{ Map, OverlayView }, core] = await Promise.all([importLibrary('maps'), importLibrary('core')]);
     if (this.destroyed) return;
     this.core = core;
+    const night = opts.mapType === 'night';
+    this.night = night;
     const options: google.maps.MapOptions & { useStaticMap?: boolean } = {
       center: opts.center,
       zoom: clamp(Math.round(opts.zoom), MIN_ZOOM, MAX_ZOOM),
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
-      mapTypeId: opts.mapType,
+      mapTypeId: night ? 'roadmap' : opts.mapType,
+      ...(night ? { styles: NIGHT_GOOGLE_STYLES } : {}),
       disableDefaultUI: true,
       clickableIcons: true,
       gestureHandling: 'greedy',
       keyboardShortcuts: true,
-      backgroundColor: MAP_BG,
+      backgroundColor: night ? NIGHT_BG : MAP_BG,
     };
     // LCP on phones (INTEGRATION §8): Maps JS paints a one-image preview of the first view (its own static map
     // service, part of the map load) while the raster tiles download, but only when the map is ≤ 800 × 800 and
     // ≤ 384k px. A full-height phone map (375 × 812, 412 × 915, …) just misses that, so on a slow connection the map
     // stayed blank until ~15 tiles at 2-3× DPR had arrived (7+ s on slow 4G). Ask for the preview on phone-sized
     // maps; desktop keeps Google's default (tiles arrive fast there and a large preview would only add bytes).
-    if (el.clientWidth > 0 && el.clientWidth <= PREVIEW_MAX_WIDTH && el.clientHeight <= PREVIEW_MAX_HEIGHT) options.useStaticMap = true;
+    // (Not at night: the preview image is the unstyled day map, which would flash light before the dark tiles.)
+    if (!night && el.clientWidth > 0 && el.clientWidth <= PREVIEW_MAX_WIDTH && el.clientHeight <= PREVIEW_MAX_HEIGHT) options.useStaticMap = true;
     const map = new Map(el, options);
     this.map = map;
     this.measure();
@@ -338,9 +346,17 @@ export class GoogleAdapter implements CsMapAdapter, OverlayHost {
     else map.setCenter(ll);
   }
 
+  /** Default / Satellite are Google map types; Night is the roadmap with a dark `styles` array. */
   setMapType(type: MapType): void {
     const map = this.map;
-    if (map && map.getMapTypeId() !== type) map.setMapTypeId(type);
+    if (!map) return;
+    const night = type === 'night';
+    const id = night ? 'roadmap' : type;
+    if (map.getMapTypeId() !== id) map.setMapTypeId(id);
+    if (night !== this.night) {
+      this.night = night;
+      map.setOptions({ styles: night ? NIGHT_GOOGLE_STYLES : null });
+    }
   }
 
   setLayers(layers: LayersState): void {
@@ -394,8 +410,8 @@ export class GoogleAdapter implements CsMapAdapter, OverlayHost {
     this.pins.setUser(loc);
   }
 
-  flashCoin(placeId: string, side: TradeSide, label: string): void {
-    this.pins.flash(placeId, side, label);
+  flashCoin(placeId: string, kind: FlashKind, label: string): void {
+    this.pins.flash(placeId, kind, label);
   }
 
   /* -------------------------------------------------------------- subscriptions */

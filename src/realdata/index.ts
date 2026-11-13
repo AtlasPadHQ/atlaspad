@@ -15,7 +15,7 @@
  */
 import type { CoinDTO, ConfigResponse, EligibilityResponse, FeedEventDTO, PlaceResponse } from '../../worker/wire';
 import { AREA_MIN_ZOOM, LIMITS } from '../config';
-import { flashLabel } from '../lib/format';
+import { flashForEvent, flashLabel } from '../lib/format';
 import { flashPin } from '../map/mapBridge';
 import { BUILD_CLUSTER, IS_REAL } from '../mode';
 import { coinsInBounds, useStore } from '../store';
@@ -404,14 +404,42 @@ function fetchUnknownMints(mints: string[]): void {
   }, 150);
 }
 
+/** Launch / claim rows newer than this light their pin up when they arrive (older ones are history). */
+const LIGHT_UP_MAX_AGE_MS = 5 * 60_000;
+const LIGHT_UP_MAX_PER_POLL = 8;
+
+/**
+ * New launches and claim steps light their pin up on the map (trades flash from /api/market instead). Only rows
+ * that weren't in the feed before this poll, and never on the first load (that is history, not news).
+ */
+function lightUpNew(mapped: readonly FeedEvent[], known: ReadonlySet<string>): void {
+  const s = st();
+  if (!s.layers.flashes) return;
+  const cutoff = Date.now() - LIGHT_UP_MAX_AGE_MS;
+  // one flash per pin: the newest row wins (a claim and its payout in one poll show "Owner paid", not the older step)
+  const newestFirst = [...mapped].sort((a, b) => b.ts - a.ts);
+  const lit = new Set<string>();
+  for (const e of newestFirst) {
+    if (lit.size >= LIGHT_UP_MAX_PER_POLL) break;
+    if ((e.kind !== 'launch' && e.kind !== 'claim') || known.has(e.id) || e.ts < cutoff || lit.has(e.placeId)) continue;
+    const f = flashForEvent(e);
+    if (!f) continue;
+    flashPin(e.placeId, f.kind, f.label, true);
+    lit.add(e.placeId);
+  }
+}
+
 async function loadFeed(): Promise<void> {
   const r = await api.feed(feedLoaded && feedSince ? { limit: 50, since: Math.max(0, feedSince - 1_000) } : { limit: 50 });
   const events = r.events ?? [];
+  const firstLoad = !feedLoaded;
   feedLoaded = true;
   const me = st().wallet.address;
   const mapped: FeedEvent[] = events.map((e) => feedEventFromDTO(e, st().solUsd, me));
   for (const e of events) if (e.ts > feedSince) feedSince = e.ts;
+  const known = firstLoad ? null : new Set(st().feed.map((e) => e.id));
   st().mergeFeed(mapped);
+  if (known) lightUpNew(mapped, known);
   fetchUnknownMints([...new Set(events.map((e) => e.mint))]);
   tradesFromFeed(events);
   st().setDataReady(true);

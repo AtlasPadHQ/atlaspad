@@ -2,7 +2,7 @@
  * Number & text formatting (DESIGN §3.4). Apply these everywhere — never hand-format.
  * SHARED (src/lib). Pure, locale fixed to en-GB.
  */
-import type { TradeSide } from '../types';
+import type { FeedEvent, FlashKind, TradeSide } from '../types';
 
 const LOCALE = 'en-GB';
 const UP = '▲'; // ▲
@@ -186,6 +186,23 @@ export function usdToSolApprox(usd: number, solUsd: number): string {
 /** Buy/sell flash tag: `+1.2 SOL` / `−2.5 SOL` (U+2212). */
 export function flashLabel(side: TradeSide, sol: number): string {
   return `${side === 'buy' ? '+' : MINUS}${solNumber(Math.abs(sol))} SOL`;
+}
+
+/**
+ * How a feed event lights up its pin (DESIGN §7.2): trades "+1.2 SOL", a new coin "New coin", an owner claim
+ * "Claim started" → "Owner verified" → "Owner paid". Price moves (`pump`) don't flash.
+ */
+export function flashForEvent(ev: FeedEvent): { kind: FlashKind; label: string } | null {
+  switch (ev.kind) {
+    case 'trade':
+      return { kind: ev.side, label: flashLabel(ev.side, ev.sol) };
+    case 'launch':
+      return { kind: 'launch', label: 'New coin' };
+    case 'claim':
+      return { kind: 'claim', label: ev.stage === 'requested' ? 'Claim started' : ev.stage === 'withdrawn' ? 'Owner paid' : 'Owner verified' };
+    default:
+      return null;
+  }
 }
 
 /** Percent change for panels/lists: `▲ 12.4%` / `▼ 3.2%`. */
