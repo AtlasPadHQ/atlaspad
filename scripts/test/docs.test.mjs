@@ -129,6 +129,25 @@ test('README: the product card links to the live site and the explorer link is t
   for (const address of explorer) assert.equal(address, deployed, 'a mainnet explorer link (no ?cluster=) to the deployed program');
 });
 
+test('README: the official token section shows exactly the address the site shows (src/config.ts OFFICIAL_TOKEN_MINT)', () => {
+  const site = /export const OFFICIAL_TOKEN_MINT = '([1-9A-HJ-NP-Za-km-z]+)';/.exec(read('src/config.ts'))?.[1];
+  assert.ok(site, 'src/config.ts declares OFFICIAL_TOKEN_MINT as a base58 string');
+  // a Solana address: base58 that decodes to exactly 32 bytes
+  const ALPHA = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  let n = 0n;
+  for (const c of site) n = n * 58n + BigInt(ALPHA.indexOf(c));
+  let bytes = 0;
+  for (let x = n; x > 0n; x >>= 8n) bytes++;
+  bytes += site.match(/^1*/)[0].length;
+  assert.equal(bytes, 32, `${site} is not a 32-byte Solana address`);
+  const section = README.split(/^## /m).find((s) => s.startsWith('Official token\n'));
+  assert.ok(section, 'README has an "Official token" section');
+  const shown = [...section.matchAll(/[1-9A-HJ-NP-Za-km-z]{32,44}/g)].map((m) => m[0]);
+  assert.ok(shown.length >= 2, 'the address in a code block and in the pump.fun link');
+  for (const a of shown) assert.equal(a, site, 'every address in the section is the official one');
+  assert.ok(section.includes(`https://pump.fun/coin/${site}`), 'the pump.fun link points at the official mint');
+});
+
 test('README: the "How it works" diagram names only instructions SPEC.md specifies (shop_vault:: with a §5 heading, pump:: by name)', () => {
   const blocks = mermaidBlocks(README);
   assert.equal(blocks.length, 1, 'one Mermaid block');

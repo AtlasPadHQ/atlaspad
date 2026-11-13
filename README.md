@@ -15,6 +15,17 @@ Google Place ID, and the first launch wins. The coin's pump.fun creator is a per
 program, so 100% of its creator fees are held there until the business's owner proves ownership and claims them (on
 mainnet: a code on the shop's own website), after a public 72-hour window.
 
+## Official token
+
+The only official AtlasPad token, on Solana via pump.fun:
+
+```text
+ApntUKURSdFuCPPPW2oHmiiocfBpaky1ptVyRGZypump
+```
+
+[View it on pump.fun](https://pump.fun/coin/ApntUKURSdFuCPPPW2oHmiiocfBpaky1ptVyRGZypump). Any other token using the AtlasPad name is not ours. Memecoins are
+high risk, and nothing here is financial advice.
+
 Internal ids keep the earlier working name `cornershop` on purpose (Worker names, D1/KV names, storage keys, the
 program crate): renaming them would break deployed URLs and on-chain metadata.
 

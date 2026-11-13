@@ -4,7 +4,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { usePhoneOff } from '../claim/phoneOff';
-import { links } from '../config';
+import { links, OFFICIAL_TOKEN_MINT } from '../config';
+import { copyOfficialToken } from '../lib/clipboard';
 import { CONTACT_EMAIL } from '../legal/contact';
 import { CLUSTER, IS_REAL } from '../mode';
 import { useStore } from '../store';
@@ -170,6 +171,17 @@ export function HelpPanel() {
         })}
       </div>
       <div className="foot help-legal">
+        <p className="help-token">
+          Official AtlasPad token: <code translate="no">{OFFICIAL_TOKEN_MINT}</code>{' '}
+          <button type="button" className="link-btn" onClick={() => void copyOfficialToken()}>
+            Copy
+          </button>
+          {' · '}
+          <a href={links.pumpfun(OFFICIAL_TOKEN_MINT)} target="_blank" rel="noopener noreferrer">
+            pump.fun
+          </a>
+          . Any other token using the AtlasPad name isn't ours.
+        </p>
         <p>Coins on AtlasPad are launched by the public and are not affiliated with the business.</p>
         <p>
           Questions, disputes or takedowns: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>

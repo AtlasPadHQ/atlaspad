@@ -189,6 +189,12 @@ export const links = {
   } as Record<string, (url: string, ref: string) => string>,
 } as const;
 
+/**
+ * The official AtlasPad token (a pump.fun mint on Solana mainnet). Shown on the desktop rail ("Token", copies it), in
+ * the mobile menu and in Help, and in the README; scripts/test/docs.test.mjs keeps the README's copy identical to this.
+ */
+export const OFFICIAL_TOKEN_MINT = 'ApntUKURSdFuCPPPW2oHmiiocfBpaky1ptVyRGZypump';
+
 /** Pinned wallets, in display order (DESIGN §12.4). */
 export const PINNED_WALLETS = ['Phantom', 'Solflare', 'Backpack'] as const;
 

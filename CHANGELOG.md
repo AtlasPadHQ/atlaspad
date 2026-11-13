@@ -9,6 +9,9 @@ Every patch gets an entry here, a commit, and a version tag (`vMAJOR.MINOR.PATCH
   amber, and "Claim started", "Owner verified" and "Owner paid" in blue. A coin whose pin hasn't loaded yet lights up
   as soon as it appears. At night every flash also flares the pin's glow.
 - The Layers switch "Live trade flashes" is now "Live flashes" and turns all of them on or off.
+- The official AtlasPad token address (`ApntUKURSdFuCPPPW2oHmiiocfBpaky1ptVyRGZypump`) is on the site: "Token" on the
+  desktop rail copies it, the mobile menu has it too, and Help shows it in full with a pump.fun link. The README shows the
+  same address, and a test keeps the two identical.
 - This deploy also ships v0.7.4 (first-visit copy for an empty registry), which never went out on its own.
 
 ## v0.7.4 — 2026-11-12 · First-visit copy for an empty registry

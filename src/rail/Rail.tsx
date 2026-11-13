@@ -4,7 +4,7 @@
  * Rail, top → bottom: app icon (home: close any panel, clear selection, reset filters, keep the
  * viewport) · Live (live dot) · Top shops · Launched (unseen-launches badge) · My coins (amber
  * badge when you own a claimed shop with fees) · the selected place entry (`$TICKER` /
- * `New coin`; re-opens / expands its panel and pans to the pin when it is off-screen) · X (AtlasPad's account) and GitHub (the source code), both in a new tab · Help.
+ * `New coin`; re-opens / expands its panel and pans to the pin when it is off-screen) · Token (copies the official AtlasPad token address) · X (AtlasPad's account) and GitHub (the source code), both in a new tab · Help.
  * Items toggle their panel (the active item again closes it).
  *
  * Mobile (<768): the rail is not rendered; the drawer opens when store.railOpen is true (the
@@ -15,7 +15,9 @@ import { useEffect } from 'react';
 import { boundsContains } from '../lib/geo';
 import { useIsMobile } from '../lib/media';
 import { useStore } from '../store';
-import { links } from '../config';
+import { links, OFFICIAL_TOKEN_MINT } from '../config';
+import { copyOfficialToken } from '../lib/clipboard';
+import { shortAddr } from '../lib/format';
 import { AppIcon, GitHubGlyph, Icon, XGlyph } from '../ui';
 import Drawer from './Drawer';
 import { badgeText, RAIL_ITEMS, useActivePanel, useLaunchedBadge, useLiveHealth, useMyCoinsBadge, type RailMode } from './railState';
@@ -131,6 +133,18 @@ function DesktopRail() {
       </ul>
       <RailPlace />
       <div className="rail-spacer" />
+      <button
+        type="button"
+        className="rail-item rail-help rail-token"
+        onClick={() => void copyOfficialToken()}
+        aria-label={`Copy the official AtlasPad token address, ${OFFICIAL_TOKEN_MINT}`}
+        data-tip={`Copy token address ${shortAddr(OFFICIAL_TOKEN_MINT)}`}
+      >
+        <span className="ind">
+          <Icon name="toll" />
+        </span>
+        <span className="lbl">Token</span>
+      </button>
       <a className="rail-item rail-help rail-x" href={links.xProfile} target="_blank" rel="noopener noreferrer" aria-label={`AtlasPad on X, ${links.xHandle} (opens in a new tab)`} data-tip={`Follow ${links.xHandle}`}>
         <span className="ind">
           <XGlyph size={20} />

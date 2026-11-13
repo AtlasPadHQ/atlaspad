@@ -2,7 +2,8 @@
  * Mobile navigation drawer (DESIGN §6.9; replaces the rail below 768px). Opened by the green
  * app-icon logo in the mobile search pill (store.setRailOpen(true)). Left drawer over a scrim:
  * header (app icon + CORNERSHOP), items Live (live dot) · Top shops · Launched (badge) ·
- * My coins (amber badge) · divider · Help · About AtlasPad · AtlasPad on X · Source code on GitHub (both in a new tab), footer mode chip (DEMO / DEVNET; none on mainnet) +
+ * My coins (amber badge) · divider · Help · About AtlasPad · AtlasPad on X · Source code on GitHub (both in a new tab) ·
+ * AtlasPad token (copies the official token address), footer mode chip (DEMO / DEVNET; none on mainnet) +
  * Business opt-out.
  *
  * Items behave like the rail items and close the drawer. Scrim tap, Esc (drawer layer) and the
@@ -11,7 +12,9 @@
  */
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { links } from '../config';
+import { links, OFFICIAL_TOKEN_MINT } from '../config';
+import { copyOfficialToken } from '../lib/clipboard';
+import { shortAddr } from '../lib/format';
 import { ESC_PRIORITY, useEscapeLayer } from '../lib/escape';
 import { useStore } from '../store';
 import { AppIcon, GitHubGlyph, Icon, IconButton, ModeChip, usePresence, Wordmark, XGlyph } from '../ui';
@@ -155,6 +158,24 @@ function DrawerSheet({ open, state }: { open: boolean; state: 'open' | 'closing'
                 <span className="dl">Source code on GitHub</span>
                 <span className="sr"> (opens in a new tab)</span>
               </a>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="drawer-item"
+                onClick={() => {
+                  close();
+                  void copyOfficialToken();
+                }}
+              >
+                <span className="di">
+                  <Icon name="toll" />
+                </span>
+                <span className="dl">
+                  AtlasPad token <span translate="no">{shortAddr(OFFICIAL_TOKEN_MINT)}</span>
+                </span>
+                <span className="sr">, copy the official token address</span>
+              </button>
             </li>
           </ul>
         </nav>

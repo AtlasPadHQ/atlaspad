@@ -2,6 +2,7 @@
  * Clipboard with toast + fallback (DESIGN §16.11: "Mint address copied", "Link copied",
  * "Address copied"). SHARED (src/lib). Browser-only.
  */
+import { OFFICIAL_TOKEN_MINT } from '../config';
 import { useStore } from '../store';
 
 /** Copy text. Uses the async Clipboard API, falling back to a hidden textarea + execCommand. */
@@ -48,4 +49,12 @@ export async function copyWithToast(text: string, successMessage: string): Promi
   if (ok) toast(successMessage, 'ok');
   else toast("Couldn't copy. Select and copy it manually.", 'error');
   return ok;
+}
+
+/** Copy the official AtlasPad token address (rail, mobile menu, Help) and say so in a toast. */
+export async function copyOfficialToken(): Promise<void> {
+  const ok = await copyText(OFFICIAL_TOKEN_MINT);
+  const st = useStore.getState();
+  if (ok) st.toast('AtlasPad token address copied', 'ok');
+  else st.toast("Couldn't copy. Select and copy it manually.", 'error');
 }
